@@ -141,7 +141,6 @@ AVCaptureDevice* findAppleMic()
     // ->wait, since want this to compelete before doing other things!
     [[xpcConnection remoteObjectProxy] initialize:^
      {
-         
          //signal sema
          dispatch_semaphore_signal(waitSema);
          
@@ -670,6 +669,9 @@ bail:
     //process name
     NSString* processName = nil;
     
+    //log msg
+    NSMutableString* logMsg = nil;
+    
     //alloc notificaiton
     notification = [[NSUserNotification alloc] init];
     
@@ -678,6 +680,9 @@ bail:
     
     //alloc details
     details = [NSMutableString string];
+    
+    //alloc log msg
+    logMsg = [NSMutableString string];
     
     //set title
     // ->audio device
@@ -742,7 +747,33 @@ bail:
         //set details
         // ->name of process using it / icon too?
         [notification setInformativeText:[NSString stringWithFormat:@"%@ (%@)", processName, event[EVENT_PROCESS_ID]]];
+    }
 
+    //log event?
+    // TODO: test will final apps/prefs
+    if(YES == [[NSUserDefaults standardUserDefaults] boolForKey:LOG_ACTIVITY])
+    {
+        //init msg
+        [logMsg appendString:@"OVERSIGHT: "];
+        
+        //no process?
+        // ->just add title / details
+        if(nil == processName)
+        {
+            //add
+            [logMsg appendFormat:@"%@ (%@)", title, details];
+        }
+        
+        //process
+        // ->add title / details / process
+        else
+        {
+            //add
+            [logMsg appendFormat:@"%@ (%@, %@)", title, details, processName];
+        }
+        
+        //write it out to syslog
+        syslog(LOG_ERR, "%s\n", logMsg.UTF8String);
     }
     
     //icon issues

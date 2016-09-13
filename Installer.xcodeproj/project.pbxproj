@@ -21,9 +21,9 @@
 		7D17C4FD1D658DB90066232A /* ErrorWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D17C4F31D658DB90066232A /* ErrorWindowController.m */; };
 		7D17C4FE1D658DB90066232A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D17C4F41D658DB90066232A /* main.m */; };
 		7D17C4FF1D658DB90066232A /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 7D17C4F51D658DB90066232A /* Info.plist */; };
-		7D17C5001D658DB90066232A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7D17C4F71D658DB90066232A /* Assets.xcassets */; };
 		7D17C5011D658DB90066232A /* ErrorWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7D17C4F81D658DB90066232A /* ErrorWindowController.xib */; };
 		7D17C5041D658DEC0066232A /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7D17C5021D658DEC0066232A /* MainMenu.xib */; };
+		7D6245831D87C3D700870565 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7D6245821D87C3D700870565 /* Images.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -50,10 +50,10 @@
 		7D17C4F41D658DB90066232A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Installer/main.m; sourceTree = SOURCE_ROOT; };
 		7D17C4F51D658DB90066232A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Installer/Info.plist; sourceTree = SOURCE_ROOT; };
 		7D17C4F61D658DB90066232A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = Installer/AppDelegate.h; sourceTree = SOURCE_ROOT; };
-		7D17C4F71D658DB90066232A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = Installer/Assets.xcassets; sourceTree = SOURCE_ROOT; };
 		7D17C4F81D658DB90066232A /* ErrorWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = ErrorWindowController.xib; path = Installer/ErrorWindowController.xib; sourceTree = SOURCE_ROOT; };
 		7D17C5031D658DEC0066232A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Installer/Base.lproj/MainMenu.xib; sourceTree = SOURCE_ROOT; };
 		7D24C8651D2CDEA7009932EE /* Installer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Installer.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		7D6245821D87C3D700870565 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Images/Images.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -70,6 +70,7 @@
 		7D17C4D71D658D9F0066232A /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				7D6245821D87C3D700870565 /* Images.xcassets */,
 				7D17C4D81D658D9F0066232A /* AboutWindow.xib */,
 				7D17C4D91D658D9F0066232A /* AboutWindowController.h */,
 				7D17C4DA1D658D9F0066232A /* AboutWindowController.m */,
@@ -94,17 +95,9 @@
 			path = Images;
 			sourceTree = "<group>";
 		};
-		7D17C5051D658F3E0066232A /* Images */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Images;
-			sourceTree = "<group>";
-		};
 		7D24C85C1D2CDEA7009932EE = {
 			isa = PBXGroup;
 			children = (
-				7D17C5051D658F3E0066232A /* Images */,
 				7D17C4D71D658D9F0066232A /* Shared */,
 				7D24C8671D2CDEA7009932EE /* Source */,
 				7D24C8661D2CDEA7009932EE /* Products */,
@@ -132,7 +125,6 @@
 				7D17C4F21D658DB90066232A /* ErrorWindowController.h */,
 				7D17C4F31D658DB90066232A /* ErrorWindowController.m */,
 				7D17C4F61D658DB90066232A /* AppDelegate.h */,
-				7D17C4F71D658DB90066232A /* Assets.xcassets */,
 				7D17C4F81D658DB90066232A /* ErrorWindowController.xib */,
 				7D24C86B1D2CDEA7009932EE /* Supporting Files */,
 			);
@@ -208,10 +200,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7D6245831D87C3D700870565 /* Images.xcassets in Resources */,
 				7D17C4E91D658D9F0066232A /* overSight.png in Resources */,
 				7D17C4FF1D658DB90066232A /* Info.plist in Resources */,
 				7D17C5011D658DB90066232A /* ErrorWindowController.xib in Resources */,
-				7D17C5001D658DB90066232A /* Assets.xcassets in Resources */,
 				7D17C4E81D658D9F0066232A /* icon.png in Resources */,
 				7D17C4FC1D658DB90066232A /* ConfigureWindowController.xib in Resources */,
 				7D17C4E51D658D9F0066232A /* AboutWindow.xib in Resources */,

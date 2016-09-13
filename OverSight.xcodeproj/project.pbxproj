@@ -7,9 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		7D17C4941D658A790066232A /* AboutWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7D17C48C1D658A790066232A /* AboutWindow.xib */; };
-		7D17C4951D658A790066232A /* AboutWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D17C48E1D658A790066232A /* AboutWindowController.m */; };
-		7D17C4971D658A790066232A /* Logging.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D17C4931D658A790066232A /* Logging.m */; };
 		7D17C5271D6592FE0066232A /* statusIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 7D17C5141D658FEB0066232A /* statusIcon.png */; };
 		7D17C5281D6592FE0066232A /* statusIcon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 7D17C5151D658FEB0066232A /* statusIcon@2x.png */; };
 		7D17C5391D659E580066232A /* AboutWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7D17C52C1D659E580066232A /* AboutWindow.xib */; };
@@ -21,22 +18,28 @@
 		7D17CFE51D8133840017B475 /* AVMonitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D17CFE11D81121E0017B475 /* AVMonitor.m */; };
 		7D17D0101D8136C60017B475 /* OverSightXPC.xpc in Embed XPC Services */ = {isa = PBXBuildFile; fileRef = 7DC9C8121D641A350017D143 /* OverSightXPC.xpc */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		7D62457C1D84FB8900870565 /* Enumerator.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D62457B1D84FB8900870565 /* Enumerator.m */; };
-		7D62457D1D8517F500870565 /* Logging.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D17C4931D658A790066232A /* Logging.m */; };
 		7D6245801D85348E00870565 /* Utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D62457F1D85348E00870565 /* Utilities.m */; };
-		7D6245811D8537CF00870565 /* Logging.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D17C4931D658A790066232A /* Logging.m */; };
+		7D6245851D87C43900870565 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7D6245841D87C43900870565 /* Images.xcassets */; };
+		7D6245871D87C55F00870565 /* Logging.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D17C5361D659E580066232A /* Logging.m */; };
+		7D6245881D87C57600870565 /* Logging.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D17C5361D659E580066232A /* Logging.m */; };
+		7D6245891D87C58400870565 /* Logging.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D17C5361D659E580066232A /* Logging.m */; };
+		7D62458B1D87CE0900870565 /* AboutWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D17C52E1D659E580066232A /* AboutWindowController.m */; };
+		7D62458F1D87D38400870565 /* InfoWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7D62458C1D87D38400870565 /* InfoWindow.xib */; };
+		7D6245901D87D38400870565 /* InfoWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D62458D1D87D38400870565 /* InfoWindowController.m */; };
+		7D6245911D87D39E00870565 /* InfoWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D62458D1D87D38400870565 /* InfoWindowController.m */; };
+		7D6245921D87D46800870565 /* InfoWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7D62458C1D87D38400870565 /* InfoWindow.xib */; };
+		7D6245931D87E13200870565 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 7D17C5331D659E580066232A /* icon.png */; };
+		7D6245941D87E13200870565 /* overSight.png in Resources */ = {isa = PBXBuildFile; fileRef = 7D17C5341D659E580066232A /* overSight.png */; };
+		7D6245951D87E14800870565 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8B5755CD19DA3F9300799E6B /* MainMenu.xib */; };
 		7DAF4B7F1D657192000DA31A /* StatusBarMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DAF4B7D1D656FD3000DA31A /* StatusBarMenu.m */; };
 		7DC9C8171D641A350017D143 /* OverSightXPC.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DC9C8161D641A350017D143 /* OverSightXPC.m */; };
 		7DC9C8191D641A350017D143 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DC9C8181D641A350017D143 /* main.m */; };
 		7DC9C81D1D641A350017D143 /* OverSightXPC.xpc in Embed XPC Services */ = {isa = PBXBuildFile; fileRef = 7DC9C8121D641A350017D143 /* OverSightXPC.xpc */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		8B5755A119DA3E9500799E6B /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B5755A019DA3E9500799E6B /* main.m */; };
 		8B5755A419DA3E9500799E6B /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B5755A319DA3E9500799E6B /* AppDelegate.m */; };
-		8B5755A619DA3E9500799E6B /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8B5755A519DA3E9500799E6B /* Images.xcassets */; };
 		8B5755A919DA3E9500799E6B /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8B5755A719DA3E9500799E6B /* MainMenu.xib */; };
 		8B5755C719DA3F9300799E6B /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B5755C619DA3F9300799E6B /* main.m */; };
 		8B5755CA19DA3F9300799E6B /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B5755C919DA3F9300799E6B /* AppDelegate.m */; };
-		8B5755CC19DA3F9300799E6B /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8B5755CB19DA3F9300799E6B /* Images.xcassets */; };
-		8B5755CF19DA3F9300799E6B /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8B5755CD19DA3F9300799E6B /* MainMenu.xib */; };
-		8B5755E319DA41D300799E6B /* ServiceManagement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B5755E219DA41D300799E6B /* ServiceManagement.framework */; };
 		8B5755E619DA432000799E6B /* OverSight Helper.app in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8B5755C219DA3F9300799E6B /* OverSight Helper.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
@@ -86,14 +89,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		7D17C48C1D658A790066232A /* AboutWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = AboutWindow.xib; path = Shared/AboutWindow.xib; sourceTree = SOURCE_ROOT; };
-		7D17C48D1D658A790066232A /* AboutWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AboutWindowController.h; path = Shared/AboutWindowController.h; sourceTree = SOURCE_ROOT; };
-		7D17C48E1D658A790066232A /* AboutWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AboutWindowController.m; path = Shared/AboutWindowController.m; sourceTree = SOURCE_ROOT; };
-		7D17C48F1D658A790066232A /* Consts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Consts.h; path = Shared/Consts.h; sourceTree = SOURCE_ROOT; };
-		7D17C4901D658A790066232A /* Exception.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Exception.h; path = Shared/Exception.h; sourceTree = SOURCE_ROOT; };
-		7D17C4911D658A790066232A /* Exception.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Exception.m; path = Shared/Exception.m; sourceTree = SOURCE_ROOT; };
-		7D17C4921D658A790066232A /* Logging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Logging.h; path = Shared/Logging.h; sourceTree = SOURCE_ROOT; };
-		7D17C4931D658A790066232A /* Logging.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Logging.m; path = Shared/Logging.m; sourceTree = SOURCE_ROOT; };
 		7D17C5141D658FEB0066232A /* statusIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = statusIcon.png; path = Images/statusIcon.png; sourceTree = "<group>"; };
 		7D17C5151D658FEB0066232A /* statusIcon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "statusIcon@2x.png"; path = "Images/statusIcon@2x.png"; sourceTree = "<group>"; };
 		7D17C52C1D659E580066232A /* AboutWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AboutWindow.xib; sourceTree = "<group>"; };
@@ -115,6 +110,10 @@
 		7D62457B1D84FB8900870565 /* Enumerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Enumerator.m; sourceTree = "<group>"; };
 		7D62457E1D85348E00870565 /* Utilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utilities.h; sourceTree = "<group>"; };
 		7D62457F1D85348E00870565 /* Utilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Utilities.m; sourceTree = "<group>"; };
+		7D6245841D87C43900870565 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Images/Images.xcassets; sourceTree = "<group>"; };
+		7D62458C1D87D38400870565 /* InfoWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = InfoWindow.xib; sourceTree = "<group>"; };
+		7D62458D1D87D38400870565 /* InfoWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfoWindowController.m; sourceTree = "<group>"; };
+		7D62458E1D87D38400870565 /* InfoWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfoWindowController.h; sourceTree = "<group>"; };
 		7DAF4B7C1D656FD3000DA31A /* StatusBarMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StatusBarMenu.h; sourceTree = "<group>"; };
 		7DAF4B7D1D656FD3000DA31A /* StatusBarMenu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StatusBarMenu.m; sourceTree = "<group>"; };
 		7DC9C8121D641A350017D143 /* OverSightXPC.xpc */ = {isa = PBXFileReference; explicitFileType = "wrapper.xpc-service"; includeInIndex = 0; path = OverSightXPC.xpc; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -127,16 +126,13 @@
 		8B5755A019DA3E9500799E6B /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		8B5755A219DA3E9500799E6B /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		8B5755A319DA3E9500799E6B /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		8B5755A519DA3E9500799E6B /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		8B5755A819DA3E9500799E6B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		8B5755C219DA3F9300799E6B /* OverSight Helper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "OverSight Helper.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8B5755C519DA3F9300799E6B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8B5755C619DA3F9300799E6B /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		8B5755C819DA3F9300799E6B /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		8B5755C919DA3F9300799E6B /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		8B5755CB19DA3F9300799E6B /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		8B5755CE19DA3F9300799E6B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
-		8B5755E219DA41D300799E6B /* ServiceManagement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ServiceManagement.framework; path = System/Library/Frameworks/ServiceManagement.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -151,7 +147,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8B5755E319DA41D300799E6B /* ServiceManagement.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -165,24 +160,10 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		7D17C48B1D658A670066232A /* Shared */ = {
-			isa = PBXGroup;
-			children = (
-				7D17C48C1D658A790066232A /* AboutWindow.xib */,
-				7D17C48D1D658A790066232A /* AboutWindowController.h */,
-				7D17C48E1D658A790066232A /* AboutWindowController.m */,
-				7D17C48F1D658A790066232A /* Consts.h */,
-				7D17C4901D658A790066232A /* Exception.h */,
-				7D17C4911D658A790066232A /* Exception.m */,
-				7D17C4921D658A790066232A /* Logging.h */,
-				7D17C4931D658A790066232A /* Logging.m */,
-			);
-			name = Shared;
-			sourceTree = "<group>";
-		};
 		7D17C5131D658FE20066232A /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				7D17CFE21D81121E0017B475 /* AVMonitor.h */,
 				7D17C5141D658FEB0066232A /* statusIcon.png */,
 				7D17C5151D658FEB0066232A /* statusIcon@2x.png */,
 			);
@@ -192,6 +173,10 @@
 		7D17C52B1D659E580066232A /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				7D62458C1D87D38400870565 /* InfoWindow.xib */,
+				7D62458D1D87D38400870565 /* InfoWindowController.m */,
+				7D62458E1D87D38400870565 /* InfoWindowController.h */,
+				7D6245841D87C43900870565 /* Images.xcassets */,
 				7D17C52C1D659E580066232A /* AboutWindow.xib */,
 				7D17C52D1D659E580066232A /* AboutWindowController.h */,
 				7D17C52E1D659E580066232A /* AboutWindowController.m */,
@@ -218,6 +203,15 @@
 			path = Images;
 			sourceTree = "<group>";
 		};
+		7D6245861D87C53500870565 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				7DC9C8181D641A350017D143 /* main.m */,
+				7DC9C81A1D641A350017D143 /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
 		7DC9C8131D641A350017D143 /* OverSightXPC */ = {
 			isa = PBXGroup;
 			children = (
@@ -226,8 +220,7 @@
 				7D17CFDE1D810D6D0017B475 /* XPCProtocol.h */,
 				7DC9C8151D641A350017D143 /* OverSightXPC.h */,
 				7DC9C8161D641A350017D143 /* OverSightXPC.m */,
-				7DC9C8181D641A350017D143 /* main.m */,
-				7DC9C81A1D641A350017D143 /* Info.plist */,
+				7D6245861D87C53500870565 /* Supporting Files */,
 			);
 			path = OverSightXPC;
 			sourceTree = "<group>";
@@ -236,7 +229,6 @@
 			isa = PBXGroup;
 			children = (
 				7D17C52B1D659E580066232A /* Shared */,
-				8B5755E219DA41D300799E6B /* ServiceManagement.framework */,
 				8B57559D19DA3E9500799E6B /* MainApp */,
 				8B5755C319DA3F9300799E6B /* LoginItem */,
 				7DC9C8131D641A350017D143 /* OverSightXPC */,
@@ -259,7 +251,6 @@
 			children = (
 				8B5755A219DA3E9500799E6B /* AppDelegate.h */,
 				8B5755A319DA3E9500799E6B /* AppDelegate.m */,
-				8B5755A519DA3E9500799E6B /* Images.xcassets */,
 				8B5755A719DA3E9500799E6B /* MainMenu.xib */,
 				8B57559E19DA3E9500799E6B /* Supporting Files */,
 			);
@@ -279,14 +270,11 @@
 			isa = PBXGroup;
 			children = (
 				7D17C5131D658FE20066232A /* Images */,
-				7D17C48B1D658A670066232A /* Shared */,
 				7DAF4B7C1D656FD3000DA31A /* StatusBarMenu.h */,
 				7DAF4B7D1D656FD3000DA31A /* StatusBarMenu.m */,
 				8B5755C819DA3F9300799E6B /* AppDelegate.h */,
 				8B5755C919DA3F9300799E6B /* AppDelegate.m */,
 				7D17CFE11D81121E0017B475 /* AVMonitor.m */,
-				7D17CFE21D81121E0017B475 /* AVMonitor.h */,
-				8B5755CB19DA3F9300799E6B /* Images.xcassets */,
 				8B5755CD19DA3F9300799E6B /* MainMenu.xib */,
 				8B5755C419DA3F9300799E6B /* Supporting Files */,
 			);
@@ -425,11 +413,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8B5755A619DA3E9500799E6B /* Images.xcassets in Resources */,
+				7D6245921D87D46800870565 /* InfoWindow.xib in Resources */,
 				7D17C53C1D659E580066232A /* icon.png in Resources */,
 				8B5755A919DA3E9500799E6B /* MainMenu.xib in Resources */,
 				7D17C53D1D659E580066232A /* overSight.png in Resources */,
-				7D17C4941D658A790066232A /* AboutWindow.xib in Resources */,
 				7D17C5391D659E580066232A /* AboutWindow.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -438,10 +425,13 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7D6245951D87E14800870565 /* MainMenu.xib in Resources */,
+				7D6245931D87E13200870565 /* icon.png in Resources */,
+				7D6245941D87E13200870565 /* overSight.png in Resources */,
 				7D17C5271D6592FE0066232A /* statusIcon.png in Resources */,
+				7D62458F1D87D38400870565 /* InfoWindow.xib in Resources */,
+				7D6245851D87C43900870565 /* Images.xcassets in Resources */,
 				7D17C5281D6592FE0066232A /* statusIcon@2x.png in Resources */,
-				8B5755CC19DA3F9300799E6B /* Images.xcassets in Resources */,
-				8B5755CF19DA3F9300799E6B /* MainMenu.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -452,7 +442,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7D6245811D8537CF00870565 /* Logging.m in Sources */,
+				7D6245871D87C55F00870565 /* Logging.m in Sources */,
 				7D17CFE41D811B4E0017B475 /* Utilities.m in Sources */,
 				7D62457C1D84FB8900870565 /* Enumerator.m in Sources */,
 				7DC9C8191D641A350017D143 /* main.m in Sources */,
@@ -464,12 +454,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7D6245911D87D39E00870565 /* InfoWindowController.m in Sources */,
+				7D62458B1D87CE0900870565 /* AboutWindowController.m in Sources */,
+				7D6245891D87C58400870565 /* Logging.m in Sources */,
 				8B5755A419DA3E9500799E6B /* AppDelegate.m in Sources */,
 				8B5755A119DA3E9500799E6B /* main.m in Sources */,
-				7D17C4971D658A790066232A /* Logging.m in Sources */,
 				7D17C53B1D659E580066232A /* Exception.m in Sources */,
 				7D17C53F1D659E580066232A /* Utilities.m in Sources */,
-				7D17C4951D658A790066232A /* AboutWindowController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -477,9 +468,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7D6245881D87C57600870565 /* Logging.m in Sources */,
 				7D6245801D85348E00870565 /* Utilities.m in Sources */,
-				7D62457D1D8517F500870565 /* Logging.m in Sources */,
 				7D17CFE51D8133840017B475 /* AVMonitor.m in Sources */,
+				7D6245901D87D38400870565 /* InfoWindowController.m in Sources */,
 				7DAF4B7F1D657192000DA31A /* StatusBarMenu.m in Sources */,
 				8B5755CA19DA3F9300799E6B /* AppDelegate.m in Sources */,
 				8B5755C719DA3F9300799E6B /* main.m in Sources */,
@@ -520,7 +512,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
-				CODE_SIGN_IDENTITY = "Developer ID Application: Objective-See, LLC (VBG97UB4TA)";
+				CODE_SIGN_IDENTITY = "Developer ID Application";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Developer ID Application: Objective-See, LLC (VBG97UB4TA)";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
@@ -538,7 +530,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
-				CODE_SIGN_IDENTITY = "Developer ID Application: Objective-See, LLC (VBG97UB4TA)";
+				CODE_SIGN_IDENTITY = "Developer ID Application";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Developer ID Application: Objective-See, LLC (VBG97UB4TA)";
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
@@ -630,8 +622,7 @@
 		8B5755B919DA3E9500799E6B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "Developer ID Application: Objective-See, LLC (VBG97UB4TA)";
+				CODE_SIGN_IDENTITY = "Developer ID Application";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Developer ID Application: Objective-See, LLC (VBG97UB4TA)";
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
@@ -646,8 +637,7 @@
 		8B5755BA19DA3E9500799E6B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "Developer ID Application: Objective-See, LLC (VBG97UB4TA)";
+				CODE_SIGN_IDENTITY = "Developer ID Application";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Developer ID Application: Objective-See, LLC (VBG97UB4TA)";
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
@@ -663,7 +653,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "Developer ID Application: Objective-See, LLC (VBG97UB4TA)";
+				CODE_SIGN_IDENTITY = "Developer ID Application";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Developer ID Application: Objective-See, LLC (VBG97UB4TA)";
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -683,7 +673,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "Developer ID Application: Objective-See, LLC (VBG97UB4TA)";
+				CODE_SIGN_IDENTITY = "Developer ID Application";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Developer ID Application: Objective-See, LLC (VBG97UB4TA)";
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = LoginItem/Info.plist;

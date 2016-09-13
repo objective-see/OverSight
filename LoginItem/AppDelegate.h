@@ -9,6 +9,7 @@
 #import "AVMonitor.h"
 #import "EventMonitor.h"
 #import "StatusBarMenu.h"
+#import "InfoWindowController.h"
 
 #import <Cocoa/Cocoa.h>
 
@@ -16,13 +17,14 @@
 
 /* PROPERTIES */
 
+//av monitor class
+@property(nonatomic, retain)AVMonitor* avMonitor;
+
 //status bar menu
 @property(nonatomic, retain)StatusBarMenu* statusBarMenuController;
 
-//(camera event) monitor class
-@property(nonatomic, retain)EventMonitor* monitor;
-
-@property(nonatomic, retain)AVMonitor* avMonitor;
+//info window
+@property(nonatomic, retain)InfoWindowController* infoWindowController;
 
 @end
 

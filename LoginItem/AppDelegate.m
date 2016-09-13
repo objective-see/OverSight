@@ -6,8 +6,9 @@
 //  Copyright (c) 2016 Objective-See. All rights reserved.
 //
 
-
+#import "Consts.h"
 #import "Logging.h"
+#import "Utilities.h"
 #import "AppDelegate.h"
 
 
@@ -19,8 +20,8 @@
 @implementation AppDelegate
 
 
-@synthesize monitor;
 @synthesize avMonitor;
+@synthesize infoWindowController;
 @synthesize statusBarMenuController;
 
 
@@ -36,6 +37,25 @@
     
     //dbg msg
     logMsg(LOG_DEBUG, @"initialized/loaded status bar (icon/menu)");
+    
+    //check for updates
+    // ->but only when user has not disabled that feature
+    // TODO: change to YES
+    if(NO == [[NSUserDefaults standardUserDefaults] boolForKey:CHECK_4_UPDATES])
+    {
+        //TODO: make a min!
+        //after a minute
+        //->check for updates in background
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^
+        {
+           //dbg msg
+           logMsg(LOG_DEBUG, @"checking for update");
+           
+           //check
+           [self isThereAndUpdate];
+        });
+        
+    }
     
     //create/init av event monitor
     avMonitor = [[AVMonitor alloc] init];
@@ -61,6 +81,61 @@
     
     //init menu
     [self.statusBarMenuController setupStatusItem];
+    
+    return;
+}
+
+//check for an update
+//TODO: test to make sure window shows up!
+-(void)isThereAndUpdate
+{
+    //version string
+    NSMutableString* versionString = nil;
+    
+    //alloc string
+    versionString = [NSMutableString string];
+    
+    //check if available version is newer
+    // ->show update window
+    if(YES == isNewVersion(versionString))
+    {
+        //new version!
+        // ->show update popup on main thread
+        dispatch_sync(dispatch_get_main_queue(), ^{
+        
+        //dbg msg
+        logMsg(LOG_DEBUG, [NSString stringWithFormat:@"a new version (%@) is available", versionString]);
+        
+        //alloc/init about window
+        infoWindowController = [[InfoWindowController alloc] initWithWindowNibName:@"InfoWindow"];
+        
+        //configure
+        [self.infoWindowController configure:[NSString stringWithFormat:@"a new version (%@) is available!", versionString] buttonTitle:@"update"];
+        
+        //center window
+        [[self.infoWindowController window] center];
+        
+        //show it
+        [self.infoWindowController showWindow:self];
+        
+        //invoke function in background that will make window modal
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            
+            //make modal
+            makeModal(self.infoWindowController);
+            
+        });
+            
+        });
+    }
+    
+    //no new version
+    // ->just (debug) log msg
+    else
+    {
+        //dbg msg
+        logMsg(LOG_DEBUG, @"no updates available");
+    }
     
     return;
 }

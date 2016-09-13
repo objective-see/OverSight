@@ -38,6 +38,16 @@
     return;
 }
 
+//automatically invoked when window is closing
+// ->make ourselves unmodal
+-(void)windowWillClose:(NSNotification *)notification
+{
+    //make un-modal
+    [[NSApplication sharedApplication] stopModal];
+    
+    return;
+}
+
 //automatically invoked when user clicks 'more info'
 // ->load products webpage view their default browser
 -(IBAction)moreInfo:(id)sender

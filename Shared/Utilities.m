@@ -271,3 +271,117 @@ bail:
     return taskPath;
 }
 
+//determine if there is a new version
+// -1, YES or NO
+NSInteger isNewVersion(NSMutableString* versionString)
+{
+    //flag
+    NSInteger newVersionExists = -1;
+    
+    //installed version
+    NSString* installedVersion = nil;
+    
+    //latest version
+    NSString* latestVersion = nil;
+    
+    //get installed version
+    installedVersion = getAppVersion();
+    
+    //get latest version
+    // ->will query internet (bb's website)
+    latestVersion = getLatestVersion();
+    if(nil == latestVersion)
+    {
+        //set error msg
+        [versionString setString:@"failed to get latest version"];
+        
+        //bail
+        goto bail;
+    }
+    
+    //save version
+    [versionString setString:latestVersion];
+    
+    //set version flag
+    // ->YES/NO
+    newVersionExists = (NSOrderedAscending == [installedVersion compare:latestVersion options:NSNumericSearch]);
+    
+//bail
+bail:
+    
+    return newVersionExists;
+}
+
+//query interwebz to get latest version
+NSString* getLatestVersion()
+{
+    //version data
+    NSData* versionData = nil;
+    
+    //version dictionary
+    NSDictionary* versionDictionary = nil;
+    
+    //latest version
+    NSString* latestVersion = nil;
+    
+    //get version from remote URL
+    versionData = [[NSData alloc] initWithContentsOfURL:[NSURL URLWithString:PRODUCT_VERSION_URL]];
+    
+    //sanity check
+    if(nil == versionData)
+    {
+        //bail
+        goto bail;
+    }
+    
+    //convert JSON to dictionary
+    versionDictionary = [NSJSONSerialization JSONObjectWithData:versionData options:0 error:nil];
+    
+    //sanity check
+    if(nil == versionDictionary)
+    {
+        //bail
+        goto bail;
+    }
+    
+    //extract latest version
+    latestVersion = versionDictionary[@"latestVersion"];
+    
+//bail
+bail:
+    
+    return latestVersion;
+}
+
+
+//wait until a window is non nil
+// ->then make it modal
+void makeModal(NSWindowController* windowController)
+{
+    //wait up to 1 second window to be non-nil
+    // ->then make modal
+    for(int i=0; i<20; i++)
+    {
+        //can make it modal once we have a window
+        if(nil != windowController.window)
+        {
+            //make modal on main thread
+            dispatch_sync(dispatch_get_main_queue(), ^{
+                
+                //modal
+                [[NSApplication sharedApplication] runModalForWindow:windowController.window];
+                
+            });
+            
+            //all done
+            break;
+        }
+        
+        //nap
+        [NSThread sleepForTimeInterval:0.05f];
+        
+    }//until 1 second
+    
+    return;
+}
+

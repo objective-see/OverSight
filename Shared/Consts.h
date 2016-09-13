@@ -8,26 +8,18 @@
 
 //TODO: update!
 
-#ifndef WYS_Consts_h
-#define WYS_Consts_h
+#ifndef OS_Consts_h
+#define OS_Consts_h
 
 //success
 #define STATUS_SUCCESS 0
 
 //product url
-#define PRODUCT_URL @"https://objective-see.com/products/whatsyoursign.html"
+#define PRODUCT_URL @"https://objective-see.com/products/oversight.html"
 
-//installed extensions
-#define INSTALLED_EXTENSIONS @"~/Library/Preferences/com.apple.preferences.extensions.FinderSync.plist"
-
-//bundle ID of finder sync extension
-#define EXTENSION_BUNDLE_ID @"com.objective-see.WhatsYourSignExt.FinderSync"
-
-//extension folder
-#define EXTENSION_FOLDER @"~/Library/WhatsYourSign"
-
-//extension name
-#define EXTENSION_NAME @"WhatsYourSign.appex"
+//product version url
+//TODO: change back!
+#define PRODUCT_VERSION_URL @"https://objective-see.com/products/versions/ransomwhere.json"
 
 //frame shift
 // ->for status msg to avoid activity indicator
@@ -63,15 +55,6 @@
 //OS minor version el capitan
 #define OS_MINOR_VERSION_EL_CAPITAN 11
 
-//path to file binary
-#define FILE @"/usr/bin/file"
-
-//path to pluginkit binary
-#define PLUGIN_KIT @"/usr/bin/pluginkit"
-
-//path to pkgutil
-#define PKG_UTIL @"/usr/sbin/pkgutil"
-
 //action to install
 // ->also button title
 #define ACTION_INSTALL @"Install"
@@ -103,5 +86,11 @@
 
 //general error URL
 #define FATAL_ERROR_URL @"https://objective-see.com/errors.html"
+
+//log activity button
+#define LOG_ACTIVITY @"logActivity"
+
+//automatically check for updates button
+#define CHECK_4_UPDATES @"check4Updates"
 
 #endif

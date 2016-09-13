@@ -258,6 +258,9 @@ bail:
         
     //dbg msg
     logMsg(LOG_DEBUG, [NSString stringWithFormat:@"candidate video procs: %@", candidateVideoProcs]);
+        
+    //TODO: ignore self!!
+    //Sample analysis of process 18340 written to file /tmp/OverSight_Helper_2016-09-12_211234_StAd.sample.txt
     
     //save to baseline
     // TODO: test that this works, esp if cnt goes down!! (facetime battery mode)
@@ -391,7 +394,7 @@ bail:
         }
 
         //for now, just check for 'CMIOGraph::DoWork'
-        // TODO: could look for dylibs, other calls, etc
+        // ->TODO: could look for dylibs, other calls, etc
         if(YES != [results containsString:@"CMIOGraph::DoWork"])
         {
             //skip

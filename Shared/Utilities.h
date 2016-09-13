@@ -14,6 +14,8 @@
 
 /* FUNCTIONS */
 
+//TODO: cleanup/remove un-needed
+
 //get app's version
 // ->extracted from Info.plist
 NSString* getAppVersion();
@@ -39,11 +41,22 @@ NSDictionary* hashFile(NSString* filePath);
 // ->extracted from Info.plist
 NSString* getAppVersion();
 
+//query interwebz to get latest version
+NSString* getLatestVersion();
+
+//determine if there is a new version
+// -1, YES or NO
+NSInteger isNewVersion(NSMutableString* versionString);
+
 //exec a process and grab it's output
 NSData* execTask(NSString* binaryPath, NSArray* arguments);
 
 //get process's path
 NSString* getProcessPath(pid_t pid);
+
+//wait until a window is non nil
+// ->then make it modal
+void makeModal(NSWindowController* windowController);
 
 
 #endif
