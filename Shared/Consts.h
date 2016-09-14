@@ -1,12 +1,10 @@
 //
 //  Consts.h
-//  WhatsYourSign
+//  OverSight
 //
 //  Created by Patrick Wardle on 7/7/16.
 //  Copyright (c) 2016 Objective-See. All rights reserved.
 //
-
-//TODO: update!
 
 #ifndef OS_Consts_h
 #define OS_Consts_h
@@ -30,21 +28,6 @@
 
 //hotkey 'q'
 #define KEYCODE_Q 0xC
-
-//signature status
-#define KEY_SIGNATURE_STATUS @"signatureStatus"
-
-//signing auths
-#define KEY_SIGNING_AUTHORITIES @"signingAuthorities"
-
-//file belongs to apple?
-#define KEY_SIGNING_IS_APPLE @"signedByApple"
-
-//file signed with apple dev id
-#define KEY_SIGNING_IS_APPLE_DEV_ID @"signedWithDevID"
-
-//from app store
-#define KEY_SIGNING_IS_APP_STORE @"fromAppStore"
 
 //OS version x
 #define OS_MAJOR_VERSION_X 10

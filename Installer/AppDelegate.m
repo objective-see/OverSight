@@ -6,9 +6,6 @@
 //  Copyright (c) 2016 Objective-See. All rights reserved.
 //
 
-//TODO: remove:
-// sudo lsmp -p 13513
-
 #import "Consts.h"
 #import "Configure.h"
 #import "Exception.h"

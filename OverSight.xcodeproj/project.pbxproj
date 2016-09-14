@@ -24,13 +24,13 @@
 		7D6245881D87C57600870565 /* Logging.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D17C5361D659E580066232A /* Logging.m */; };
 		7D6245891D87C58400870565 /* Logging.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D17C5361D659E580066232A /* Logging.m */; };
 		7D62458B1D87CE0900870565 /* AboutWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D17C52E1D659E580066232A /* AboutWindowController.m */; };
-		7D62458F1D87D38400870565 /* InfoWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7D62458C1D87D38400870565 /* InfoWindow.xib */; };
 		7D6245901D87D38400870565 /* InfoWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D62458D1D87D38400870565 /* InfoWindowController.m */; };
 		7D6245911D87D39E00870565 /* InfoWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D62458D1D87D38400870565 /* InfoWindowController.m */; };
 		7D6245921D87D46800870565 /* InfoWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7D62458C1D87D38400870565 /* InfoWindow.xib */; };
 		7D6245931D87E13200870565 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 7D17C5331D659E580066232A /* icon.png */; };
 		7D6245941D87E13200870565 /* overSight.png in Resources */ = {isa = PBXBuildFile; fileRef = 7D17C5341D659E580066232A /* overSight.png */; };
 		7D6245951D87E14800870565 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8B5755CD19DA3F9300799E6B /* MainMenu.xib */; };
+		7D9A7DE81D893E4F0091C1AF /* InfoWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7D62458C1D87D38400870565 /* InfoWindow.xib */; };
 		7DAF4B7F1D657192000DA31A /* StatusBarMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DAF4B7D1D656FD3000DA31A /* StatusBarMenu.m */; };
 		7DC9C8171D641A350017D143 /* OverSightXPC.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DC9C8161D641A350017D143 /* OverSightXPC.m */; };
 		7DC9C8191D641A350017D143 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DC9C8181D641A350017D143 /* main.m */; };
@@ -425,11 +425,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7D9A7DE81D893E4F0091C1AF /* InfoWindow.xib in Resources */,
 				7D6245951D87E14800870565 /* MainMenu.xib in Resources */,
 				7D6245931D87E13200870565 /* icon.png in Resources */,
 				7D6245941D87E13200870565 /* overSight.png in Resources */,
 				7D17C5271D6592FE0066232A /* statusIcon.png in Resources */,
-				7D62458F1D87D38400870565 /* InfoWindow.xib in Resources */,
 				7D6245851D87C43900870565 /* Images.xcassets in Resources */,
 				7D17C5281D6592FE0066232A /* statusIcon@2x.png in Resources */,
 			);

@@ -24,7 +24,6 @@
 @synthesize infoWindowController;
 @synthesize statusBarMenuController;
 
-
 //app's main interface
 // ->load status bar and kick off monitor
 -(void)applicationDidFinishLaunching:(NSNotification *)aNotification
@@ -53,6 +52,7 @@
            
            //check
            [self isThereAndUpdate];
+            
         });
         
     }
@@ -86,7 +86,6 @@
 }
 
 //check for an update
-//TODO: test to make sure window shows up!
 -(void)isThereAndUpdate
 {
     //version string
