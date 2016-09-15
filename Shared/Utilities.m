@@ -7,11 +7,13 @@
 //
 
 #import "Consts.h"
+#import "Logging.h"
 #import "Utilities.h"
 
 #import <signal.h>
 #import <unistd.h>
 #import <libproc.h>
+#import <sys/stat.h>
 #import <sys/sysctl.h>
 #import <Security/Security.h>
 #import <Foundation/Foundation.h>
@@ -69,6 +71,116 @@ NSBundle* findAppBundle(NSString* binaryPath)
              (YES != [appPath isEqualToString:@""]) );
     
     return appBundle;
+}
+
+//set dir's|file's group/owner
+BOOL setFileOwner(NSString* path, NSNumber* groupID, NSNumber* ownerID, BOOL recursive)
+{
+    //ret var
+    BOOL bRet = NO;
+    
+    //owner dictionary
+    NSDictionary* fileOwner = nil;
+    
+    //sub paths
+    NSArray *subPaths = nil;
+    
+    //full path
+    // ->for recursive
+    NSString* fullPath = nil;
+    
+    //init permissions dictionary
+    fileOwner = @{NSFileGroupOwnerAccountID:groupID, NSFileOwnerAccountID:ownerID};
+    
+    //set group/owner
+    if(YES != [[NSFileManager defaultManager] setAttributes:fileOwner ofItemAtPath:path error:NULL])
+    {
+        //err msg
+        logMsg(LOG_ERR, [NSString stringWithFormat:@"failed to set ownership for %@ (%@)", path, fileOwner]);
+        
+        //bail
+        goto bail;
+    }
+    
+    //dbg msg
+    logMsg(LOG_DEBUG, [NSString stringWithFormat:@"set ownership for %@ (%@)", path, fileOwner]);
+    
+    //do it recursively
+    if(YES == recursive)
+    {
+        //sanity check
+        // ->make sure root starts with '/'
+        if(YES != [path hasSuffix:@"/"])
+        {
+            //add '/'
+            path = [NSString stringWithFormat:@"%@/", path];
+        }
+        
+        //get all subpaths
+        subPaths = [[NSFileManager defaultManager] subpathsAtPath:path];
+        for(NSString *subPath in subPaths)
+        {
+            //init full path
+            fullPath = [path stringByAppendingString:subPath];
+            
+            //set group/owner
+            if(YES != [[NSFileManager defaultManager] setAttributes:fileOwner ofItemAtPath:fullPath error:NULL])
+            {
+                //err msg
+                logMsg(LOG_ERR, [NSString stringWithFormat:@"failed to set ownership for %@ (%@)", fullPath, fileOwner]);
+                
+                //bail
+                goto bail;
+            }
+        }
+    }
+    
+    //no errors
+    bRet = YES;
+    
+//bail
+bail:
+    
+    return bRet;
+}
+
+//set permissions for file
+void setFilePermissions(NSString* file, int permissions)
+{
+    //file permissions
+    NSDictionary* filePermissions = nil;
+    
+    //new permissions
+    //newPermissions =
+    
+    //get current file attributes
+    filePermissions = [[NSFileManager defaultManager] attributesOfItemAtPath:file error:NULL];
+    
+    //int currentPermissions = [[filePermissions objectForKey:@"NSFilePosixPermissions"] intValue];
+    //permissions |= (S_IRSUR | S_IRGRP | S_IROTH);
+    // NSDictionary *newattribs = [NSDict dictionaryWithObject:[NSNumber numberWithInt:permissions]
+       //                                        forKey:NSFilePosixPermissions];
+    //[fm setAttributes:dict ofItemAtPath:[file path] error:&error];
+    
+    
+    
+    //init dictionary
+    filePermissions = @{NSFilePosixPermissions: [NSNumber numberWithInt:permissions]};
+    
+    //set permissions
+    if(YES != [[NSFileManager defaultManager] setAttributes:filePermissions ofItemAtPath:file error:NULL])
+    {
+        //err msg
+        logMsg(LOG_ERR, [NSString stringWithFormat:@"failed to set permissions for %@ (%@)", file, filePermissions]);
+    }
+    
+    else
+    {
+        //dbg msg
+        logMsg(LOG_DEBUG, [NSString stringWithFormat:@"set permissions for %@ (%@)", file, filePermissions]);
+    }
+    
+    return;
 }
 
 //exec a process and grab it's output
@@ -384,4 +496,6 @@ void makeModal(NSWindowController* windowController)
     
     return;
 }
+
+
 

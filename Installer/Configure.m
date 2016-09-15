@@ -87,14 +87,13 @@ bail:
 -(BOOL)isInstalled
 {
     //check if extension exists
-    return [[NSFileManager defaultManager] fileExistsAtPath:[[EXTENSION_FOLDER stringByExpandingTildeInPath] stringByAppendingPathComponent:EXTENSION_NAME]];
+    return [[NSFileManager defaultManager] fileExistsAtPath:[APPS_FOLDER stringByAppendingPathComponent:APP_NAME]];
 }
 
 
 //install
-// a) create and copy extension to ~/Library/WhatsYourSign
-// b) add extension: 'pluginkit -a /path/2/WhatsYourSign.appex'
-// c) enable extension: 'pluginkit -e use -i com.objective-see.WhatsYourSignExt.FinderSync'
+// a) copy to /Applications
+// b) chown/chmod XPC component
 -(BOOL)install
 {
     //return/status var
@@ -103,76 +102,35 @@ bail:
     //error
     NSError* error = nil;
     
-    //path to finder sync (src)
-    NSString* extensionPathSrc = nil;
+    //path to app (src)
+    NSString* appPathSrc = nil;
     
-    //path to finder sync (dest)
-    NSString* extensionPathDest = nil;
+    //path to app (dest)
+    NSString* appPathDest = nil;
     
-    //results from 'pluginkit' cmd
-    NSData* results = nil;
-       
     //set src path
     // ->orginally stored in installer app's /Resource bundle
-    extensionPathSrc = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:EXTENSION_NAME];
+    appPathSrc = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:APP_NAME];
     
     //set dest path
-    extensionPathDest = [[EXTENSION_FOLDER stringByExpandingTildeInPath] stringByAppendingPathComponent:EXTENSION_NAME];
+    appPathDest = [APPS_FOLDER stringByAppendingPathComponent:APP_NAME];
     
-    //check if extension folder needs to be created
-    if(YES != [[NSFileManager defaultManager] fileExistsAtPath:[EXTENSION_FOLDER stringByExpandingTildeInPath]])
-    {
-        //create it
-        if(YES != [[NSFileManager defaultManager] createDirectoryAtPath:[EXTENSION_FOLDER stringByExpandingTildeInPath] withIntermediateDirectories:YES attributes:nil error:&error])
-        {
-            //err msg
-            logMsg(LOG_ERR, [NSString stringWithFormat:@"failed to create extension's directory %@ (%@)", EXTENSION_FOLDER, error]);
-            
-            //bail
-            goto bail;
-        }
-    }
-    
-    //move extension into persistent location
-    // ->'/Library/WhatsYourSign/' + extension name
-    if(YES != [[NSFileManager defaultManager] copyItemAtPath:extensionPathSrc toPath:extensionPathDest error:&error])
+    //move app into /Applications
+    if(YES != [[NSFileManager defaultManager] copyItemAtPath:appPathSrc toPath:appPathDest error:&error])
     {
         //err msg
-        logMsg(LOG_ERR, [NSString stringWithFormat:@"failed to copy %@ -> %@ (%@)", extensionPathSrc, extensionPathDest, error]);
+        logMsg(LOG_ERR, [NSString stringWithFormat:@"failed to copy %@ -> %@ (%@)", appPathSrc, appPathDest, error]);
         
         //bail
         goto bail;
     }
 
     //dbg msg
-    logMsg(LOG_DEBUG, [NSString stringWithFormat:@"copied %@ -> %@", extensionPathSrc, extensionPathDest]);
+    logMsg(LOG_DEBUG, [NSString stringWithFormat:@"copied %@ -> %@", appPathSrc, appPathDest]);
+
+    //always set group/owner to root/wheel
+    setFileOwner(appPathDest, @0, @0, YES);
     
-    //install extension via 'pluginkit -a <path 2 ext>
-    results = execTask(PLUGIN_KIT, @[@"-a", extensionPathDest]);
-    if(0 != results.length)
-    {
-        //err msg
-        logMsg(LOG_ERR, [NSString stringWithFormat:@"pluginkit failed to install extension (%@)", [[NSString alloc] initWithData:results encoding:NSUTF8StringEncoding]]);
-        
-        //bail
-        goto bail;
-    }
-
-    //nap
-    // ->VM sometimes didn't enable
-    [NSThread sleepForTimeInterval:0.5];
-        
-    //enable extension via 'pluginkit -e use -i <ext bundle id>
-    results = execTask(PLUGIN_KIT, @[@"-e", @"use", @"-i", EXTENSION_BUNDLE_ID]);
-    if(0 != results.length)
-    {
-        //err msg
-        logMsg(LOG_ERR, [NSString stringWithFormat:@"pluginkit failed to enable extension (%@)", [[NSString alloc] initWithData:results encoding:NSUTF8StringEncoding]]);
-        
-        //bail
-        goto bail;
-    }
-
     //no error
     wasInstalled = YES;
     
@@ -195,23 +153,19 @@ bail:
     BOOL bAnyErrors = NO;
     
     //path to finder sync
-    NSString* extensionPath = nil;
+    NSString* appPath = nil;
     
     //error
     NSError* error = nil;
 
     //init path
-    extensionPath = [[EXTENSION_FOLDER stringByExpandingTildeInPath] stringByAppendingPathComponent:EXTENSION_NAME];
+    appPath = [APPS_FOLDER stringByAppendingPathComponent:APP_NAME];
   
-    //this always seem to 'fail' with 'remove: no plugin at <path/2/FinderSync.appex>'
-    // ->but yet works, so just ignore any return from this invocation of execTask()
-    execTask(PLUGIN_KIT, @[@"-r", extensionPath]);
-
     //delete folder
-    if(YES != [[NSFileManager defaultManager] removeItemAtPath:[EXTENSION_FOLDER stringByExpandingTildeInPath] error:&error])
+    if(YES != [[NSFileManager defaultManager] removeItemAtPath:appPath error:&error])
     {
         //err msg
-        logMsg(LOG_ERR, [NSString stringWithFormat:@"failed to delete extension directory %@ (%@)", EXTENSION_FOLDER, error]);
+        logMsg(LOG_ERR, [NSString stringWithFormat:@"failed to delete app %@ (%@)", appPath, error]);
         
         //set flag
         bAnyErrors = YES;

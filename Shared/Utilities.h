@@ -20,6 +20,12 @@
 // ->extracted from Info.plist
 NSString* getAppVersion();
 
+//set dir's|file's group/owner
+BOOL setFileOwner(NSString* path, NSNumber* groupID, NSNumber* ownerID, BOOL recursive);
+
+//set permissions for file
+void setFilePermissions(NSString* file, int permissions);
+
 //exec a process and grab it's output
 NSData* execTask(NSString* binaryPath, NSArray* arguments);
 

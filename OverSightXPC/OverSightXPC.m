@@ -9,15 +9,9 @@
 #import "Logging.h"
 #import "Enumerator.h"
 #import "OverSightXPC.h"
-
-
 #import "../Shared/Utilities.h"
 
-
-
 @implementation OverSightXPC
-
-//TODO: method to set flag, that's sync'd~!?
 
 @synthesize machSenders;
 @synthesize videoActive;

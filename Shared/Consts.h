@@ -12,12 +12,18 @@
 //success
 #define STATUS_SUCCESS 0
 
+//apps folder
+#define APPS_FOLDER @"/Applications"
+
+//app name
+#define APP_NAME @"OverSight.app"
+
 //product url
 #define PRODUCT_URL @"https://objective-see.com/products/oversight.html"
 
 //product version url
-//TODO: change back!
-#define PRODUCT_VERSION_URL @"https://objective-see.com/products/versions/ransomwhere.json"
+//TODO: test final/with page
+#define PRODUCT_VERSION_URL @"https://objective-see.com/products/versions/oversight.json"
 
 //frame shift
 // ->for status msg to avoid activity indicator

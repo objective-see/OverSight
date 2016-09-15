@@ -262,9 +262,6 @@ bail:
     //TODO: ignore self!!
     //Sample analysis of process 18340 written to file /tmp/OverSight_Helper_2016-09-12_211234_StAd.sample.txt
     
-    //save to baseline
-    // TODO: test that this works, esp if cnt goes down!! (facetime battery mode)
-    //[self.machSenders addEntriesFromDictionary:currentSenders];
     //update
     self.machSenders = currentSenders;
     

@@ -54,6 +54,7 @@
 		7D17C5031D658DEC0066232A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Installer/Base.lproj/MainMenu.xib; sourceTree = SOURCE_ROOT; };
 		7D24C8651D2CDEA7009932EE /* Installer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Installer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7D6245821D87C3D700870565 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Images/Images.xcassets; sourceTree = "<group>"; };
+		7D9A7DE91D8A8BDA0091C1AF /* main.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = main.h; path = Installer/main.h; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -117,6 +118,7 @@
 			children = (
 				7D17C5021D658DEC0066232A /* MainMenu.xib */,
 				7D17C4EC1D658DB90066232A /* Configure.m */,
+				7D17C4F61D658DB90066232A /* AppDelegate.h */,
 				7D17C4ED1D658DB90066232A /* AppDelegate.m */,
 				7D17C4EE1D658DB90066232A /* ConfigureWindowController.m */,
 				7D17C4EF1D658DB90066232A /* ConfigureWindowController.xib */,
@@ -124,7 +126,6 @@
 				7D17C4F11D658DB90066232A /* ConfigureWindowController.h */,
 				7D17C4F21D658DB90066232A /* ErrorWindowController.h */,
 				7D17C4F31D658DB90066232A /* ErrorWindowController.m */,
-				7D17C4F61D658DB90066232A /* AppDelegate.h */,
 				7D17C4F81D658DB90066232A /* ErrorWindowController.xib */,
 				7D24C86B1D2CDEA7009932EE /* Supporting Files */,
 			);
@@ -137,6 +138,7 @@
 			children = (
 				7D17C4F51D658DB90066232A /* Info.plist */,
 				7D17C4F41D658DB90066232A /* main.m */,
+				7D9A7DE91D8A8BDA0091C1AF /* main.h */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";

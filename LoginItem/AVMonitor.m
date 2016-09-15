@@ -6,8 +6,6 @@
 //  Copyright (c) 2015 Objective-See. All rights reserved.
 //
 
-//TODO: NSLOg -> logmSg
-
 #import "Consts.h"
 #import "Logging.h"
 #import "Utilities.h"

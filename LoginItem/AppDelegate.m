@@ -39,20 +39,17 @@
     
     //check for updates
     // ->but only when user has not disabled that feature
-    // TODO: change to YES
-    if(NO == [[NSUserDefaults standardUserDefaults] boolForKey:CHECK_4_UPDATES])
+    if(YES == [[NSUserDefaults standardUserDefaults] boolForKey:CHECK_4_UPDATES])
     {
-        //TODO: make a min!
         //after a minute
         //->check for updates in background
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 60 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^
         {
            //dbg msg
            logMsg(LOG_DEBUG, @"checking for update");
            
            //check
            [self isThereAndUpdate];
-            
         });
         
     }
