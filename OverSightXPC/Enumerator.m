@@ -6,6 +6,7 @@
 //  Copyright (c) 2016 Objective-See. All rights reserved.
 //
 
+#import "main.h"
 #import "Enumerator.h"
 #import "../Shared/Logging.h"
 #import "../Shared/Utilities.h"
@@ -239,29 +240,21 @@ bail:
         // ->those that have new mach message
         if( [currentSenders[processID] intValue] > [self.machSenders[processID] intValue])
         {
+            //ignore client/requestor
+            if(clientPID == processID.intValue)
+            {
+                //ignore
+                continue;
+            }
+            
             //add
             [candidateVideoProcs addObject:processID];
         }
-        
-        /*
-        
-        //remove existing ones
-        if( (nil != self.machSenders[processID]) &&
-            ([currentSenders[processID] intValue]) <= [self.machSenders[processID] intValue])
-        {
-            //remove
-            [currentSenders removeObjectForKey:processID];
-        }
-         
-        */
     }
         
     //dbg msg
     logMsg(LOG_DEBUG, [NSString stringWithFormat:@"candidate video procs: %@", candidateVideoProcs]);
-        
-    //TODO: ignore self!!
-    //Sample analysis of process 18340 written to file /tmp/OverSight_Helper_2016-09-12_211234_StAd.sample.txt
-    
+
     //update
     self.machSenders = currentSenders;
     

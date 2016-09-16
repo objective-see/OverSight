@@ -6,28 +6,13 @@
 //  Copyright (c) 2016 Objective-See. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#import "main.h"
 
-#import "../Shared/Exception.h"
-#import "../Shared/XPCProtocol.h"
-#import "../Shared/Logging.h"
 
-#import "OverSightXPC.h"
+/* GLOBALS */
 
-//TODO: remove
-#import <syslog.h>
-
-//interface for 'extension' to NSXPCConnection
-// ->allows us to access the 'private' auditToken iVar
-@interface ExtendedNSXPCConnection : NSXPCConnection
-{
-    //private iVar
-    audit_token_t auditToken;
-}
-//private iVar
-@property audit_token_t auditToken;
-
-@end
+//client/requestor pid
+pid_t clientPID = 0;
 
 //implementation for 'extension' to NSXPCConnection
 // ->allows us to access the 'private' auditToken iVar
@@ -36,16 +21,6 @@
 //private iVar
 @synthesize auditToken;
 
-@end
-
-//function def
-OSStatus SecTaskValidateForRequirement(SecTaskRef task, CFStringRef requirement);
-
-//signing auth
-#define SIGNING_AUTH @"Developer ID Application: Objective-See, LLC (VBG97UB4TA)"
-
-//skeleton interface
-@interface ServiceDelegate : NSObject <NSXPCListenerDelegate>
 @end
 
 @implementation ServiceDelegate
@@ -96,6 +71,9 @@ OSStatus SecTaskValidateForRequirement(SecTaskRef task, CFStringRef requirement)
     //happy
     shouldAccept = YES;
     
+    //grab client/requestor's pid
+    clientPID = audit_token_to_pid(((ExtendedNSXPCConnection*)newConnection).auditToken);
+    
 //bail
 bail:
     
@@ -130,25 +108,7 @@ int main(int argc, const char *argv[])
     //first thing...
     // ->install exception handlers!
     installExceptionHandlers();
-    
-    /*
-    
-    //TODO: don't think we need this?
-     //chown -R root:wheel & chmod -R +s seems to be all thats needed
-     
-    //make really r00t
-    // ->needed for exec'ing vmmap, etc
-    if(0 != setuid(0))
-    {
-        //err msg
-        logMsg(LOG_ERR, [NSString stringWithFormat:@"setuid() failed with %d", errno]);
-        
-        //bail
-        goto bail;
-    }
-    
-    */ 
-     
+         
     //create the delegate for the service.
     delegate = [ServiceDelegate new];
     

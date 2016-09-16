@@ -31,6 +31,8 @@
 		7D6245941D87E13200870565 /* overSight.png in Resources */ = {isa = PBXBuildFile; fileRef = 7D17C5341D659E580066232A /* overSight.png */; };
 		7D6245951D87E14800870565 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8B5755CD19DA3F9300799E6B /* MainMenu.xib */; };
 		7D9A7DE81D893E4F0091C1AF /* InfoWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7D62458C1D87D38400870565 /* InfoWindow.xib */; };
+		7D9A7DEC1D8BE1E00091C1AF /* Exception.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D17C5311D659E580066232A /* Exception.m */; };
+		7D9A7DEE1D8CACE30091C1AF /* libbsm.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D9A7DED1D8CACE30091C1AF /* libbsm.tbd */; };
 		7DAF4B7F1D657192000DA31A /* StatusBarMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DAF4B7D1D656FD3000DA31A /* StatusBarMenu.m */; };
 		7DC9C8171D641A350017D143 /* OverSightXPC.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DC9C8161D641A350017D143 /* OverSightXPC.m */; };
 		7DC9C8191D641A350017D143 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DC9C8181D641A350017D143 /* main.m */; };
@@ -112,6 +114,8 @@
 		7D62458C1D87D38400870565 /* InfoWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = InfoWindow.xib; sourceTree = "<group>"; };
 		7D62458D1D87D38400870565 /* InfoWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfoWindowController.m; sourceTree = "<group>"; };
 		7D62458E1D87D38400870565 /* InfoWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfoWindowController.h; sourceTree = "<group>"; };
+		7D9A7DED1D8CACE30091C1AF /* libbsm.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libbsm.tbd; path = usr/lib/libbsm.tbd; sourceTree = SDKROOT; };
+		7D9A7DEF1D8CADD10091C1AF /* main.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = main.h; path = OverSightXPC/main.h; sourceTree = "<group>"; };
 		7DAF4B7C1D656FD3000DA31A /* StatusBarMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StatusBarMenu.h; sourceTree = "<group>"; };
 		7DAF4B7D1D656FD3000DA31A /* StatusBarMenu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StatusBarMenu.m; sourceTree = "<group>"; };
 		7DC9C8121D641A350017D143 /* OverSightXPC.xpc */ = {isa = PBXFileReference; explicitFileType = "wrapper.xpc-service"; includeInIndex = 0; path = OverSightXPC.xpc; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -138,6 +142,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7D9A7DEE1D8CACE30091C1AF /* libbsm.tbd in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -227,6 +232,8 @@
 		8B57559219DA3E9500799E6B = {
 			isa = PBXGroup;
 			children = (
+				7D9A7DEF1D8CADD10091C1AF /* main.h */,
+				7D9A7DED1D8CACE30091C1AF /* libbsm.tbd */,
 				7D17C52B1D659E580066232A /* Shared */,
 				8B57559D19DA3E9500799E6B /* MainApp */,
 				8B5755C319DA3F9300799E6B /* LoginItem */,
@@ -441,6 +448,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7D9A7DEC1D8BE1E00091C1AF /* Exception.m in Sources */,
 				7D6245871D87C55F00870565 /* Logging.m in Sources */,
 				7D17CFE41D811B4E0017B475 /* Utilities.m in Sources */,
 				7D62457C1D84FB8900870565 /* Enumerator.m in Sources */,

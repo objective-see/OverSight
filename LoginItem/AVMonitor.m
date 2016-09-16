@@ -102,6 +102,9 @@ AVCaptureDevice* findAppleMic()
     //return var
     BOOL bRet = NO;
     
+    //status/err var
+    BOOL wasErrors = NO;
+    
     //xpc connection
     __block NSXPCConnection* xpcConnection = nil;
     
@@ -210,16 +213,23 @@ AVCaptureDevice* findAppleMic()
         if(YES != [self watchVideo:connectionID])
         {
             //err msg
+            logMsg(LOG_DEBUG, @"failed to watch for video events");
+            
+            //set err
+            wasErrors = YES;
+            
+            //don't bail
+            // ->can still listen for audio events
         }
-        
-        //dbg msg
-        logMsg(LOG_DEBUG, @"registerd for video events");
     }
     //err msg
     else
     {
         //err msg
         logMsg(LOG_ERR, @"failed to find (apple) camera :(");
+        
+        //don't bail
+        // ->can still listen for audio events
     }
     
     //watch mic
@@ -245,10 +255,11 @@ AVCaptureDevice* findAppleMic()
         if(YES != [self watchAudio:connectionID])
         {
             //err msg
+            logMsg(LOG_DEBUG, @"failed to watch for audio events");
+            
+            //set err
+            wasErrors = YES;
         }
-        
-        //dbg msg
-        logMsg(LOG_DEBUG, @"registerd for audio events");
     }
     
     //err msg
@@ -262,12 +273,12 @@ AVCaptureDevice* findAppleMic()
     // ->update menu to show devices & their status
     [((AppDelegate*)[[NSApplication sharedApplication] delegate]).statusBarMenuController updateStatusItemMenu:devices];
     
-    //no errors
-    bRet = YES;
-
-//TODO: not needed?
-//bail
-bail:
+    //make sure no errors occured
+    if(YES != wasErrors)
+    {
+        //happy
+        bRet = YES;
+    }
     
     //cleanup XPC
     if(nil != xpcConnection)
@@ -278,7 +289,6 @@ bail:
         //nil out
         xpcConnection = nil;
     }
-    
     
     return bRet;
 }
@@ -351,8 +361,7 @@ bail:
     //init dictionary
     event = [NSMutableDictionary dictionary];
     
-    //sync?
-    //TODO: is this a good idea?
+    //sync
     @synchronized (self)
     {
     
