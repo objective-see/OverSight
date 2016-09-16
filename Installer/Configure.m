@@ -22,7 +22,8 @@
     //return var
     BOOL wasConfigured = NO;
     
-    //install extension
+    //install
+    // ->starts on success
     if(ACTION_INSTALL_FLAG == parameter)
     {
         //dbg msg
@@ -42,6 +43,10 @@
                 goto bail;
             }
             
+            //and stop
+            //TODO: erorr checking
+            [self stop];
+            
             //dbg msg
             logMsg(LOG_DEBUG, @"uninstalled");
         }
@@ -49,16 +54,44 @@
         //install
         if(YES != [self install])
         {
+            //err msg
+            logMsg(LOG_ERR, @"installation failed");
+            
             //bail
             goto bail;
         }
         
         //dbg msg
-        logMsg(LOG_DEBUG, @"installed!");
+        logMsg(LOG_DEBUG, @"installed, now will start");
+        
+        //start login item
+        if(YES != [self start])
+        {
+            //err msg
+            logMsg(LOG_ERR, @"starting failed");
+            
+            //bail
+            goto bail;
+        }
     }
-    //uninstall extension
+    //uninstall
+    // ->stops login item (also w/ stop XPC service)
     else if(ACTION_UNINSTALL_FLAG == parameter)
     {
+        //dbg msg
+        logMsg(LOG_DEBUG, @"stopping login item");
+        
+        //stop login item/XPC service
+        if(YES != [self stop])
+        {
+            //err msg
+            logMsg(LOG_ERR, @"stopping failed");
+            
+            //bail
+            goto bail;
+        }
+    
+         
         //dbg msg
         logMsg(LOG_DEBUG, @"uninstalling...");
         
@@ -83,13 +116,12 @@ bail:
 }
 
 //determine if installed
-// ->simply checks if extension binary exists
+// ->simply checks if application exists in /Applications
 -(BOOL)isInstalled
 {
     //check if extension exists
     return [[NSFileManager defaultManager] fileExistsAtPath:[APPS_FOLDER stringByAppendingPathComponent:APP_NAME]];
 }
-
 
 //install
 // a) copy to /Applications
@@ -107,6 +139,9 @@ bail:
     
     //path to app (dest)
     NSString* appPathDest = nil;
+    
+    //path to XPC service
+    NSString* xpcServicePath = nil;
     
     //set src path
     // ->orginally stored in installer app's /Resource bundle
@@ -127,9 +162,29 @@ bail:
 
     //dbg msg
     logMsg(LOG_DEBUG, [NSString stringWithFormat:@"copied %@ -> %@", appPathSrc, appPathDest]);
+    
+    //init path to XPC service
+    xpcServicePath = [appPathDest stringByAppendingPathComponent:@"Contents/Library/LoginItems/OverSight Helper.app/Contents/XPCServices/OverSightXPC.xpc"];
 
-    //always set group/owner to root/wheel
-    setFileOwner(appPathDest, @0, @0, YES);
+    //set XPC service to be owned; root:wheel
+    if(YES != setFileOwner(xpcServicePath, @0, @0, YES))
+    {
+        //err msg
+        logMsg(LOG_ERR, [NSString stringWithFormat:@"failed to set file owner to root:wheel on %@", xpcServicePath]);
+        
+        //bail
+        goto bail;
+    }
+    
+    //set XPC service binary to setuid
+    if(YES != setFilePermissions(xpcServicePath, 06755, YES))
+    {
+        //err msg
+        logMsg(LOG_ERR, [NSString stringWithFormat:@"failed to set file permissions to 06755 on %@", xpcServicePath]);
+        
+        //bail
+        goto bail;
+    }
     
     //no error
     wasInstalled = YES;
@@ -140,9 +195,59 @@ bail:
     return wasInstalled;
 }
 
+//start
+// ->just the login item
+-(BOOL)start
+{
+    //flag
+    BOOL bStarted = NO;
+    
+    //path to login item
+    NSString* loginItem = nil;
+    
+    //init path
+    loginItem = [[APPS_FOLDER stringByAppendingPathComponent:APP_NAME] stringByAppendingPathComponent:@"Contents/Library/LoginItems/OverSight Helper.app"];
+
+    //launch it!
+    if(YES != [[NSWorkspace sharedWorkspace] launchApplication:loginItem])
+    {
+        //err msg
+        logMsg(LOG_ERR, [NSString stringWithFormat:@"failed to start login item, %@", loginItem]);
+        
+        //bail
+        goto bail;
+    }
+    
+    //happy
+    bStarted = YES;
+    
+//bail
+bail:
+    
+    return bStarted;
+}
+
+//stop
+-(BOOL)stop
+{
+    //flag
+    BOOL bStopped = NO;
+    
+    //kill it
+    // pkill doesn't provide error info, so...
+    execTask(PKILL, @[APP_HELPER_NAME]);
+    
+    //happy
+    bStopped = YES;
+    
+//bail
+bail:
+    
+    return bStopped;
+}
+
 //uninstall
-// a) remove it (pluginkit -r <path 2 ext>)
-// b) delete binary & folder; /Library/WhatsYourSign
+// ->delete app
 -(BOOL)uninstall
 {
     //return/status var

@@ -77,7 +77,7 @@ NSBundle* findAppBundle(NSString* binaryPath)
 BOOL setFileOwner(NSString* path, NSNumber* groupID, NSNumber* ownerID, BOOL recursive)
 {
     //ret var
-    BOOL bRet = NO;
+    BOOL bSetOwner = NO;
     
     //owner dictionary
     NSDictionary* fileOwner = nil;
@@ -136,51 +136,80 @@ BOOL setFileOwner(NSString* path, NSNumber* groupID, NSNumber* ownerID, BOOL rec
     }
     
     //no errors
-    bRet = YES;
+    bSetOwner = YES;
     
 //bail
 bail:
     
-    return bRet;
+    return bSetOwner;
 }
 
 //set permissions for file
-void setFilePermissions(NSString* file, int permissions)
+BOOL setFilePermissions(NSString* file, int permissions, BOOL recursive)
 {
+    //ret var
+    BOOL bSetPermissions = NO;
+    
     //file permissions
     NSDictionary* filePermissions = nil;
     
-    //new permissions
-    //newPermissions =
+    //root directory
+    NSURL* root = nil;
     
-    //get current file attributes
-    filePermissions = [[NSFileManager defaultManager] attributesOfItemAtPath:file error:NULL];
+    //directory enumerator
+    NSDirectoryEnumerator* enumerator = nil;
     
-    //int currentPermissions = [[filePermissions objectForKey:@"NSFilePosixPermissions"] intValue];
-    //permissions |= (S_IRSUR | S_IRGRP | S_IROTH);
-    // NSDictionary *newattribs = [NSDict dictionaryWithObject:[NSNumber numberWithInt:permissions]
-       //                                        forKey:NSFilePosixPermissions];
-    //[fm setAttributes:dict ofItemAtPath:[file path] error:&error];
-    
-    
+    //error
+    NSError* error = nil;
     
     //init dictionary
     filePermissions = @{NSFilePosixPermissions: [NSNumber numberWithInt:permissions]};
     
-    //set permissions
+    //apply file permissions recursively
+    if(YES == recursive)
+    {
+        //init root
+        root = [NSURL fileURLWithPath:file];
+        
+        //init enumerator
+        enumerator = [[NSFileManager defaultManager] enumeratorAtURL:root includingPropertiesForKeys:[NSArray arrayWithObject:NSURLIsDirectoryKey] options:0
+                                                        errorHandler:^(NSURL *url, NSError *error) { return YES; }];
+    
+        //set file permissions on each
+        for(NSURL* currentFile in enumerator)
+        {
+            NSLog(@"current file: %@", currentFile.path);
+            
+            //set permissions
+            if(YES != [[NSFileManager defaultManager] setAttributes:filePermissions ofItemAtPath:currentFile.path error:&error])
+            {
+                //err msg
+                logMsg(LOG_ERR, [NSString stringWithFormat:@"failed to set permissions for %@ (%@), %@", currentFile.path, filePermissions, error]);
+                
+                //bail
+                goto bail;
+            }
+        }
+    }
+    
+    //always set permissions on passed in file (or top-level directory)
+    // ->note: recursive enumerator skips root directory, so execute this always
     if(YES != [[NSFileManager defaultManager] setAttributes:filePermissions ofItemAtPath:file error:NULL])
     {
         //err msg
         logMsg(LOG_ERR, [NSString stringWithFormat:@"failed to set permissions for %@ (%@)", file, filePermissions]);
+        
+        //bail
+        goto bail;
     }
     
-    else
-    {
-        //dbg msg
-        logMsg(LOG_DEBUG, [NSString stringWithFormat:@"set permissions for %@ (%@)", file, filePermissions]);
-    }
+    //happy
+    bSetPermissions = YES;
     
-    return;
+//bail
+bail:
+    
+    return bSetPermissions;
 }
 
 //exec a process and grab it's output

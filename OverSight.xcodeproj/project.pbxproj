@@ -34,7 +34,6 @@
 		7DAF4B7F1D657192000DA31A /* StatusBarMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DAF4B7D1D656FD3000DA31A /* StatusBarMenu.m */; };
 		7DC9C8171D641A350017D143 /* OverSightXPC.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DC9C8161D641A350017D143 /* OverSightXPC.m */; };
 		7DC9C8191D641A350017D143 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DC9C8181D641A350017D143 /* main.m */; };
-		7DC9C81D1D641A350017D143 /* OverSightXPC.xpc in Embed XPC Services */ = {isa = PBXBuildFile; fileRef = 7DC9C8121D641A350017D143 /* OverSightXPC.xpc */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		8B5755A119DA3E9500799E6B /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B5755A019DA3E9500799E6B /* main.m */; };
 		8B5755A419DA3E9500799E6B /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B5755A319DA3E9500799E6B /* AppDelegate.m */; };
 		8B5755A919DA3E9500799E6B /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8B5755A719DA3E9500799E6B /* MainMenu.xib */; };
@@ -71,7 +70,6 @@
 			dstPath = "$(CONTENTS_FOLDER_PATH)/XPCServices";
 			dstSubfolderSpec = 16;
 			files = (
-				7DC9C81D1D641A350017D143 /* OverSightXPC.xpc in Embed XPC Services */,
 			);
 			name = "Embed XPC Services";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -212,7 +210,7 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		7DC9C8131D641A350017D143 /* OverSightXPC */ = {
+		7DC9C8131D641A350017D143 /* XPCService */ = {
 			isa = PBXGroup;
 			children = (
 				7D62457A1D84FB8900870565 /* Enumerator.h */,
@@ -222,6 +220,7 @@
 				7DC9C8161D641A350017D143 /* OverSightXPC.m */,
 				7D6245861D87C53500870565 /* Supporting Files */,
 			);
+			name = XPCService;
 			path = OverSightXPC;
 			sourceTree = "<group>";
 		};
@@ -231,7 +230,7 @@
 				7D17C52B1D659E580066232A /* Shared */,
 				8B57559D19DA3E9500799E6B /* MainApp */,
 				8B5755C319DA3F9300799E6B /* LoginItem */,
-				7DC9C8131D641A350017D143 /* OverSightXPC */,
+				7DC9C8131D641A350017D143 /* XPCService */,
 				8B57559C19DA3E9500799E6B /* Products */,
 			);
 			sourceTree = "<group>";

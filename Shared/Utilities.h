@@ -24,7 +24,7 @@ NSString* getAppVersion();
 BOOL setFileOwner(NSString* path, NSNumber* groupID, NSNumber* ownerID, BOOL recursive);
 
 //set permissions for file
-void setFilePermissions(NSString* file, int permissions);
+BOOL setFilePermissions(NSString* file, int permissions, BOOL recursive);
 
 //exec a process and grab it's output
 NSData* execTask(NSString* binaryPath, NSArray* arguments);

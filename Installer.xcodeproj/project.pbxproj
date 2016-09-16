@@ -20,10 +20,10 @@
 		7D17C4FC1D658DB90066232A /* ConfigureWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7D17C4EF1D658DB90066232A /* ConfigureWindowController.xib */; };
 		7D17C4FD1D658DB90066232A /* ErrorWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D17C4F31D658DB90066232A /* ErrorWindowController.m */; };
 		7D17C4FE1D658DB90066232A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D17C4F41D658DB90066232A /* main.m */; };
-		7D17C4FF1D658DB90066232A /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 7D17C4F51D658DB90066232A /* Info.plist */; };
 		7D17C5011D658DB90066232A /* ErrorWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7D17C4F81D658DB90066232A /* ErrorWindowController.xib */; };
 		7D17C5041D658DEC0066232A /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7D17C5021D658DEC0066232A /* MainMenu.xib */; };
 		7D6245831D87C3D700870565 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7D6245821D87C3D700870565 /* Images.xcassets */; };
+		7D9A7DEB1D8BC4E40091C1AF /* OverSight.app in Resources */ = {isa = PBXBuildFile; fileRef = 7D9A7DEA1D8BC4E40091C1AF /* OverSight.app */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -55,6 +55,7 @@
 		7D24C8651D2CDEA7009932EE /* Installer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Installer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7D6245821D87C3D700870565 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Images/Images.xcassets; sourceTree = "<group>"; };
 		7D9A7DE91D8A8BDA0091C1AF /* main.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = main.h; path = Installer/main.h; sourceTree = SOURCE_ROOT; };
+		7D9A7DEA1D8BC4E40091C1AF /* OverSight.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; name = OverSight.app; path = "/Users/patrickw/objective-see/OverSight/DerivedData/OverSight/Build/Products/Debug/OverSight.app"; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,6 +100,7 @@
 		7D24C85C1D2CDEA7009932EE = {
 			isa = PBXGroup;
 			children = (
+				7D9A7DEA1D8BC4E40091C1AF /* OverSight.app */,
 				7D17C4D71D658D9F0066232A /* Shared */,
 				7D24C8671D2CDEA7009932EE /* Source */,
 				7D24C8661D2CDEA7009932EE /* Products */,
@@ -202,9 +204,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7D9A7DEB1D8BC4E40091C1AF /* OverSight.app in Resources */,
 				7D6245831D87C3D700870565 /* Images.xcassets in Resources */,
 				7D17C4E91D658D9F0066232A /* overSight.png in Resources */,
-				7D17C4FF1D658DB90066232A /* Info.plist in Resources */,
 				7D17C5011D658DB90066232A /* ErrorWindowController.xib in Resources */,
 				7D17C4E81D658D9F0066232A /* icon.png in Resources */,
 				7D17C4FC1D658DB90066232A /* ConfigureWindowController.xib in Resources */,

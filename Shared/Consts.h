@@ -18,6 +18,9 @@
 //app name
 #define APP_NAME @"OverSight.app"
 
+//app helper name
+#define APP_HELPER_NAME @"OverSight Helper"
+
 //product url
 #define PRODUCT_URL @"https://objective-see.com/products/oversight.html"
 
@@ -81,5 +84,8 @@
 
 //automatically check for updates button
 #define CHECK_4_UPDATES @"check4Updates"
+
+//path to pkill
+#define PKILL @"/usr/bin/pkill"
 
 #endif

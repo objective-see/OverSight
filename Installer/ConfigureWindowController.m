@@ -310,13 +310,13 @@ bail:
     if(YES == success)
     {
         //set result msg
-        resultMsg = [NSMutableString stringWithFormat:@"WhatsYourSign %@ed!", action];
+        resultMsg = [NSMutableString stringWithFormat:@"OverSight %@ed!", action];
         
         //add extra info when installed
         if(ACTION_INSTALL_FLAG == event)
         {
             //append
-            [resultMsg appendString:@"\nany file: ctl+click->'Signing Info'"];
+            [resultMsg appendString:@"\nconfig via ☔️ in status bar"];
         }
         
         //set font to black

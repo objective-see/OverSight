@@ -10,6 +10,7 @@
 
 #import "../Shared/Exception.h"
 #import "../Shared/XPCProtocol.h"
+#import "../Shared/Logging.h"
 
 #import "OverSightXPC.h"
 
@@ -126,29 +127,27 @@ int main(int argc, const char *argv[])
     //listener
     NSXPCListener* listener = nil;
     
-    //
     //first thing...
     // ->install exception handlers!
-    //TODO: re-enable
-    //installExceptionHandlers();
+    installExceptionHandlers();
     
     /*
+    
     //TODO: don't think we need this?
-     chown -R root:wheel & chmod -R +s seems to be all thats needed
+     //chown -R root:wheel & chmod -R +s seems to be all thats needed
      
     //make really r00t
     // ->needed for exec'ing vmmap, etc
     if(0 != setuid(0))
     {
-        //TODO: re-enable
         //err msg
-        syslog(LOG_ERR, "OBJECTIVE-SEE TASKEXPLORER ERROR: setuid() failed with: %d\n", errno);
+        logMsg(LOG_ERR, [NSString stringWithFormat:@"setuid() failed with %d", errno]);
         
         //bail
         goto bail;
     }
-     
-    */
+    
+    */ 
      
     //create the delegate for the service.
     delegate = [ServiceDelegate new];
@@ -163,9 +162,6 @@ int main(int argc, const char *argv[])
     //resuming the listener starts this service
     // ->method does not return
     [listener resume];
-    
-    //baseline
-    
     
     //happy
     status = 0;
