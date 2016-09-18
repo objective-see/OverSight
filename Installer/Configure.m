@@ -34,7 +34,11 @@
         if(YES == [self isInstalled])
         {
             //dbg msg
-            logMsg(LOG_DEBUG, @"already installed, so uninstalling...");
+            logMsg(LOG_DEBUG, @"already installed, so stopping/uninstalling...");
+            
+            //stop
+            // ->kill login item/XPC service
+            [self stop];
             
             //uninstall
             if(YES != [self uninstall])
@@ -42,10 +46,6 @@
                 //bail
                 goto bail;
             }
-            
-            //and stop
-            //TODO: erorr checking
-            [self stop];
             
             //dbg msg
             logMsg(LOG_DEBUG, @"uninstalled");
@@ -81,16 +81,9 @@
         //dbg msg
         logMsg(LOG_DEBUG, @"stopping login item");
         
-        //stop login item/XPC service
-        if(YES != [self stop])
-        {
-            //err msg
-            logMsg(LOG_ERR, @"stopping failed");
-            
-            //bail
-            goto bail;
-        }
-    
+        //stop
+        // ->kill login item/XPC service
+        [self stop];
          
         //dbg msg
         logMsg(LOG_DEBUG, @"uninstalling...");
@@ -228,22 +221,13 @@ bail:
 }
 
 //stop
--(BOOL)stop
+-(void)stop
 {
-    //flag
-    BOOL bStopped = NO;
-    
     //kill it
     // pkill doesn't provide error info, so...
     execTask(PKILL, @[APP_HELPER_NAME]);
-    
-    //happy
-    bStopped = YES;
-    
-//bail
-bail:
-    
-    return bStopped;
+
+    return;
 }
 
 //uninstall

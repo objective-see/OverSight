@@ -11,12 +11,10 @@
 #import "Exception.h"
 #import "Utilities.h"
 
-//TODO: renenable
-/*
 #ifdef IS_INSTALLER_APP
 #import "AppDelegate.h"
 #endif
-*/
+
 
 //global
 // ->only report an fatal exception once
@@ -98,9 +96,8 @@ void exceptionHandler(NSException *exception)
     // ->agent should exit
     errorInfo[KEY_ERROR_SHOULD_EXIT] = [NSNumber numberWithBool:YES];
     
-    //TODO: renable
     //display error msg
-    //[((AppDelegate*)[[NSApplication sharedApplication] delegate]) displayErrorWindow:errorInfo];
+    [((AppDelegate*)[[NSApplication sharedApplication] delegate]) displayErrorWindow:errorInfo];
     
     //need to sleep, otherwise returning from this function will cause OS to kill agent
     //  ->instead, we want error popup to be displayed (which will exit agent when closed)
@@ -178,9 +175,8 @@ void signalHandler(int signal, siginfo_t *info, void *context)
     // ->agent should exit
     errorInfo[KEY_ERROR_SHOULD_EXIT] = [NSNumber numberWithBool:YES];
     
-    //TODO: renable
     //display error msg
-    //[((AppDelegate*)[[NSApplication sharedApplication] delegate]) displayErrorWindow:errorInfo];
+    [((AppDelegate*)[[NSApplication sharedApplication] delegate]) displayErrorWindow:errorInfo];
     
     //end app-specific code
     #endif

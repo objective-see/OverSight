@@ -42,8 +42,5 @@ void logMsg(int level, NSString* msg)
     //log to syslog
     syslog(level, "%s: %s\n", [logPrefix UTF8String], [msg UTF8String]);
     
-    //TODO: remove
-    NSLog(@"%s: %s", [logPrefix UTF8String], [msg UTF8String]);
-    
     return;
 }

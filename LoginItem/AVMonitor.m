@@ -14,67 +14,6 @@
 
 #import "../Shared/XPCProtocol.h"
 
-//TODO: make instance methods?!
-
-//grab first apple camera
-AVCaptureDevice* findAppleCamera()
-{
-    //apple camera
-    // ->likely FaceTime camera
-    AVCaptureDevice* appleCamera = nil;
-    
-    //list of cameras
-    NSArray *cameras = nil;
-    
-    //get cameras
-    cameras = [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo];
-    for(AVCaptureDevice* camera in cameras)
-    {
-        //check if apple
-        if(YES == [camera.manufacturer isEqualToString:@"Apple Inc."])
-        {
-            //save
-            appleCamera = camera;
-            
-            //exit loop
-            break;
-        }
-    }
-    
-    return appleCamera;
-}
-
-//grab built-in mic
-AVCaptureDevice* findAppleMic()
-{
-    //built-in mic
-    AVCaptureDevice* appleMic = nil;
-    
-    //list of mics
-    NSArray *mics = nil;
-    
-    //get mics
-    mics = [AVCaptureDevice devicesWithMediaType:AVMediaTypeAudio];
-    for(AVCaptureDevice* mic in mics)
-    {
-        //check if apple
-        // ->also check input source
-        if( (YES == [mic.manufacturer isEqualToString:@"Apple Inc."]) &&
-            (YES == [[[mic activeInputSource] inputSourceID] isEqualToString:@"imic"]) )
-        {
-            //save
-            appleMic = mic;
-            
-            //exit loop
-            break;
-        }
-        
-    }
-    
-    return appleMic;
-}
-
-
 @implementation AVMonitor
 
 @synthesize mic;
@@ -94,6 +33,54 @@ AVCaptureDevice* findAppleMic()
     }
     
     return self;
+}
+
+//grab first apple camera
+// ->saves into iVar 'camera'
+// note: could maybe use defaultDeviceWithDeviceType method() to default device...
+-(void)findAppleCamera
+{
+    //get cameras
+    // ->look for one that belongs to apple
+    for(AVCaptureDevice* currentCamera in [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo])
+    {
+        //check if apple
+        if(YES == [currentCamera.manufacturer isEqualToString:@"Apple Inc."])
+        {
+            //save
+            self.camera = currentCamera;
+            
+            //exit loop
+            break;
+        }
+    }
+    
+    return;
+}
+
+//grab first apple mic
+// ->saves into iVar 'mic'
+-(void)findAppleMic
+{
+    //get mics
+    // ->loof for one that belongs to app
+    for(AVCaptureDevice* currentMic in [AVCaptureDevice devicesWithMediaType:AVMediaTypeAudio])
+    {
+        //check if apple
+        // ->also check input source
+        if( (YES == [currentMic.manufacturer isEqualToString:@"Apple Inc."]) &&
+            (YES == [[[currentMic activeInputSource] inputSourceID] isEqualToString:@"imic"]) )
+        {
+            //save
+            self.mic = currentMic;
+            
+            //exit loop
+            break;
+        }
+        
+    }
+    
+    return;
 }
 
 //initialiaze AV notifcations/callbacks
@@ -155,13 +142,12 @@ AVCaptureDevice* findAppleMic()
     methodSelector = NSSelectorFromString(@"connectionID");
     
     //find (first) apple camera
-    self.camera = findAppleCamera();
+    // ->saves camera into iVar, 'camera'
+    [self findAppleCamera];
     
-    //find built in mic
-    self.mic = findAppleMic();
-    
-    //dbg msg
-    logMsg(LOG_DEBUG, [NSString stringWithFormat:@"found mic: %@", self.mic]);
+    //find (first) apple mic
+    // ->saves mic into iVar, 'mic'
+    [self findAppleMic];
     
     //got camera
     // ->grab connection ID and invoke helper functions
@@ -522,7 +508,7 @@ bail:
     if(noErr != status)
     {
         //err msg
-        //TODO: add
+        logMsg(LOG_ERR, [NSString stringWithFormat:@"CMIOObjectAddPropertyListenerBlock() failed with %d", status]);
         
         //bail
         goto bail;
@@ -737,15 +723,14 @@ bail:
     // ->for activatated video; allow/block
     else
     {
+        //get process name
+        processName = getProcessName([event[EVENT_PROCESS_ID] intValue]);
+        
         //set other button title
         notification.otherButtonTitle = @"allow";
         
         //set action title
         notification.actionButtonTitle = @"block";
-        
-        //get process name
-        // TODO: see 'determineName' in BB (to get name from bundle, etc)
-        processName = [getProcessPath([event[EVENT_PROCESS_ID] intValue]) lastPathComponent];
         
         //set pid in user info
         // ->allows code to try kill proc (later) if user clicks 'block'
@@ -753,7 +738,7 @@ bail:
         
         //set details
         // ->name of process using it / icon too?
-        [notification setInformativeText:[NSString stringWithFormat:@"%@ (%@)", processName, event[EVENT_PROCESS_ID]]];
+        [notification setInformativeText:[NSString stringWithFormat:@"process: %@ (%@)", processName, event[EVENT_PROCESS_ID]]];
     }
 
     //log event?
@@ -772,11 +757,11 @@ bail:
         }
         
         //process
-        // ->add title / details / process
+        // ->add title / details / process path
         else
         {
             //add
-            [logMsg appendFormat:@"%@ (%@, %@)", title, details, processName];
+            [logMsg appendFormat:@"%@ (process: %@, %@)", title, details, getProcessPath([event[EVENT_PROCESS_ID] intValue])];
         }
         
         //write it out to syslog

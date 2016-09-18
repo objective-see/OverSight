@@ -33,6 +33,7 @@
 		7D9A7DE81D893E4F0091C1AF /* InfoWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7D62458C1D87D38400870565 /* InfoWindow.xib */; };
 		7D9A7DEC1D8BE1E00091C1AF /* Exception.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D17C5311D659E580066232A /* Exception.m */; };
 		7D9A7DEE1D8CACE30091C1AF /* libbsm.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D9A7DED1D8CACE30091C1AF /* libbsm.tbd */; };
+		7D9A7DF21D8F2C900091C1AF /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7D6245841D87C43900870565 /* Images.xcassets */; };
 		7DAF4B7F1D657192000DA31A /* StatusBarMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DAF4B7D1D656FD3000DA31A /* StatusBarMenu.m */; };
 		7DC9C8171D641A350017D143 /* OverSightXPC.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DC9C8161D641A350017D143 /* OverSightXPC.m */; };
 		7DC9C8191D641A350017D143 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DC9C8181D641A350017D143 /* main.m */; };
@@ -166,7 +167,7 @@
 		7D17C5131D658FE20066232A /* Images */ = {
 			isa = PBXGroup;
 			children = (
-				7D17CFE21D81121E0017B475 /* AVMonitor.h */,
+				8B5755C819DA3F9300799E6B /* AppDelegate.h */,
 				7D17C5141D658FEB0066232A /* statusIcon.png */,
 				7D17C5151D658FEB0066232A /* statusIcon@2x.png */,
 			);
@@ -276,11 +277,11 @@
 			isa = PBXGroup;
 			children = (
 				7D17C5131D658FE20066232A /* Images */,
+				8B5755C919DA3F9300799E6B /* AppDelegate.m */,
+				7D17CFE21D81121E0017B475 /* AVMonitor.h */,
+				7D17CFE11D81121E0017B475 /* AVMonitor.m */,
 				7DAF4B7C1D656FD3000DA31A /* StatusBarMenu.h */,
 				7DAF4B7D1D656FD3000DA31A /* StatusBarMenu.m */,
-				8B5755C819DA3F9300799E6B /* AppDelegate.h */,
-				8B5755C919DA3F9300799E6B /* AppDelegate.m */,
-				7D17CFE11D81121E0017B475 /* AVMonitor.m */,
 				8B5755CD19DA3F9300799E6B /* MainMenu.xib */,
 				8B5755C419DA3F9300799E6B /* Supporting Files */,
 			);
@@ -419,6 +420,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7D9A7DF21D8F2C900091C1AF /* Images.xcassets in Resources */,
 				7D6245921D87D46800870565 /* InfoWindow.xib in Resources */,
 				7D17C53C1D659E580066232A /* icon.png in Resources */,
 				8B5755A919DA3E9500799E6B /* MainMenu.xib in Resources */,
@@ -629,6 +631,7 @@
 		8B5755B919DA3E9500799E6B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "Developer ID Application";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Developer ID Application: Objective-See, LLC (VBG97UB4TA)";
 				COMBINE_HIDPI_IMAGES = YES;
@@ -644,6 +647,7 @@
 		8B5755BA19DA3E9500799E6B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "Developer ID Application";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Developer ID Application: Objective-See, LLC (VBG97UB4TA)";
 				COMBINE_HIDPI_IMAGES = YES;

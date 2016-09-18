@@ -14,8 +14,6 @@
 
 /* FUNCTIONS */
 
-//TODO: cleanup/remove un-needed
-
 //get app's version
 // ->extracted from Info.plist
 NSString* getAppVersion();
@@ -36,13 +34,6 @@ SInt32 getVersion(OSType selector);
 // parse it back up to find app's bundle
 NSBundle* findAppBundle(NSString* binaryPath);
 
-//given a directory and a filter predicate
-// ->return all matches
-NSArray* directoryContents(NSString* directory, NSString* predicate);
-
-//hash (sha1/md5) a file
-NSDictionary* hashFile(NSString* filePath);
-
 //get app's version
 // ->extracted from Info.plist
 NSString* getAppVersion();
@@ -54,15 +45,15 @@ NSString* getLatestVersion();
 // -1, YES or NO
 NSInteger isNewVersion(NSMutableString* versionString);
 
-//exec a process and grab it's output
-NSData* execTask(NSString* binaryPath, NSArray* arguments);
-
 //get process's path
 NSString* getProcessPath(pid_t pid);
+
+//given a pid
+// ->get the name of the process
+NSString* getProcessName(pid_t pid);
 
 //wait until a window is non nil
 // ->then make it modal
 void makeModal(NSWindowController* windowController);
-
 
 #endif

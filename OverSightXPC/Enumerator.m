@@ -309,7 +309,6 @@ bail:
         }
         
         //parse on '()'
-        // TODO: improve this!
         subStrings = [line componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"()"]];
         if(subStrings.count < 3)
         {
@@ -371,10 +370,10 @@ bail:
     videoProcs = [NSMutableArray array];
     
     //invoke 'sample' on each
-    // TODO: delete tmp file? 'Sample analysis of process 37370 written to file /tmp/FaceTime_2016-09-10_081703_TAwB.sample.txt' (written 2 std err?)
     for(NSNumber* processID in currentSenders)
     {
         //exec 'sample' to get threads/dylibs
+        // ->uses 1.0 seconds for sampling time
         results = [[NSString alloc] initWithData:execTask(SAMPLE, @[processID.stringValue, @"1"]) encoding:NSUTF8StringEncoding];
         if( (nil == results) ||
             (0 == results.length) )
@@ -382,7 +381,11 @@ bail:
             //skip
             continue;
         }
-
+        
+        //sampling a process creates a temp file
+        //->delete it!
+        [self deleteSampleFile:getProcessPath(processID.intValue)];
+        
         //for now, just check for 'CMIOGraph::DoWork'
         // ->TODO: could look for dylibs, other calls, etc
         if(YES != [results containsString:@"CMIOGraph::DoWork"])
@@ -396,6 +399,66 @@ bail:
     }
     
     return videoProcs;
+}
+
+//'sample' binary creates a file
+// ->this looks for that file and deletes it
+-(void)deleteSampleFile:(NSString*)processPath
+{
+    //error
+    NSError* error = nil;
+    
+    //files
+    NSArray* files = nil;
+    
+    //grab all files in /tmp
+    files = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:@"/tmp/" error:&error];
+    if(nil != error)
+    {
+        //err msg
+        logMsg(LOG_ERR, [NSString stringWithFormat:@"failed to enumerate files in /tmp, %@", error]);
+        
+        //bail
+        goto bail;
+    }
+    
+    //find/delete file
+    for(NSString* file in files)
+    {
+        //skip non-sample files
+        if(YES != [file hasSuffix:@".sample.txt"])
+        {
+            //skip
+            continue;
+        }
+        
+        //ignore files that don't contain process name
+        if(YES != [file containsString:[processPath lastPathComponent]])
+        {
+            //skip
+            continue;
+        }
+        
+        //dbg msg
+        logMsg(LOG_DEBUG, [NSString stringWithFormat:@"deleting sample file: %@", file]);
+        
+        //delete
+        if(YES != [[NSFileManager defaultManager] removeItemAtPath:[@"/tmp" stringByAppendingPathComponent:file] error:&error])
+        {
+            //err msg
+            logMsg(LOG_ERR, [NSString stringWithFormat:@"failed to delete %@ (%@)", file, error]);
+            
+            //bail
+            goto bail;
+        }
+    
+    }//all files
+    
+//bail
+bail:
+    
+    
+    return;
 }
 
 //set status of video

@@ -254,7 +254,7 @@ NSData* execTask(NSString* binaryPath, NSArray* arguments)
         //launch
         [task launch];
     }
-    @catch(NSException *exception)
+    @catch(NSException* exception)
     {
         //bail
         goto bail;
@@ -410,6 +410,53 @@ bail:
     }
     
     return taskPath;
+}
+
+//given a pid
+// ->get the name of the process
+NSString* getProcessName(pid_t pid)
+{
+    //task path
+    NSString* processName = nil;
+    
+    //process path
+    NSString* processPath = nil;
+    
+    //app's bundle
+    NSBundle* appBundle = nil;
+    
+    //get process path
+    processPath = getProcessPath(pid);
+    if( (nil == processPath) ||
+        (0 == processPath.length) )
+    {
+        //default to 'unknown'
+        processName = @"<unknown>";
+        
+        //bail
+        goto bail;
+    }
+    
+    //try find an app bundle
+    appBundle = findAppBundle(processPath);
+    if(nil != appBundle)
+    {
+        //grab name from app's bundle
+        processName = [appBundle infoDictionary][@"CFBundleName"];
+    }
+    
+    //still nil?
+    // ->just grab from path
+    if(nil == processName)
+    {
+        //from path
+        processName = [processPath lastPathComponent];
+    }
+    
+//bail
+bail:
+    
+    return processName;
 }
 
 //determine if there is a new version
