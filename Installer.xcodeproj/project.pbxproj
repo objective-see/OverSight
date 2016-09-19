@@ -52,7 +52,7 @@
 		7D17C4F61D658DB90066232A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = Installer/AppDelegate.h; sourceTree = SOURCE_ROOT; };
 		7D17C4F81D658DB90066232A /* ErrorWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = ErrorWindowController.xib; path = Installer/ErrorWindowController.xib; sourceTree = SOURCE_ROOT; };
 		7D17C5031D658DEC0066232A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Installer/Base.lproj/MainMenu.xib; sourceTree = SOURCE_ROOT; };
-		7D24C8651D2CDEA7009932EE /* Installer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Installer.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		7D24C8651D2CDEA7009932EE /* OverSight_Installer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OverSight_Installer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7D6245821D87C3D700870565 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Images/Images.xcassets; sourceTree = "<group>"; };
 		7D9A7DE91D8A8BDA0091C1AF /* main.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = main.h; path = Installer/main.h; sourceTree = SOURCE_ROOT; };
 		7D9A7DEA1D8BC4E40091C1AF /* OverSight.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; name = OverSight.app; path = "/Users/patrickw/objective-see/OverSight/DerivedData/OverSight/Build/Products/Debug/OverSight.app"; sourceTree = "<absolute>"; };
@@ -110,7 +110,7 @@
 		7D24C8661D2CDEA7009932EE /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				7D24C8651D2CDEA7009932EE /* Installer.app */,
+				7D24C8651D2CDEA7009932EE /* OverSight_Installer.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -163,7 +163,7 @@
 			);
 			name = Installer;
 			productName = WhatsYourSign;
-			productReference = 7D24C8651D2CDEA7009932EE /* Installer.app */;
+			productReference = 7D24C8651D2CDEA7009932EE /* OverSight_Installer.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -349,7 +349,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "Developer ID Application";
+				CODE_SIGN_IDENTITY = "Developer ID Application: Objective-See, LLC (VBG97UB4TA)";
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"IS_INSTALLER_APP=1",
@@ -361,7 +361,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.objective-see.OverSightInstaller";
-				PRODUCT_NAME = Installer;
+				PRODUCT_NAME = OverSight_Installer;
 				USER_HEADER_SEARCH_PATHS = ../Shared;
 			};
 			name = Debug;
@@ -370,7 +370,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "Developer ID Application";
+				CODE_SIGN_IDENTITY = "Developer ID Application: Objective-See, LLC (VBG97UB4TA)";
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = "IS_INSTALLER_APP=1";
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
@@ -378,7 +378,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.objective-see.OverSightInstaller";
-				PRODUCT_NAME = Installer;
+				PRODUCT_NAME = OverSight_Installer;
 				USER_HEADER_SEARCH_PATHS = ../Shared;
 			};
 			name = Release;
