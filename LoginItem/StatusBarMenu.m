@@ -233,38 +233,32 @@
 // ->launch main application which will show prefs
 -(void)preferences:(id)sender
 {
+    //path components
+    NSArray* pathComponents = nil;
     
-    //this works when packaged into Login Item into top-level app
-    NSArray *pathComponents = [[[NSBundle mainBundle] bundlePath] pathComponents];
-    pathComponents = [pathComponents subarrayWithRange:NSMakeRange(0, [pathComponents count] - 4)];
-    NSString *path = [NSString pathWithComponents:pathComponents];
-    [[NSWorkspace sharedWorkspace] launchApplication:path];
+    //path to main app
+    NSString* mainApp = nil;
     
+    //init path components
+    pathComponents = [[[NSBundle mainBundle] bundlePath] pathComponents];
+    if(pathComponents.count <= 4)
+    {
+        //bail
+        goto bail;
+    }
     
-    
-    /*
-    //controller for preferences window
-    PrefsWindowController* prefsWindowController = nil;
+    //init path to main app
+    // ->basically trim off last 4 path components
+    mainApp = [NSString pathWithComponents:[pathComponents subarrayWithRange:NSMakeRange(0, [pathComponents count] - 4)]];
     
     //dbg msg
-    logMsg(LOG_DEBUG, @"displaying preferences window");
+    logMsg(LOG_DEBUG, [NSString stringWithFormat:@"launching main app; %@", mainApp]);
     
-    //grab controller
-    prefsWindowController = ((AppDelegate*)[[NSApplication sharedApplication] delegate]).prefsWindowController;
-    
-    //show pref window
-    [prefsWindowController showWindow:sender];
-    
-    //invoke function in background that will make window modal
-    // ->waits until window is non-nil
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        
-        //make modal
-        makeModal(prefsWindowController);
-        
-    });
-     
-    */
+    //launch main app
+    [[NSWorkspace sharedWorkspace] launchApplication:mainApp];
+
+//bail
+bail:
     
     return;
 }

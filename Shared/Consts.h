@@ -32,12 +32,6 @@
 // ->for status msg to avoid activity indicator
 #define FRAME_SHIFT 45
 
-//hotkey 'w'
-#define KEYCODE_W 0xD
-
-//hotkey 'q'
-#define KEYCODE_Q 0xC
-
 //OS version x
 #define OS_MAJOR_VERSION_X 10
 
@@ -79,11 +73,17 @@
 //general error URL
 #define FATAL_ERROR_URL @"https://objective-see.com/errors.html"
 
+//path to preferences
+#define APP_PREFERENCES @"~/Library/Preferences/com.objective-see.OverSight.plist"
+
 //log activity button
-#define LOG_ACTIVITY @"logActivity"
+#define PREF_LOG_ACTIVITY @"logActivity"
 
 //automatically check for updates button
-#define CHECK_4_UPDATES @"check4Updates"
+#define PREF_CHECK_4_UPDATES @"check4Updates"
+
+//keycode for 'q'
+#define KEYCODE_Q 0x0C
 
 //path to pkill
 #define PKILL @"/usr/bin/pkill"

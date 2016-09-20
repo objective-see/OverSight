@@ -46,10 +46,14 @@
 -(void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
     //set 'log activity' button state
-    self.logActivity.state = [[NSUserDefaults standardUserDefaults] boolForKey:LOG_ACTIVITY];
+    self.logActivity.state = [[NSUserDefaults standardUserDefaults] boolForKey:PREF_LOG_ACTIVITY];
     
     //set 'automatically check for updates' button state
-    self.check4Updates.state = [[NSUserDefaults standardUserDefaults] boolForKey:CHECK_4_UPDATES];
+    self.check4Updates.state = [[NSUserDefaults standardUserDefaults] boolForKey:PREF_CHECK_4_UPDATES];
+    
+    //register for hotkey presses
+    // ->for now, just cmd+q to quit app
+    [self registerKeypressHandler];
     
     return;
 }
@@ -60,6 +64,75 @@
     return YES;
 }
 
+//register handler for hot keys
+-(void)registerKeypressHandler
+{
+    //event handler
+    NSEvent* (^keypressHandler)(NSEvent *) = nil;
+    
+    //init handler block
+    // ->just call helper function
+    keypressHandler = ^NSEvent * (NSEvent * theEvent){
+        
+        //invoke helper
+        return [self handleKeypress:theEvent];
+    };
+    
+    //register for key-down events
+    [NSEvent addLocalMonitorForEventsMatchingMask:NSKeyDownMask handler:keypressHandler];
+    
+    return;
+}
+
+
+//helper function for keypresses
+// ->for now, only handle cmd+q, to quit
+-(NSEvent*)handleKeypress:(NSEvent*)event
+{
+    //flag indicating event was handled
+    BOOL wasHandled = NO;
+    
+    //only care about 'cmd' + something
+    if(NSCommandKeyMask != (event.modifierFlags & NSCommandKeyMask))
+    {
+        //bail
+        goto bail;
+    }
+    
+    //handle key-code
+    // command+q: quite
+    switch ([event keyCode])
+    {
+        //'q' (quit)
+        case KEYCODE_Q:
+            
+            //bye!
+            [[NSApplication sharedApplication] terminate:nil];
+            
+            //set flag
+            wasHandled = YES;
+            
+            break;
+            
+        default:
+            
+            break;
+    }
+    
+//bail
+bail:
+    
+    //nil out event if it was handled
+    if(YES == wasHandled)
+    {
+        //nil
+        event = nil;
+    }
+    
+    return event;
+
+}
+
 //toggle/set preferences
 -(IBAction)togglePreference:(NSButton *)sender
 {
@@ -67,15 +140,18 @@
     if(sender == self.logActivity)
     {
         //set
-        [[NSUserDefaults standardUserDefaults] setBool:[sender state] forKey:LOG_ACTIVITY];
+        [[NSUserDefaults standardUserDefaults] setBool:[sender state] forKey:PREF_LOG_ACTIVITY];
     }
     
     //set 'automatically check for updates'
     else if (sender == self.check4Updates)
     {
         //set
-        [[NSUserDefaults standardUserDefaults] setBool:[sender state] forKey:CHECK_4_UPDATES];
+        [[NSUserDefaults standardUserDefaults] setBool:[sender state] forKey:PREF_CHECK_4_UPDATES];
     }
+    
+    //save em
+    [[NSUserDefaults standardUserDefaults] synchronize];
     
     return;
 }

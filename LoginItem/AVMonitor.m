@@ -35,14 +35,21 @@
     return self;
 }
 
-//grab first apple camera
+//grab first apple camera, or default
 // ->saves into iVar 'camera'
-// note: could maybe use defaultDeviceWithDeviceType method() to default device...
 -(void)findAppleCamera
 {
-    //get cameras
-    // ->look for one that belongs to apple
-    for(AVCaptureDevice* currentCamera in [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo])
+    //cameras
+    NSArray* cameras = nil;
+    
+    //grab all cameras
+    cameras = [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo];
+    
+    //dbg msg
+    logMsg(LOG_DEBUG, [NSString stringWithFormat:@"cameras: %@", cameras]);
+    
+    //look for camera that belongs to apple
+    for(AVCaptureDevice* currentCamera in cameras)
     {
         //check if apple
         if(YES == [currentCamera.manufacturer isEqualToString:@"Apple Inc."])
@@ -55,6 +62,17 @@
         }
     }
     
+    //didn't find apple
+    // ->grab default camera
+    if(nil == self.camera)
+    {
+        //get default
+        self.camera = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+        
+        //dbg msg
+        logMsg(LOG_DEBUG, [NSString stringWithFormat:@"didn't find apple camera, grabbed default: %@", self.camera]);
+    }
+    
     return;
 }
 
@@ -62,9 +80,17 @@
 // ->saves into iVar 'mic'
 -(void)findAppleMic
 {
-    //get mics
-    // ->loof for one that belongs to app
-    for(AVCaptureDevice* currentMic in [AVCaptureDevice devicesWithMediaType:AVMediaTypeAudio])
+    //mics
+    NSArray* mics = nil;
+    
+    //grab all mics
+    mics = [AVCaptureDevice devicesWithMediaType:AVMediaTypeAudio];
+    
+    //dbg msg
+    logMsg(LOG_DEBUG, [NSString stringWithFormat:@"mics: %@", mics]);
+    
+    //look for mic that belongs to apple
+    for(AVCaptureDevice* currentMic in mics)
     {
         //check if apple
         // ->also check input source
@@ -77,7 +103,17 @@
             //exit loop
             break;
         }
+    }
+    
+    //didn't find apple
+    // ->grab default camera
+    if(nil == self.mic)
+    {
+        //get default
+        self.mic = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeAudio];
         
+        //dbg msg
+        logMsg(LOG_DEBUG, [NSString stringWithFormat:@"didn't find apple 'imic', grabbed default: %@", self.mic]);
     }
     
     return;
@@ -344,8 +380,14 @@ bail:
     //wait semaphore
     dispatch_semaphore_t waitSema = nil;
     
-    //init dictionary
+    //devices
+    NSMutableArray* devices = nil;
+    
+    //init dictionary for event
     event = [NSMutableDictionary dictionary];
+    
+    //init array for devices
+    devices = [NSMutableArray array];
     
     //sync
     @synchronized (self)
@@ -354,9 +396,23 @@ bail:
     //set status
     [self setVideoDevStatus:deviceID];
         
+    //add camera
+    if(nil != self.camera)
+    {
+        //add
+        [devices addObject:@{EVENT_DEVICE:self.camera, EVENT_DEVICE_STATUS:@(self.videoActive)}];
+    }
+        
+    //add mic
+    if(nil != self.mic)
+    {
+        //add
+        [devices addObject:@{EVENT_DEVICE:self.mic, EVENT_DEVICE_STATUS:@(self.audioActive)}];
+    }
+
     //send msg to status menu
     // ->update menu to show (all) devices & their status
-    [((AppDelegate*)[[NSApplication sharedApplication] delegate]).statusBarMenuController updateStatusItemMenu:@[@{EVENT_DEVICE:self.camera, EVENT_DEVICE_STATUS:@(self.videoActive)},@{EVENT_DEVICE:self.mic, EVENT_DEVICE_STATUS:@(self.audioActive)}]];
+    [((AppDelegate*)[[NSApplication sharedApplication] delegate]).statusBarMenuController updateStatusItemMenu:devices];
 
     //add device
     event[EVENT_DEVICE] = self.camera;
@@ -610,6 +666,9 @@ bail:
     //ret var
     BOOL bRegistered = NO;
     
+    //status var
+    OSStatus status = -1;
+    
     //property struct
     AudioObjectPropertyAddress propertyStruct = {0};
     
@@ -629,22 +688,24 @@ bail:
         [self handleAudioNotification:deviceID];
     };
     
-    
-    OSStatus ret = AudioObjectAddPropertyListenerBlock(deviceID, &propertyStruct, dispatch_get_main_queue(), listenerBlock);
-    if (ret)
+    //add property listener for audio changes
+    status = AudioObjectAddPropertyListenerBlock(deviceID, &propertyStruct, dispatch_get_main_queue(), listenerBlock);
+    if(noErr != status)
     {
-        abort(); // FIXME
+        //err msg
+        logMsg(LOG_ERR, [NSString stringWithFormat:@"AudioObjectAddPropertyListenerBlock() failed with %d", status]);
+        
+        //bail
+        goto bail;
     }
-    
-    
+
     //happy
     bRegistered = YES;
     
-    //bail
+//bail
 bail:
     
     return bRegistered;
-    
 }
 
 //build and display notification
@@ -665,6 +726,9 @@ bail:
     //log msg
     NSMutableString* logMsg = nil;
     
+    //preferences
+    NSDictionary* preferences = nil;
+    
     //alloc notificaiton
     notification = [[NSUserNotification alloc] init];
     
@@ -676,6 +740,9 @@ bail:
     
     //alloc log msg
     logMsg = [NSMutableString string];
+    
+    //always (manually) load preferences
+    preferences = [NSDictionary dictionaryWithContentsOfFile:[APP_PREFERENCES stringByExpandingTildeInPath]];
     
     //set title
     // ->audio device
@@ -706,6 +773,10 @@ bail:
         //add
         [title appendString:@" became active"];
     }
+    
+    //set details
+    // ->name of device
+    details = ((AVCaptureDevice*)event[EVENT_DEVICE]).localizedName;
     
     //customize buttons
     // ->for mic or inactive events, just say 'ok'
@@ -742,8 +813,7 @@ bail:
     }
 
     //log event?
-    // TODO: test will final apps/prefs
-    if(YES == [[NSUserDefaults standardUserDefaults] boolForKey:LOG_ACTIVITY])
+    if(YES == [preferences[PREF_LOG_ACTIVITY] boolValue])
     {
         //init msg
         [logMsg appendString:@"OVERSIGHT: "];
@@ -768,26 +838,11 @@ bail:
         syslog(LOG_ERR, "%s\n", logMsg.UTF8String);
     }
     
-    //icon issues
-    //http://stackoverflow.com/questions/11856766/osx-notification-center-icon
-    
-    //contentImage for process icon?
-    
-    //custom icon?
-    //http://stackoverflow.com/questions/24923979/nsusernotification-customisable-app-icon
-    
-    //icon set automatically?
-    //[notification set]
-    
     //set title
     [notification setTitle:title];
     
     //set subtitle
-    [notification setSubtitle:((AVCaptureDevice*)event[EVENT_DEVICE]).localizedName];
-    
-    //set details
-    // ->name of process using it / icon too?
-    //[notification setInformativeText:@"some process (1337)"];
+    [notification setSubtitle:details];
     
     //set notification
     [[NSUserNotificationCenter defaultUserNotificationCenter] setDelegate:self];

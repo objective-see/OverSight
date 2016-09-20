@@ -28,6 +28,9 @@
 // ->load status bar and kick off monitor
 -(void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
+    //default
+    NSDictionary* preferences = nil;
+    
     //dbg msg
     logMsg(LOG_DEBUG, @"starting login item");
     
@@ -37,9 +40,23 @@
     //dbg msg
     logMsg(LOG_DEBUG, @"initialized/loaded status bar (icon/menu)");
     
+    //first time, register defaults (manually cuz NSUserDefaults wasn't working - wtf)
+    // ->note: do this in here, since main app (with prefs) isn't run until user manually launches it
+    if(YES != [[NSFileManager defaultManager] fileExistsAtPath:[APP_PREFERENCES stringByExpandingTildeInPath]])
+    {
+        //dbg msg
+        logMsg(LOG_DEBUG, @"preference file not found; manually creating");
+
+        //write em out
+        [@{PREF_LOG_ACTIVITY:@YES, PREF_CHECK_4_UPDATES:@YES} writeToFile:[APP_PREFERENCES stringByExpandingTildeInPath] atomically:NO];
+    }
+    
+    //always (manually) load preferences
+    preferences = [NSDictionary dictionaryWithContentsOfFile:[APP_PREFERENCES stringByExpandingTildeInPath]];
+    
     //check for updates
     // ->but only when user has not disabled that feature
-    if(YES == [[NSUserDefaults standardUserDefaults] boolForKey:CHECK_4_UPDATES])
+    if(YES == [preferences[PREF_CHECK_4_UPDATES] boolValue])
     {
         //after a minute
         //->check for updates in background
@@ -51,7 +68,6 @@
            //check
            [self isThereAndUpdate];
         });
-        
     }
     
     //create/init av event monitor
