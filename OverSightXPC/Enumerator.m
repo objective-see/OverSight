@@ -7,9 +7,10 @@
 //
 
 #import "main.h"
+#import "Consts.h"
+#import "Logging.h"
+#import "Utilities.h"
 #import "Enumerator.h"
-#import "../Shared/Logging.h"
-#import "../Shared/Utilities.h"
 
 #import <libproc.h>
 #import <sys/sysctl.h>
@@ -39,6 +40,7 @@ static NSArray* ignoredProcs = nil;
                       @"/usr/sbin/notifyd",
                       @"/usr/sbin/syslogd",
                       @"/usr/sbin/cfprefsd",
+                      @"/usr/libexec/avconferenced",
                       @"/usr/libexec/opendirectoryd",
                       @"/usr/libexec/UserEventAgent",
                       @"/System/Library/CoreServices/launchservicesd",
@@ -119,7 +121,7 @@ static NSArray* ignoredProcs = nil;
         //get name
         processPath = getProcessPath(pids[i]);
         if( (nil == processPath) ||
-           (0 == processPath.length) )
+            (0 == processPath.length) )
         {
             //skip
             continue;
@@ -180,7 +182,7 @@ bail:
                 self.machSenders = [self enumMachSenders:[self findCameraAssistant]];
                 
                 //dbg msg
-                logMsg(LOG_DEBUG, [NSString stringWithFormat:@"baselined mach senders: %@", self.machSenders]);
+                logMsg(LOG_DEBUG, [NSString stringWithFormat:@"found %lu baselined mach senders: %@", (unsigned long)self.machSenders.count, self.machSenders]);
             }
         }
         
@@ -231,7 +233,7 @@ bail:
     currentSenders = [self enumMachSenders:cameraAssistant];
         
     //dbg msg
-    logMsg(LOG_DEBUG, [NSString stringWithFormat:@"current mach senders: %@", currentSenders]);
+    logMsg(LOG_DEBUG, [NSString stringWithFormat:@"found %lu current mach senders: %@", (unsigned long)currentSenders.count, currentSenders]);
     
     //remove any known/existing senders
     for(NSNumber* processID in currentSenders.allKeys)
@@ -253,12 +255,13 @@ bail:
     }
         
     //dbg msg
-    logMsg(LOG_DEBUG, [NSString stringWithFormat:@"candidate video procs: %@", candidateVideoProcs]);
-
+    logMsg(LOG_DEBUG, [NSString stringWithFormat:@"found %lu candidate video procs: %@", (unsigned long)candidateVideoProcs.count, candidateVideoProcs]);
+    
     //update
     self.machSenders = currentSenders;
     
     //invoke 'sample' to confirm that candidates are using CMIO/video inputs
+    // ->note, will skip FaceTime.app on macOS Sierra, as it doesn't do CMIO stuff directly
     videoProcs = [self sampleCandidates:candidateVideoProcs];
     
     }//sync
@@ -284,6 +287,9 @@ bail:
     
     //process id
     NSNumber* processID = nil;
+    
+    //process path
+    NSString* processPath = nil;
     
     //alloc
     senders = [NSMutableDictionary dictionary];
@@ -340,8 +346,18 @@ bail:
             continue;
         }
         
+        //get process path
+        // ->skip blank/unknown procs
+        processPath = getProcessPath(processID.intValue);
+        if( (nil == processPath) ||
+            (0 == processPath.length) )
+        {
+            //skip
+            continue;
+        }
+        
         //ignore apple daemons (that send mach messages, etc)
-        if(YES == [ignoredProcs containsObject:getProcessPath(processID.intValue)])
+        if(YES == [ignoredProcs containsObject:processPath])
         {
             //skip
             continue;
@@ -366,12 +382,48 @@ bail:
     //results from 'sample' cmd
     NSString* results = nil;
     
+    //process path
+    NSString* processPath = nil;
+    
     //alloc
     videoProcs = [NSMutableArray array];
     
     //invoke 'sample' on each
+    // ->skips FaceTime.app though on macOS Sierra
     for(NSNumber* processID in currentSenders)
     {
+        //dbg msg
+        logMsg(LOG_DEBUG, [NSString stringWithFormat:@"processing %d for sampling", processID.intValue]);
+        
+        //get process path
+        // ->skip ones that fail
+        processPath = getProcessPath(processID.intValue);
+        if( (nil == processPath) ||
+            (0 == processPath.length) )
+        {
+            //next
+            continue;
+        }
+        
+        //if we're running on macOS Sierra and there is only 1 candidate proc and its FaceTime
+        // ->don't sample, as it does thing wierdly....
+        if( (YES == [processPath isEqualToString:FACE_TIME]) &&
+            ([getOSVersion() [@"minorVersion"] intValue] >= 12) )
+        {
+            //dbg msg
+            logMsg(LOG_DEBUG, @"not sampling as candidate app is FaceTime on macOS Sierra");
+            
+            //add
+            [videoProcs addObject:processID];
+            
+            //next
+            continue;
+        
+        }
+        
+        //dbg msg
+        logMsg(LOG_DEBUG, [NSString stringWithFormat:@"sampling %d", processID.intValue]);
+        
         //exec 'sample' to get threads/dylibs
         // ->uses 1.0 seconds for sampling time
         results = [[NSString alloc] initWithData:execTask(SAMPLE, @[processID.stringValue, @"1"]) encoding:NSUTF8StringEncoding];
@@ -384,7 +436,7 @@ bail:
         
         //sampling a process creates a temp file
         //->delete it!
-        [self deleteSampleFile:getProcessPath(processID.intValue)];
+        [self deleteSampleFile:processPath];
         
         //for now, just check for 'CMIOGraph::DoWork'
         // ->TODO: could look for dylibs, other calls, etc

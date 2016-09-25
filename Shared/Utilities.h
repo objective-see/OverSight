@@ -14,6 +14,9 @@
 
 /* FUNCTIONS */
 
+//get OS version
+NSDictionary* getOSVersion();
+
 //get app's version
 // ->extracted from Info.plist
 NSString* getAppVersion();
@@ -51,6 +54,10 @@ NSString* getProcessPath(pid_t pid);
 //given a pid
 // ->get the name of the process
 NSString* getProcessName(pid_t pid);
+
+//given a process name
+// ->get the (first) instance of that process
+pid_t getProcessID(NSString* processName);
 
 //wait until a window is non nil
 // ->then make it modal

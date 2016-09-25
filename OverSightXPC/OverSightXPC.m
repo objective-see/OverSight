@@ -7,9 +7,10 @@
 //
 
 #import "Logging.h"
+#import "Utilities.h"
 #import "Enumerator.h"
 #import "OverSightXPC.h"
-#import "../Shared/Utilities.h"
+
 
 @implementation OverSightXPC
 

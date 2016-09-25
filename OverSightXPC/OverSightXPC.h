@@ -6,8 +6,8 @@
 //  Copyright (c) 2016 Objective-See. All rights reserved.
 //
 
+#import "XPCProtocol.h"
 #import <Foundation/Foundation.h>
-#import "../Shared/XPCProtocol.h"
 
 /* DEFINES */
 

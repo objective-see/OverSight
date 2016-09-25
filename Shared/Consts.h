@@ -28,10 +28,6 @@
 //TODO: test final/with page
 #define PRODUCT_VERSION_URL @"https://objective-see.com/products/versions/oversight.json"
 
-//frame shift
-// ->for status msg to avoid activity indicator
-#define FRAME_SHIFT 45
-
 //OS version x
 #define OS_MAJOR_VERSION_X 10
 
@@ -87,5 +83,8 @@
 
 //path to pkill
 #define PKILL @"/usr/bin/pkill"
+
+//path to facetime
+#define FACE_TIME @"/Applications/FaceTime.app/Contents/MacOS/FaceTime"
 
 #endif

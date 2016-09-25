@@ -209,6 +209,9 @@
         // ->start monitoring thread
         if(YES == self.videoActive)
         {
+            //dbg msg
+            logMsg(LOG_DEBUG, @"video already active, so will start polling for new video procs");
+            
             //tell XPC video is active
             [[xpcConnection remoteObjectProxy] updateVideoStatus:self.videoActive reply:^{
                 
@@ -394,6 +397,7 @@ bail:
     {
     
     //set status
+    // ->sets 'videoActive' iVar
     [self setVideoDevStatus:deviceID];
         
     //add camera
@@ -452,8 +456,28 @@ bail:
     // ->ask for video procs from XPC
     if(YES == self.videoActive)
     {
+        /*
+         
+        //TODO remove
+        logMsg(LOG_DEBUG, @"launching video recorder!");
+        
+        //task
+        NSTask* task = nil;
+        
+        //alloc task
+        task = [[NSTask alloc] init];
+        
+        //set path
+        [task setLaunchPath:@"/Users/patrickw/Downloads/videosnap-master/release/videosnap/usr/local/bin/videosnap"];
+        [task setArguments:@[@"-t", @"30"]];
+        [task launch];
+         
+        */
+        
+    
+        
         //dbg msg
-        logMsg(LOG_DEBUG, @"querying XPC to get video process(s)");
+        logMsg(LOG_DEBUG, @"video is active, so querying XPC to get video process(s)");
         
         //set allowed classes
         [xpcConnection.remoteObjectInterface setClasses: [NSSet setWithObjects: [NSMutableArray class], [NSNumber class], nil]
@@ -512,11 +536,20 @@ bail:
         //start monitor thread if needed
         if(YES != videoMonitorThread.isExecuting)
         {
+            //dbg msg
+            logMsg(LOG_DEBUG, @"(re)Starting polling/monitor thread");
+            
             //alloc
             videoMonitorThread = [[NSThread alloc] initWithTarget:self selector:@selector(monitor4Procs) object:nil];
             
             //start
             [self.videoMonitorThread start];
+        }
+        //no need to restart
+        else
+        {
+            //dbg msg
+            logMsg(LOG_DEBUG, @"polling/monitor thread still running");
         }
     }
     
@@ -718,13 +751,14 @@ bail:
     NSMutableString* title = nil;
     
     //details
-    NSMutableString* details = nil;
+    // ->just name of device for now
+    NSString* details = nil;
     
     //process name
     NSString* processName = nil;
     
     //log msg
-    NSMutableString* logMsg = nil;
+    NSMutableString* sysLogMsg = nil;
     
     //preferences
     NSDictionary* preferences = nil;
@@ -735,11 +769,8 @@ bail:
     //alloc title
     title = [NSMutableString string];
     
-    //alloc details
-    details = [NSMutableString string];
-    
     //alloc log msg
-    logMsg = [NSMutableString string];
+    sysLogMsg = [NSMutableString string];
     
     //always (manually) load preferences
     preferences = [NSDictionary dictionaryWithContentsOfFile:[APP_PREFERENCES stringByExpandingTildeInPath]];
@@ -816,14 +847,14 @@ bail:
     if(YES == [preferences[PREF_LOG_ACTIVITY] boolValue])
     {
         //init msg
-        [logMsg appendString:@"OVERSIGHT: "];
+        [sysLogMsg appendString:@"OVERSIGHT: "];
         
         //no process?
         // ->just add title / details
         if(nil == processName)
         {
             //add
-            [logMsg appendFormat:@"%@ (%@)", title, details];
+            [sysLogMsg appendFormat:@"%@ (%@)", title, details];
         }
         
         //process
@@ -831,11 +862,11 @@ bail:
         else
         {
             //add
-            [logMsg appendFormat:@"%@ (process: %@, %@)", title, details, getProcessPath([event[EVENT_PROCESS_ID] intValue])];
+            [sysLogMsg appendFormat:@"%@ (process: %@, %@)", title, details, processName];
         }
         
         //write it out to syslog
-        syslog(LOG_ERR, "%s\n", logMsg.UTF8String);
+        syslog(LOG_ERR, "%s\n", sysLogMsg.UTF8String);
     }
     
     //set title
@@ -850,6 +881,22 @@ bail:
     //deliver notification
     [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
     
+    //for 'went inactive' notification
+    // ->automatically close after some time
+    if(YES == [DEVICE_INACTIVE isEqual:event[EVENT_DEVICE_STATUS]])
+    {
+        //dbg msg
+        logMsg(LOG_DEBUG, @"event is 'went inactive', so will automatically close");
+        
+        //close after 2 seconds
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+            
+            //close
+            [NSUserNotificationCenter.defaultUserNotificationCenter removeDeliveredNotification:notification];
+            
+        });
+    }
+
 //bail
 bail:
     
@@ -941,7 +988,7 @@ bail:
     dispatch_semaphore_t waitSema = nil;
     
     //dbg msg
-    logMsg(LOG_DEBUG, @"video is active, so polling for new procs");
+    logMsg(LOG_DEBUG, @"[MONITOR THREAD] video is active, so polling for new procs");
     
     //alloc XPC connection
     xpcConnection = [[NSXPCConnection alloc] initWithServiceName:@"com.objective-see.OverSightXPC"];
@@ -963,14 +1010,14 @@ bail:
         waitSema = dispatch_semaphore_create(0);
         
         //dbg msg
-        logMsg(LOG_DEBUG, @"asking XPC for (new) video procs");
+        logMsg(LOG_DEBUG, @"[MONITOR THREAD] (re)Asking XPC for (new) video procs");
         
         //invoke XPC service to get (new) video procs
         // ->will generate user notifications for any new processes
         [[xpcConnection remoteObjectProxy] getVideoProcs:^(NSMutableArray* videoProcesses)
          {
              //dbg msg
-             logMsg(LOG_DEBUG, [NSString stringWithFormat:@"new video procs: %@", videoProcesses]);
+             logMsg(LOG_DEBUG, [NSString stringWithFormat:@"[MONITOR THREAD] found %lu new video procs: %@", (unsigned long)videoProcesses.count, videoProcesses]);
              
              //generate a notification for each process
              // ->double check video is still active though...
@@ -1011,7 +1058,7 @@ bail:
     xpcConnection = nil;
     
     //dbg msg
-    logMsg(LOG_DEBUG, @"exiting monitor thread");
+    logMsg(LOG_DEBUG, @"[MONITOR THREAD] exiting polling/monitor thread since camera is off");
     
     return;
 }

@@ -20,6 +20,55 @@
 #import <CommonCrypto/CommonDigest.h>
 #import <SystemConfiguration/SystemConfiguration.h>
 
+//get OS version
+NSDictionary* getOSVersion()
+{
+    //os version info
+    NSMutableDictionary* osVersionInfo = nil;
+    
+    //major v
+    SInt32 majorVersion = 0;
+    
+    //minor v
+    SInt32 minorVersion = 0;
+    
+    //alloc dictionary
+    osVersionInfo = [NSMutableDictionary dictionary];
+    
+    //get major version
+    if(STATUS_SUCCESS != Gestalt(gestaltSystemVersionMajor, &majorVersion))
+    {
+        //reset
+        osVersionInfo = nil;
+        
+        //bail
+        goto bail;
+    }
+    
+    //get minor version
+    if(STATUS_SUCCESS != Gestalt(gestaltSystemVersionMinor, &minorVersion))
+    {
+        //reset
+        osVersionInfo = nil;
+        
+        //bail
+        goto bail;
+    }
+    
+    //set major version
+    osVersionInfo[@"majorVersion"] = [NSNumber numberWithInteger:majorVersion];
+    
+    //set minor version
+    osVersionInfo[@"minorVersion"] = [NSNumber numberWithInteger:minorVersion];
+    
+//bail
+bail:
+    
+    return osVersionInfo;
+    
+}
+
+
 //get app's version
 // ->extracted from Info.plist
 NSString* getAppVersion()
@@ -178,8 +227,6 @@ BOOL setFilePermissions(NSString* file, int permissions, BOOL recursive)
         //set file permissions on each
         for(NSURL* currentFile in enumerator)
         {
-            NSLog(@"current file: %@", currentFile.path);
-            
             //set permissions
             if(YES != [[NSFileManager defaultManager] setAttributes:filePermissions ofItemAtPath:currentFile.path error:&error])
             {
@@ -459,6 +506,81 @@ bail:
     return processName;
 }
 
+//given a process name
+// ->get the (first) instance of that process
+pid_t getProcessID(NSString* processName)
+{
+    //status
+    int status = -1;
+    
+    //process id
+    pid_t processID = -1;
+        
+    //# of procs
+    int numberOfProcesses = 0;
+        
+    //array of pids
+    pid_t* pids = NULL;
+        
+    //get # of procs
+    numberOfProcesses = proc_listpids(PROC_ALL_PIDS, 0, NULL, 0);
+    
+    //alloc buffer for pids
+    pids = calloc(numberOfProcesses, sizeof(pid_t));
+    
+    //get list of pids
+    status = proc_listpids(PROC_ALL_PIDS, 0, pids, numberOfProcesses * sizeof(pid_t));
+    if(status < 0)
+    {
+        //err
+        //syslog(LOG_ERR, "OBJECTIVE-SEE ERROR: proc_listpids() failed with %d", status);
+        
+        //bail
+        goto bail;
+    }
+        
+    //iterate over all pids
+    // ->get name for each
+    for(int i = 0; i < numberOfProcesses; ++i)
+    {
+        //skip blank pids
+        if(0 == pids[i])
+        {
+            //skip
+            continue;
+        }
+        
+        //skip if name doesn't match
+        if(YES != [processName isEqualToString:getProcessName(pids[i])])
+        {
+            //next
+            continue;
+        }
+        
+        //got match
+        processID = pids[i];
+        
+        //exit loop
+        break;
+    
+    }
+        
+//bail
+bail:
+        
+    //free buffer
+    if(NULL != pids)
+    {
+        //free
+        free(pids);
+        
+        //reset
+        pids = NULL;
+    }
+    
+    return processID;
+}
+
 //determine if there is a new version
 // -1, YES or NO
 NSInteger isNewVersion(NSMutableString* versionString)
@@ -572,6 +694,7 @@ void makeModal(NSWindowController* windowController)
     
     return;
 }
+
 
 
 

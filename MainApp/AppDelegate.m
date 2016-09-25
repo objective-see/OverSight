@@ -113,7 +113,9 @@
             wasHandled = YES;
             
             break;
-            
+        
+        //default
+        // ->do nothing
         default:
             
             break;
@@ -261,6 +263,51 @@ bail:
         //show now new version message
         self.versionLabel.hidden = NO;
     }
+    
+    return;
+}
+
+//start the login item
+-(IBAction)startLoginItem:(id)sender
+{
+    //path to login item
+    NSString* loginItem = nil;
+    
+    //alert
+    NSAlert* alert = nil;
+    
+    //check if already running
+    // ->show alert and then bail
+    if(-1 != getProcessID(@"OverSight Helper"))
+    {
+        //init alert
+        alert = [NSAlert alertWithMessageText: @"Oversight is already running!" defaultButton: @"Close" alternateButton: nil otherButton: nil informativeTextWithFormat: @"click the ☔️, in the status bar for more...."];
+        
+        //make app front
+        [[NSRunningApplication currentApplication] activateWithOptions:NSApplicationActivateIgnoringOtherApps];
+        
+        //make modal
+        [alert runModal];
+        
+        //bail
+        goto bail;
+    }
+    
+    //init path
+    loginItem = [[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent:@"/Contents/Library/LoginItems/OverSight Helper.app"];
+    
+    //launch it!
+    if(YES != [[NSWorkspace sharedWorkspace] launchApplication:loginItem])
+    {
+        //err msg
+        logMsg(LOG_ERR, [NSString stringWithFormat:@"failed to start login item, %@", loginItem]);
+        
+        //bail
+        goto bail;
+    }
+
+//bail
+bail:
     
     return;
 }

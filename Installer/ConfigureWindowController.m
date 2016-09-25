@@ -230,19 +230,6 @@ bail:
 // ->basically just update UI
 -(void)beginEvent:(NSUInteger)event
 {
-    //status msg frame
-    CGRect statusMsgFrame = {0};
-    
-    //grab exiting frame
-    statusMsgFrame = self.statusMsg.frame;
-    
-    //avoid activity indicator
-    // ->shift frame shift delta
-    statusMsgFrame.origin.x += FRAME_SHIFT;
-    
-    //update frame to align
-    self.statusMsg.frame = statusMsgFrame;
-    
     //align text left
     [self.statusMsg setAlignment:NSLeftTextAlignment];
     
@@ -250,13 +237,15 @@ bail:
     if(ACTION_INSTALL_FLAG == event)
     {
         //update status msg
-        [self.statusMsg setStringValue:@"Installing..."];
+        // ->with space to avoid spinner
+        [self.statusMsg setStringValue:@"\t  Installing..."];
     }
     //uninstall msg
     else
     {
         //update status msg
-        [self.statusMsg setStringValue:@"Uninstalling..."];
+        // ->with space to avoid spinner
+        [self.statusMsg setStringValue:@"\t  Uninstalling..."];
     }
     
     //disable action button
@@ -278,9 +267,6 @@ bail:
 // ->update UI after background event has finished
 -(void)completeEvent:(BOOL)success event:(NSUInteger)event
 {
-    //status msg frame
-    CGRect statusMsgFrame = {0};
-    
     //action
     NSString* action = nil;
     
@@ -340,15 +326,6 @@ bail:
     
     //hide spinner
     [self.activityIndicator setHidden:YES];
-    
-    //grab exiting frame
-    statusMsgFrame = self.statusMsg.frame;
-    
-    //shift back since activity indicator is gone
-    statusMsgFrame.origin.x -= FRAME_SHIFT;
-    
-    //update frame to align
-    self.statusMsg.frame = statusMsgFrame;
     
     //set font to bold
     [self.statusMsg setFont:[NSFont fontWithName:@"Menlo-Bold" size:13]];

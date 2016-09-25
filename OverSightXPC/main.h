@@ -12,10 +12,9 @@
 #import <bsm/libbsm.h>
 #import <Foundation/Foundation.h>
 
-#import "../Shared/Exception.h"
-#import "../Shared/XPCProtocol.h"
-#import "../Shared/Logging.h"
-
+#import "Logging.h"
+#import "Exception.h"
+#import "XPCProtocol.h"
 #import "OverSightXPC.h"
 
 

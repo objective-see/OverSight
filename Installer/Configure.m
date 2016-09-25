@@ -63,7 +63,7 @@
         
         //dbg msg
         logMsg(LOG_DEBUG, @"installed, now will start");
-        
+    
         //start login item
         if(YES != [self start])
         {
@@ -198,19 +198,30 @@ bail:
     //path to login item
     NSString* loginItem = nil;
     
+    //task
+    NSTask* task = nil;
+    
     //init path
-    loginItem = [[APPS_FOLDER stringByAppendingPathComponent:APP_NAME] stringByAppendingPathComponent:@"Contents/Library/LoginItems/OverSight Helper.app"];
-
-    //launch it!
-    if(YES != [[NSWorkspace sharedWorkspace] launchApplication:loginItem])
+    loginItem = [[APPS_FOLDER stringByAppendingPathComponent:APP_NAME] stringByAppendingPathComponent:@"Contents/Library/LoginItems/OverSight Helper.app/Contents/MacOS/OverSight Helper"];
+    
+    //alloc task
+    task = [[NSTask alloc] init];
+    
+    //set path
+    [task setLaunchPath:loginItem];
+    
+    //wrap task launch
+    @try
     {
-        //err msg
-        logMsg(LOG_ERR, [NSString stringWithFormat:@"failed to start login item, %@", loginItem]);
-        
+        //launch
+        [task launch];
+    }
+    @catch(NSException* exception)
+    {
         //bail
         goto bail;
     }
-    
+
     //happy
     bStarted = YES;
     

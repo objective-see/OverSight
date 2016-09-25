@@ -19,7 +19,6 @@
 
 @implementation AppDelegate
 
-
 @synthesize avMonitor;
 @synthesize infoWindowController;
 @synthesize statusBarMenuController;

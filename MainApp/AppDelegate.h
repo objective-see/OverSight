@@ -38,5 +38,31 @@
 //about window controller
 @property(nonatomic, retain)AboutWindowController* aboutWindowController;
 
+
+/* METHODS */
+
+//register handler for hot keys
+-(void)registerKeypressHandler;
+
+//helper function for keypresses
+// ->for now, only handle cmd+q, to quit
+-(NSEvent*)handleKeypress:(NSEvent*)event;
+
+//toggle/set preferences
+-(IBAction)togglePreference:(NSButton *)sender;
+
+//'about' button handler
+-(IBAction)about:(id)sender;
+
+//'check for update' (now) button handler
+-(IBAction)check4Update:(id)sender;
+
+//check for an update
+-(void)isThereAndUpdate;
+
+//start the login item
+-(IBAction)startLoginItem:(id)sender;
+
+
 @end
 
