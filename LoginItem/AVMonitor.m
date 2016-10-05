@@ -456,26 +456,6 @@ bail:
     // ->ask for video procs from XPC
     if(YES == self.videoActive)
     {
-        /*
-         
-        //TODO remove
-        logMsg(LOG_DEBUG, @"launching video recorder!");
-        
-        //task
-        NSTask* task = nil;
-        
-        //alloc task
-        task = [[NSTask alloc] init];
-        
-        //set path
-        [task setLaunchPath:@"/Users/patrickw/Downloads/videosnap-master/release/videosnap/usr/local/bin/videosnap"];
-        [task setArguments:@[@"-t", @"30"]];
-        [task launch];
-         
-        */
-        
-    
-        
         //dbg msg
         logMsg(LOG_DEBUG, @"video is active, so querying XPC to get video process(s)");
         
@@ -500,6 +480,17 @@ bail:
              {
                  //set pid
                  event[EVENT_PROCESS_ID] = processID;
+                 
+                 //generate notification
+                 [self generateNotification:event];
+             }
+             
+             //if no consumer process was found
+             // ->still alert user that webcam was activated, but without details/ability to block
+             if(0 == videoProcesses.count)
+             {
+                 //set pid
+                 event[EVENT_PROCESS_ID] = @0;
                  
                  //generate notification
                  [self generateNotification:event];
@@ -810,9 +801,10 @@ bail:
     details = ((AVCaptureDevice*)event[EVENT_DEVICE]).localizedName;
     
     //customize buttons
-    // ->for mic or inactive events, just say 'ok'
+    // ->for mic, inactive events, or when consumer proc couldn't be ID'd, just say 'ok'
     if( (YES == [event[EVENT_DEVICE] isKindOfClass:NSClassFromString(@"AVCaptureHALDevice")]) ||
-        (YES == [DEVICE_INACTIVE isEqual:event[EVENT_DEVICE_STATUS]]) )
+        (YES == [DEVICE_INACTIVE isEqual:event[EVENT_DEVICE_STATUS]]) ||
+        (0 == [event[EVENT_PROCESS_ID] intValue]) )
     {
         //set other button title
         notification.otherButtonTitle = @"ok";
@@ -822,7 +814,7 @@ bail:
     }
     
     //customize buttons
-    // ->for activatated video; allow/block
+    // ->for activated video; allow/block
     else
     {
         //get process name
@@ -918,6 +910,43 @@ bail:
     
     //process id
     NSNumber* processID = nil;
+    
+    //preferences
+    NSDictionary* preferences = nil;
+    
+    //log msg
+    NSMutableString* sysLogMsg = nil;
+    
+    //always (manually) load preferences
+    preferences = [NSDictionary dictionaryWithContentsOfFile:[APP_PREFERENCES stringByExpandingTildeInPath]];
+    
+    //alloc log msg
+    sysLogMsg = [NSMutableString string];
+    
+    //log event?
+    // ->but only allow/blocks (i.e. webcam activations)
+    if( (YES == [preferences[PREF_LOG_ACTIVITY] boolValue]) &&
+        (YES == [notification.actionButtonTitle isEqualToString:@"block"]) )
+    {
+        //init msg
+        [sysLogMsg appendString:@"OVERSIGHT: "];
+        
+        //user clicked 'block'
+        if(notification.activationType == NSUserNotificationActivationTypeActionButtonClicked)
+        {
+            //add
+            [sysLogMsg appendFormat:@"user clicked 'block' for %@", notification.userInfo];
+        }
+        //user clicked 'allow'
+        else
+        {
+            //add
+            [sysLogMsg appendFormat:@"user clicked 'allow' for %@", notification.userInfo];
+        }
+        
+        //write it out to syslog
+        syslog(LOG_ERR, "%s\n", sysLogMsg.UTF8String);
+    }
     
     //dbg msg
     logMsg(LOG_DEBUG, [NSString stringWithFormat:@"use responded to notification: %@", notification]);

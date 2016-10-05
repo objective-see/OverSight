@@ -84,7 +84,12 @@
 //path to pkill
 #define PKILL @"/usr/bin/pkill"
 
+//path to xattr
+#define XATTR @"/usr/bin/xattr"
+
 //path to facetime
 #define FACE_TIME @"/Applications/FaceTime.app/Contents/MacOS/FaceTime"
+
+
 
 #endif

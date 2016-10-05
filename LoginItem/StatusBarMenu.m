@@ -6,7 +6,7 @@
 //  Copyright (c) 2015 Objective-See. All rights reserved.
 //
 
-
+#import "Consts.h"
 #import "Logging.h"
 #import "AppDelegate.h"
 #import "StatusBarMenu.h"
@@ -233,29 +233,11 @@
 // ->launch main application which will show prefs
 -(void)preferences:(id)sender
 {
-    //path components
-    NSArray* pathComponents = nil;
-    
-    //path to main app
-    NSString* mainApp = nil;
-    
-    //init path components
-    pathComponents = [[[NSBundle mainBundle] bundlePath] pathComponents];
-    if(pathComponents.count <= 4)
-    {
-        //bail
-        goto bail;
-    }
-    
-    //init path to main app
-    // ->basically trim off last 4 path components
-    mainApp = [NSString pathWithComponents:[pathComponents subarrayWithRange:NSMakeRange(0, [pathComponents count] - 4)]];
-    
     //dbg msg
-    logMsg(LOG_DEBUG, [NSString stringWithFormat:@"launching main app; %@", mainApp]);
+    logMsg(LOG_DEBUG, @"launching main app (from /Applications)");
     
     //launch main app
-    [[NSWorkspace sharedWorkspace] launchApplication:mainApp];
+    [[NSWorkspace sharedWorkspace] launchApplication:[APPS_FOLDER stringByAppendingPathComponent:APP_NAME]];
 
 //bail
 bail:

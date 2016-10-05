@@ -156,6 +156,10 @@ bail:
     //dbg msg
     logMsg(LOG_DEBUG, [NSString stringWithFormat:@"copied %@ -> %@", appPathSrc, appPathDest]);
     
+    //remove xattrs
+    // ->otherwise app translocation causes issues
+    execTask(XATTR, @[@"-cr", appPathDest]);
+    
     //init path to XPC service
     xpcServicePath = [appPathDest stringByAppendingPathComponent:@"Contents/Library/LoginItems/OverSight Helper.app/Contents/XPCServices/OverSightXPC.xpc"];
 

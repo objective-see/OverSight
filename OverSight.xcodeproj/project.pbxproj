@@ -17,6 +17,7 @@
 		7D17CFE41D811B4E0017B475 /* Utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D17C5381D659E580066232A /* Utilities.m */; };
 		7D17CFE51D8133840017B475 /* AVMonitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D17CFE11D81121E0017B475 /* AVMonitor.m */; };
 		7D17D0101D8136C60017B475 /* OverSightXPC.xpc in Embed XPC Services */ = {isa = PBXBuildFile; fileRef = 7DC9C8121D641A350017D143 /* OverSightXPC.xpc */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		7D3B524C1D9B3A74006568D9 /* libbsm.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D9A7DED1D8CACE30091C1AF /* libbsm.tbd */; };
 		7D62457C1D84FB8900870565 /* Enumerator.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D62457B1D84FB8900870565 /* Enumerator.m */; };
 		7D6245801D85348E00870565 /* Utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D62457F1D85348E00870565 /* Utilities.m */; };
 		7D6245851D87C43900870565 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7D6245841D87C43900870565 /* Images.xcassets */; };
@@ -32,7 +33,6 @@
 		7D6245951D87E14800870565 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8B5755CD19DA3F9300799E6B /* MainMenu.xib */; };
 		7D9A7DE81D893E4F0091C1AF /* InfoWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7D62458C1D87D38400870565 /* InfoWindow.xib */; };
 		7D9A7DEC1D8BE1E00091C1AF /* Exception.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D17C5311D659E580066232A /* Exception.m */; };
-		7D9A7DEE1D8CACE30091C1AF /* libbsm.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D9A7DED1D8CACE30091C1AF /* libbsm.tbd */; };
 		7D9A7DF21D8F2C900091C1AF /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7D6245841D87C43900870565 /* Images.xcassets */; };
 		7DAF4B7F1D657192000DA31A /* StatusBarMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DAF4B7D1D656FD3000DA31A /* StatusBarMenu.m */; };
 		7DC9C8171D641A350017D143 /* OverSightXPC.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DC9C8161D641A350017D143 /* OverSightXPC.m */; };
@@ -143,7 +143,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7D9A7DEE1D8CACE30091C1AF /* libbsm.tbd in Frameworks */,
+				7D3B524C1D9B3A74006568D9 /* libbsm.tbd in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -361,7 +361,7 @@
 		8B57559319DA3E9500799E6B /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0730;
+				LastUpgradeCheck = 0800;
 				ORGANIZATIONNAME = "Cory Bohon";
 				TargetAttributes = {
 					7DC9C8111D641A350017D143 = {
@@ -528,7 +528,7 @@
 				ENABLE_TESTABILITY = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
 				INFOPLIST_FILE = OverSightXPC/Info.plist;
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.objective-see.OverSightXPC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -545,7 +545,7 @@
 				COPY_PHASE_STRIP = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
 				INFOPLIST_FILE = OverSightXPC/Info.plist;
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.objective-see.OverSightXPC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -565,8 +565,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "Developer ID Application: Objective-See, LLC (VBG97UB4TA)";
@@ -574,6 +576,7 @@
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -587,7 +590,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
@@ -607,8 +610,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "Developer ID Application: Objective-See, LLC (VBG97UB4TA)";
@@ -617,6 +622,7 @@
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
@@ -624,7 +630,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
 			};

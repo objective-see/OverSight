@@ -65,7 +65,7 @@
            logMsg(LOG_DEBUG, @"checking for update");
            
            //check
-           [self isThereAndUpdate];
+           [self isThereAnUpdate];
         });
     }
     
@@ -98,7 +98,7 @@
 }
 
 //check for an update
--(void)isThereAndUpdate
+-(void)isThereAnUpdate
 {
     //version string
     NSMutableString* versionString = nil;

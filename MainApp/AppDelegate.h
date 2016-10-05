@@ -58,7 +58,7 @@
 -(IBAction)check4Update:(id)sender;
 
 //check for an update
--(void)isThereAndUpdate;
+-(void)isThereAnUpdate;
 
 //start the login item
 -(IBAction)startLoginItem:(id)sender;

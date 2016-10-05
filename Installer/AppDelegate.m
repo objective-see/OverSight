@@ -135,6 +135,4 @@ bail:
     return;
 }
 
-- (IBAction)startLoginItem:(id)sender {
-}
 @end

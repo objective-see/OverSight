@@ -16,7 +16,7 @@ int main(int argc, const char * argv[])
     
     @autoreleasepool
     {
-    
+        
     //check for r00t
     // ->then spawn self via auth exec
     if(0 != geteuid())

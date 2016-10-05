@@ -199,13 +199,13 @@ bail:
     [self.spinner startAnimation:self];
     
     //check for update
-    [self isThereAndUpdate];
+    [self isThereAnUpdate];
     
     return;
 }
 
 //check for an update
--(void)isThereAndUpdate
+-(void)isThereAnUpdate
 {
     //version string
     NSMutableString* versionString = nil;
