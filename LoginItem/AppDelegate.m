@@ -31,14 +31,20 @@
     NSDictionary* preferences = nil;
     
     //dbg msg
-    logMsg(LOG_DEBUG, @"starting login item");
+    logMsg(LOG_DEBUG, @"starting login item app logic");
+    
+    //drop group privs
+    setgid(getgid());
+    
+    //drop user privs
+    setuid(getuid());
     
     //init/load status bar
     [self loadStatusBar];
     
     //dbg msg
     logMsg(LOG_DEBUG, @"initialized/loaded status bar (icon/menu)");
-    
+
     //first time, register defaults (manually cuz NSUserDefaults wasn't working - wtf)
     // ->note: do this in here, since main app (with prefs) isn't run until user manually launches it
     if(YES != [[NSFileManager defaultManager] fileExistsAtPath:[APP_PREFERENCES stringByExpandingTildeInPath]])
@@ -66,6 +72,7 @@
            
            //check
            [self isThereAnUpdate];
+            
         });
     }
     
@@ -81,6 +88,9 @@
     
     //dbg msg
     logMsg(LOG_DEBUG, @"AV monitor off and running");
+    
+//bail
+bail:
     
     return;
 }

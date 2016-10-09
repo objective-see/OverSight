@@ -7,12 +7,12 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <ServiceManagement/ServiceManagement.h>
 
 #import "Consts.h"
 #import "Logging.h"
 #import "Utilities.h"
 #import "Configure.h"
-
 
 @implementation Configure
 
@@ -136,6 +136,9 @@ bail:
     //path to XPC service
     NSString* xpcServicePath = nil;
     
+    //path to login item
+    NSString* loginItem = nil;
+    
     //set src path
     // ->orginally stored in installer app's /Resource bundle
     appPathSrc = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:APP_NAME];
@@ -159,6 +162,19 @@ bail:
     //remove xattrs
     // ->otherwise app translocation causes issues
     execTask(XATTR, @[@"-cr", appPathDest]);
+    
+    //dbg msg
+    logMsg(LOG_DEBUG, @"removed xattrz");
+
+    //init path to login item
+    loginItem = [appPathDest stringByAppendingPathComponent:@"Contents/Library/LoginItems/OverSight Helper.app/Contents/MacOS/OverSight Helper"];
+    
+    //call into login item to install itself
+    // ->runs as non-root, so can access user's login items, etc
+    execTask(loginItem, @[ACTION_INSTALL]);
+    
+    //dbg msg
+    logMsg(LOG_DEBUG, [NSString stringWithFormat:@"persisted %@", loginItem]);
     
     //init path to XPC service
     xpcServicePath = [appPathDest stringByAppendingPathComponent:@"Contents/Library/LoginItems/OverSight Helper.app/Contents/XPCServices/OverSightXPC.xpc"];
@@ -261,9 +277,22 @@ bail:
     
     //error
     NSError* error = nil;
+    
+    //path to login item
+    NSString* loginItem = nil;
 
     //init path
     appPath = [APPS_FOLDER stringByAppendingPathComponent:APP_NAME];
+    
+    //init path to login item
+    loginItem = [appPath stringByAppendingPathComponent:@"Contents/Library/LoginItems/OverSight Helper.app/Contents/MacOS/OverSight Helper"];
+    
+    //call into login item to install itself
+    // ->runs as non-root, so can access user's login items, etc
+    execTask(loginItem, @[ACTION_UNINSTALL]);
+    
+    //dbg msg
+    logMsg(LOG_DEBUG, [NSString stringWithFormat:@"unpersisted %@", loginItem]);
   
     //delete folder
     if(YES != [[NSFileManager defaultManager] removeItemAtPath:appPath error:&error])
@@ -277,6 +306,7 @@ bail:
         //keep uninstalling...
     }
     
+    
     //only success when there were no errors
     if(YES != bAnyErrors)
     {
@@ -286,6 +316,7 @@ bail:
 
     return wasUninstalled;
 }
+
 
 @end
 

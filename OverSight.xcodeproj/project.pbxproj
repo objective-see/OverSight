@@ -107,6 +107,7 @@
 		7D17CFDE1D810D6D0017B475 /* XPCProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = XPCProtocol.h; path = Shared/XPCProtocol.h; sourceTree = SOURCE_ROOT; };
 		7D17CFE11D81121E0017B475 /* AVMonitor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AVMonitor.m; sourceTree = "<group>"; };
 		7D17CFE21D81121E0017B475 /* AVMonitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AVMonitor.h; sourceTree = "<group>"; };
+		7D32457A1DA59A3700AE0711 /* main.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = main.h; sourceTree = "<group>"; };
 		7D62457A1D84FB8900870565 /* Enumerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Enumerator.h; sourceTree = "<group>"; };
 		7D62457B1D84FB8900870565 /* Enumerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Enumerator.m; sourceTree = "<group>"; };
 		7D62457E1D85348E00870565 /* Utilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utilities.h; sourceTree = "<group>"; };
@@ -293,6 +294,7 @@
 			children = (
 				8B5755C519DA3F9300799E6B /* Info.plist */,
 				8B5755C619DA3F9300799E6B /* main.m */,
+				7D32457A1DA59A3700AE0711 /* main.h */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -594,6 +596,7 @@
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = ../Shared;
 			};
 			name = Debug;
 		};
@@ -633,6 +636,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = ../Shared;
 			};
 			name = Release;
 		};

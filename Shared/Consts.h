@@ -25,7 +25,6 @@
 #define PRODUCT_URL @"https://objective-see.com/products/oversight.html"
 
 //product version url
-//TODO: test final/with page
 #define PRODUCT_VERSION_URL @"https://objective-see.com/products/versions/oversight.json"
 
 //OS version x

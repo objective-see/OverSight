@@ -116,12 +116,12 @@
 			isa = PBXGroup;
 			children = (
 				7D17C5021D658DEC0066232A /* MainMenu.xib */,
-				7D17C4EC1D658DB90066232A /* Configure.m */,
 				7D17C4F61D658DB90066232A /* AppDelegate.h */,
 				7D17C4ED1D658DB90066232A /* AppDelegate.m */,
 				7D17C4EE1D658DB90066232A /* ConfigureWindowController.m */,
 				7D17C4EF1D658DB90066232A /* ConfigureWindowController.xib */,
 				7D17C4F01D658DB90066232A /* Configure.h */,
+				7D17C4EC1D658DB90066232A /* Configure.m */,
 				7D17C4F11D658DB90066232A /* ConfigureWindowController.h */,
 				7D17C4F21D658DB90066232A /* ErrorWindowController.h */,
 				7D17C4F31D658DB90066232A /* ErrorWindowController.m */,
@@ -225,7 +225,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "#for normal builds\n# ->just copy in app\ncp -R -f $BUILT_PRODUCTS_DIR/OverSight.app $BUILT_PRODUCTS_DIR/$CONTENTS_FOLDER_PATH/Resources/\n\n#for achiving\n# ->first build finder sync in release mode (don't archive it)\n#   then archive (this) installer app\n#cp -R -f ~/objective-see/WhatsYourSign/DerivedData/WhatsYourSign/Build/Products/Release/WhatsYourSign.app ~/objective-see/WhatsYourSign/DerivedData/WhatsYourSign/Build/Intermediates/ArchiveIntermediates/Installer/BuildProductsPath/Release/WhatsYourSign_Installer.app/Contents/Resources/\n";
+			shellScript = "#for normal builds\n# ->just copy in app#cp -R -f $BUILT_PRODUCTS_DIR/OverSight.app $BUILT_PRODUCTS_DIR/$CONTENTS_FOLDER_PATH/Resources/\n\n#for achiving\n# ->first build finder sync in release mode (don't archive it)\n#   then archive (this) installer app\ncp -R -f ~/objective-see/OverSight/DerivedData/OverSight/Build/Products/Release/OverSight.app ~/objective-see/OverSight/DerivedData/OverSight/Build/Intermediates/ArchiveIntermediates/Installer/BuildProductsPath/Release/OverSight_Installer.app/Contents/Resources/\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
