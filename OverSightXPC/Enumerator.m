@@ -493,7 +493,7 @@ bail:
         //update iVar
         self.userClients = currentUserClients;
         
-        AudioUnitRender
+        
         
         /*
         //parse/check

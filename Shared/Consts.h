@@ -77,6 +77,12 @@
 //automatically check for updates button
 #define PREF_CHECK_4_UPDATES @"check4Updates"
 
+//run in headless mode
+#define PREF_RUN_HEADLESS @"runHeadless"
+
+//start at login
+#define PREF_START_AT_LOGIN @"startAtLogin"
+
 //keycode for 'q'
 #define KEYCODE_Q 0x0C
 

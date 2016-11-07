@@ -23,6 +23,12 @@
 //check for updates automatically button
 @property (weak) IBOutlet NSButton *check4Updates;
 
+//start at login button
+@property (weak) IBOutlet NSButton *startAtLogin;
+
+//run in headless mode button
+@property (weak) IBOutlet NSButton *runHeadless;
+
 //check for updates now button
 @property (weak) IBOutlet NSButton *check4UpdatesNow;
 
@@ -38,6 +44,14 @@
 //about window controller
 @property(nonatomic, retain)AboutWindowController* aboutWindowController;
 
+//overlay view
+@property (weak) IBOutlet NSView *overlay;
+
+//status message
+@property (weak) IBOutlet NSTextField *statusMessage;
+
+//progress indicator
+@property (weak) IBOutlet NSProgressIndicator *progressIndicator;
 
 /* METHODS */
 
@@ -60,9 +74,11 @@
 //check for an update
 -(void)isThereAnUpdate;
 
-//start the login item
--(IBAction)startLoginItem:(id)sender;
+//'manage rules' button handler
+-(IBAction)manageRules:(id)sender;
 
+//start the login item
+-(void)startLoginItem:(BOOL)shouldRestart;
 
 @end
 

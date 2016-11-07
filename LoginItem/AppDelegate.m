@@ -27,7 +27,7 @@
 // ->load status bar and kick off monitor
 -(void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
-    //default
+    //preferences
     NSDictionary* preferences = nil;
     
     //dbg msg
@@ -38,14 +38,8 @@
     
     //drop user privs
     setuid(getuid());
-    
-    //init/load status bar
-    [self loadStatusBar];
-    
-    //dbg msg
-    logMsg(LOG_DEBUG, @"initialized/loaded status bar (icon/menu)");
 
-    //first time, register defaults (manually cuz NSUserDefaults wasn't working - wtf)
+    //first time, register defaults
     // ->note: do this in here, since main app (with prefs) isn't run until user manually launches it
     if(YES != [[NSFileManager defaultManager] fileExistsAtPath:[APP_PREFERENCES stringByExpandingTildeInPath]])
     {
@@ -53,11 +47,28 @@
         logMsg(LOG_DEBUG, @"preference file not found; manually creating");
 
         //write em out
-        [@{PREF_LOG_ACTIVITY:@YES, PREF_CHECK_4_UPDATES:@YES} writeToFile:[APP_PREFERENCES stringByExpandingTildeInPath] atomically:NO];
+        [@{PREF_LOG_ACTIVITY:@YES, PREF_START_AT_LOGIN:@YES, PREF_RUN_HEADLESS:@NO, PREF_CHECK_4_UPDATES:@YES} writeToFile:[APP_PREFERENCES stringByExpandingTildeInPath] atomically:NO];
     }
     
-    //always (manually) load preferences
+    //load preferences
     preferences = [NSDictionary dictionaryWithContentsOfFile:[APP_PREFERENCES stringByExpandingTildeInPath]];
+    
+    //init/load status bar
+    // ->but only if user didn't say: 'run in headless mode'
+    if(YES != [preferences[PREF_RUN_HEADLESS] boolValue])
+    {
+        //load
+        [self loadStatusBar];
+        
+        //dbg msg
+        logMsg(LOG_DEBUG, @"initialized/loaded status bar (icon/menu)");
+    }
+    //dbg msg
+    else
+    {
+        //dbg msg
+        logMsg(LOG_DEBUG, @"running in headless mode");
+    }
     
     //check for updates
     // ->but only when user has not disabled that feature

@@ -508,7 +508,7 @@ bail:
 
 //given a process name
 // ->get the (first) instance of that process
-pid_t getProcessID(NSString* processName)
+pid_t getProcessID(NSString* processName, uid_t userID)
 {
     //status
     int status = -1;
@@ -521,7 +521,16 @@ pid_t getProcessID(NSString* processName)
         
     //array of pids
     pid_t* pids = NULL;
-        
+    
+    //process info struct
+    struct kinfo_proc procInfo = {0};
+    
+    //size of struct
+    size_t procInfoSize = sizeof(procInfo);
+    
+    //mib
+    int mib[4] = {CTL_KERN, KERN_PROC, KERN_PROC_PID, -1};
+    
     //get # of procs
     numberOfProcesses = proc_listpids(PROC_ALL_PIDS, 0, NULL, 0);
     
@@ -557,12 +566,29 @@ pid_t getProcessID(NSString* processName)
             continue;
         }
         
+        //init mib
+        mib[0x3] = pids[i];
+        
+        //make syscall to get proc info
+        if( (0 != sysctl(mib, 0x4, &procInfo, &procInfoSize, NULL, 0)) ||
+            (0 == procInfoSize) )
+        {
+            //skip
+            continue;
+        }
+
+        //skip if user id doesn't match
+        if(userID != procInfo.kp_eproc.e_ucred.cr_uid)
+        {
+            //skip
+            continue;
+        }
+        
         //got match
         processID = pids[i];
         
         //exit loop
         break;
-    
     }
         
 //bail

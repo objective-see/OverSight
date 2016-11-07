@@ -57,7 +57,7 @@ NSString* getProcessName(pid_t pid);
 
 //given a process name
 // ->get the (first) instance of that process
-pid_t getProcessID(NSString* processName);
+pid_t getProcessID(NSString* processName, uid_t userID);
 
 //wait until a window is non nil
 // ->then make it modal

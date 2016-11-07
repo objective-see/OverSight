@@ -45,15 +45,22 @@
 // ->init user interface
 -(void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
-    //set 'log activity' button state
-    self.logActivity.state = [[NSUserDefaults standardUserDefaults] boolForKey:PREF_LOG_ACTIVITY];
-    
-    //set 'automatically check for updates' button state
-    self.check4Updates.state = [[NSUserDefaults standardUserDefaults] boolForKey:PREF_CHECK_4_UPDATES];
+    //set button states
+    [self setButtonStates];
     
     //register for hotkey presses
     // ->for now, just cmd+q to quit app
     [self registerKeypressHandler];
+    
+    //start login item in background
+    // ->checks if already running though
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+    ^{
+        //start
+        [self startLoginItem:NO];
+    });
+    
+    
     
     return;
 }
@@ -62,6 +69,30 @@
 -(BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)theApplication
 {
     return YES;
+}
+
+//set button states from preferences
+-(void)setButtonStates
+{
+    //preferences
+    NSDictionary* preferences = nil;
+    
+    //load preferences
+    preferences = [NSDictionary dictionaryWithContentsOfFile:[APP_PREFERENCES stringByExpandingTildeInPath]];
+    
+    //set 'log activity' button state
+    self.logActivity.state = [preferences[PREF_LOG_ACTIVITY] boolValue];
+    
+    //set 'start at login' button state
+    self.startAtLogin.state = [preferences[PREF_START_AT_LOGIN] boolValue];
+    
+    //set 'run headless' button state
+    self.runHeadless.state = [preferences[PREF_RUN_HEADLESS] boolValue];
+    
+    //set 'automatically check for updates' button state
+    self.check4Updates.state = [preferences[PREF_CHECK_4_UPDATES] boolValue];
+    
+    return;
 }
 
 //register handler for hot keys
@@ -138,27 +169,61 @@ bail:
 //toggle/set preferences
 -(IBAction)togglePreference:(NSButton *)sender
 {
+    //preferences
+    NSMutableDictionary* preferences = nil;
+    
+    //load preferences
+    preferences = [NSMutableDictionary dictionaryWithContentsOfFile:[APP_PREFERENCES stringByExpandingTildeInPath]];
+    
     //set 'log activity' button
     if(sender == self.logActivity)
     {
         //set
-        [[NSUserDefaults standardUserDefaults] setBool:[sender state] forKey:PREF_LOG_ACTIVITY];
+        preferences[PREF_LOG_ACTIVITY] = [NSNumber numberWithBool:[sender state]];
     }
     
     //set 'automatically check for updates'
-    else if (sender == self.check4Updates)
+    else if(sender == self.check4Updates)
     {
         //set
-        [[NSUserDefaults standardUserDefaults] setBool:[sender state] forKey:PREF_CHECK_4_UPDATES];
+        preferences[PREF_CHECK_4_UPDATES] = [NSNumber numberWithBool:[sender state]];
+        
+    }
+    
+    //set 'start at login'
+    // ->then also toggle for current user
+    else if(sender == self.startAtLogin)
+    {
+        //set
+        preferences[PREF_START_AT_LOGIN] = [NSNumber numberWithBool:[sender state]];
+        
+        //toggle
+        
+    }
+    
+    //set 'run in headless mode'
+    // ->then restart login item to realize this
+    else if(sender == self.runHeadless)
+    {
+        //set
+        preferences[PREF_RUN_HEADLESS] = [NSNumber numberWithBool:[sender state]];
+        
+        //restart login item in background
+        // ->will read prefs, and run in headless mode
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+        ^{
+            //start
+            [self startLoginItem:YES];
+        });
     }
     
     //save em
-    [[NSUserDefaults standardUserDefaults] synchronize];
+    [preferences writeToFile:[APP_PREFERENCES stringByExpandingTildeInPath] atomically:YES];
     
     return;
 }
 
-//'about' button handler
+//'about' button/menu handler
 -(IBAction)about:(id)sender
 {
     //alloc/init settings window
@@ -183,7 +248,6 @@ bail:
     });
     
     return;
-    
 }
 
 //'check for update' (now) button handler
@@ -268,35 +332,73 @@ bail:
 }
 
 //start the login item
--(IBAction)startLoginItem:(id)sender
+-(void)startLoginItem:(BOOL)shouldRestart
 {
     //path to login item
     NSString* loginItem = nil;
     
-    //alert
-    NSAlert* alert = nil;
+    //login item's pid
+    pid_t loginItemPID = -1;
     
-    //check if already running
-    // ->show alert and then bail
-    if(-1 != getProcessID(@"OverSight Helper"))
+    //get pid of login item
+    loginItemPID = getProcessID(@"OverSight Helper", getuid());
+    
+    //already running?
+    // ->kill the login item
+    if( (YES == shouldRestart) &&
+        (-1 != loginItemPID) )
     {
-        //init alert
-        alert = [NSAlert alertWithMessageText: @"Oversight is already running!" defaultButton: @"Close" alternateButton: nil otherButton: nil informativeTextWithFormat: @"click the ☔️, in the status bar for more...."];
+        //kill
+        kill(loginItemPID, SIGTERM);
         
-        //make app front
-        [[NSRunningApplication currentApplication] activateWithOptions:NSApplicationActivateIgnoringOtherApps];
+        //sleep
+        sleep(2);
         
-        //make modal
-        [alert runModal];
+        //really kill
+        kill(loginItemPID, SIGKILL);
         
-        //bail
-        goto bail;
+        //reset pid
+        loginItemPID = -1;
     }
+    
+    //start not already running
+    if(-1 == loginItemPID)
+    {
+        //dbg msg
+        logMsg(LOG_DEBUG, @"starting login item");
+        
+        //show overlay view on main thread
+        dispatch_sync(dispatch_get_main_queue(), ^{
+        
+            //pre-req
+            [self.overlay setWantsLayer:YES];
+            
+            //set overlay's view color to black
+            self.overlay.layer.backgroundColor = [NSColor whiteColor].CGColor;
+            
+            //make it semi-transparent
+            self.overlay.alphaValue = 0.85;
+            
+            //show it
+            self.overlay.hidden = NO;
+            
+            //TODO:
+            //set message
+            
+            //show spinner
+            self.progressIndicator.hidden = NO;
+            
+            //animate it
+            [self.progressIndicator startAnimation:nil];
+            
+        });
+    }
+                      
     
     //init path
     loginItem = [[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent:@"/Contents/Library/LoginItems/OverSight Helper.app"];
     
-    //launch it!
+    //launch it
     if(YES != [[NSWorkspace sharedWorkspace] launchApplication:loginItem])
     {
         //err msg
@@ -305,10 +407,23 @@ bail:
         //bail
         goto bail;
     }
-
+    
+    //(re)obtain focus for app
+    [[NSRunningApplication currentApplication] activateWithOptions:NSApplicationActivateIgnoringOtherApps];
+    
+    //TODO:
+    //hide overlay
+    
 //bail
 bail:
     
+    return;
+}
+
+
+//manage rules
+-(IBAction)manageRules:(id)sender
+{
     return;
 }
 
