@@ -18,6 +18,9 @@
 //camera assistant daemon
 #define APPLE_CAMERA_ASSISTANT @"/Library/CoreMediaIO/Plug-Ins/DAL/AppleCamera.plugin/Contents/Resources/AppleCameraAssistant"
 
+//core audio
+#define CORE_AUDIO @"/usr/sbin/coreaudiod"
+
 //lsmp binary
 #define LSMP @"/usr/bin/lsmp"
 
@@ -27,11 +30,22 @@
 
 /* PROPERTIES */
 
-//flag indicating video is action
+//flag indicating video is active
 @property BOOL videoActive;
 
+//flag indicating mic is active
+@property BOOL audioActive;
+
 //list of procs that have send Mach msg to *Assistant
-@property(nonatomic, retain)NSMutableDictionary* machSenders;
+@property(nonatomic, retain)NSMutableDictionary* machSendersVideo;
+
+//list of procs that have send Mach msg to coreaudio
+@property(nonatomic, retain)NSMutableDictionary* machSendersAudio;
+
+//list of procs that have i/o reg entries
+// ->IOService:/AppleACPIPlatformExpert/IOPMrootDomain/RootDomainUserClient
+@property(nonatomic, retain)NSMutableDictionary* userClients;
+
 
 
 /* METHODS */
@@ -46,10 +60,17 @@
 //find 'VDCAssistant' or 'AppleCameraAssistant'
 -(pid_t)findCameraAssistant;
 
+//enumerate all (recent) process that appear to be using the mic
+-(NSMutableArray*)enumAudioProcs;
+
 //enumerate all (recent) process that appear to be using video
 -(NSMutableArray*)enumVideoProcs;
 
+//set status of audio
+-(void)updateAudioStatus:(BOOL)isEnabled;
+
 //set status of video
 -(void)updateVideoStatus:(BOOL)isEnabled;
+
 
 @end

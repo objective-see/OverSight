@@ -39,6 +39,11 @@ pid_t clientPID = 0;
     //signing req string
     NSString *requirementString = nil;
     
+    //TODO: re-enable
+    
+    /*
+
+    
     //init signing req string
     requirementString = [NSString stringWithFormat:@"anchor trusted and certificate leaf [subject.CN] = \"%@\"", SIGNING_AUTH];
     
@@ -59,6 +64,8 @@ pid_t clientPID = 0;
         goto bail;
     }
     
+    */
+     
     //set the interface that the exported object implements
     newConnection.exportedInterface = [NSXPCInterface interfaceWithProtocol:@protocol(XPCProtocol)];
     

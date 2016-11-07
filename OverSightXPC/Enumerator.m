@@ -21,8 +21,11 @@ static NSArray* ignoredProcs = nil;
 
 @implementation Enumerator
 
-@synthesize machSenders;
+@synthesize audioActive;
+@synthesize userClients;
 @synthesize videoActive;
+@synthesize machSendersAudio;
+@synthesize machSendersVideo;
 
 //init
 -(instancetype)init
@@ -30,9 +33,6 @@ static NSArray* ignoredProcs = nil;
     //init
     if(self = [super init])
     {
-        //alloc dictionary
-        machSenders = [NSMutableDictionary dictionary];
-        
         //init ignored procs
         ignoredProcs = @[
                       @"/sbin/launchd",
@@ -58,7 +58,7 @@ static NSArray* ignoredProcs = nil;
 +(id)sharedManager
 {
     //instance
-    static Enumerator *sharedEnumerator = nil;
+    static Enumerator* sharedEnumerator = nil;
  
     //once token
     static dispatch_once_t onceToken;
@@ -75,6 +75,84 @@ static NSArray* ignoredProcs = nil;
     return sharedEnumerator;
 }
 
+//find a process by name
+-(pid_t)findProcess:(NSString*)processName
+{
+    //pid
+    pid_t processID = 0;
+    
+    //status
+    int status = -1;
+    
+    //# of procs
+    int numberOfProcesses = 0;
+    
+    //array of pids
+    pid_t* pids = NULL;
+    
+    //process path
+    NSString* processPath = nil;
+    
+    //get # of procs
+    numberOfProcesses = proc_listpids(PROC_ALL_PIDS, 0, NULL, 0);
+    
+    //alloc buffer for pids
+    pids = calloc(numberOfProcesses, sizeof(pid_t));
+    
+    //get list of pids
+    status = proc_listpids(PROC_ALL_PIDS, 0, pids, numberOfProcesses * sizeof(pid_t));
+    if(status < 0)
+    {
+        //bail
+        goto bail;
+    }
+    
+    //iterate over all pids
+    // ->get name for each via helper function
+    for(int i = 0; i < numberOfProcesses; ++i)
+    {
+        //skip blank pids
+        if(0 == pids[i])
+        {
+            //skip
+            continue;
+        }
+        
+        //get name
+        processPath = getProcessPath(pids[i]);
+        if( (nil == processPath) ||
+            (0 == processPath.length) )
+        {
+            //skip
+            continue;
+        }
+        
+        //match?
+        if(YES == [processPath isEqualToString:processName])
+        {
+            //save
+            processID = pids[i];
+            
+            //pau
+            break;
+        }
+        
+    }
+    
+//bail
+bail:
+    
+    //free buffer
+    if(NULL != pids)
+    {
+        //free
+        free(pids);
+    }
+    
+    return processID;
+}
+
+//TODO: replace with [self findProcess]!!
 //find 'VDCAssistant' or 'AppleCameraAssistant'
 -(pid_t)findCameraAssistant
 {
@@ -161,12 +239,12 @@ bail:
     return cameraAssistant;
 }
 
-//forever, baseline by getting all current procs that have sent a mach msg to *Assistant
-// ->ensures its only invoke while camera is not in use, so these are all just baselined procs
+//forever, baseline by getting all current procs that have sent a mach msg to *Assistant / coreaudio
+// ->logic only exec'd while camera/mic is not in use, so these are all just baselined procs
 -(void)start
 {
     //baseline forever
-    // ->though logic will skip if video is active
+    // ->though logic will skip if video or mic is active (respectively)
     while(YES)
     {
         //sync baselining
@@ -176,13 +254,35 @@ bail:
             if(YES != self.videoActive)
             {
                 //dbg msg
-                logMsg(LOG_DEBUG, @"baselining mach senders...");
+                logMsg(LOG_DEBUG, @"baselining mach senders for video...");
                 
                 //enumerate procs that have send mach messages
-                self.machSenders = [self enumMachSenders:[self findCameraAssistant]];
+                self.machSendersVideo = [self enumMachSenders:[self findCameraAssistant]];
                 
                 //dbg msg
-                logMsg(LOG_DEBUG, [NSString stringWithFormat:@"found %lu baselined mach senders: %@", (unsigned long)self.machSenders.count, self.machSenders]);
+                logMsg(LOG_DEBUG, [NSString stringWithFormat:@"found %lu baselined mach senders: %@", (unsigned long)self.machSendersVideo.count, self.machSendersVideo]);
+            }
+            
+            //only baseline if video isn't active
+            if(YES != self.audioActive)
+            {
+                //dbg msg
+                logMsg(LOG_DEBUG, @"baselining mach senders for audio...");
+                
+                //enumerate procs that have send mach messages
+                self.machSendersAudio = [self enumMachSenders:[self findProcess:CORE_AUDIO]];
+                
+                //dbg msg
+                logMsg(LOG_DEBUG, [NSString stringWithFormat:@"found %lu baselined mach senders: %@", (unsigned long)self.machSendersAudio.count, self.machSendersVideo]);
+                
+                //dbg msg
+                logMsg(LOG_DEBUG, @"baselining i/o registry entries for audio...");
+                
+                //enumerate procs that have i/o registry entries
+                self.userClients = [self enumDomainUserClients];
+                
+                //dbg msg
+                logMsg(LOG_DEBUG, [NSString stringWithFormat:@"found %lu baselined i/or registry senders: %@", (unsigned long)self.userClients.count, self.userClients]);
             }
         }
         
@@ -240,7 +340,7 @@ bail:
     {
         //add any candidate procs
         // ->those that have new mach message
-        if( [currentSenders[processID] intValue] > [self.machSenders[processID] intValue])
+        if( [currentSenders[processID] intValue] > [self.machSendersVideo[processID] intValue])
         {
             //ignore client/requestor
             if(clientPID == processID.intValue)
@@ -258,7 +358,7 @@ bail:
     logMsg(LOG_DEBUG, [NSString stringWithFormat:@"found %lu candidate video procs: %@", (unsigned long)candidateVideoProcs.count, candidateVideoProcs]);
     
     //update
-    self.machSenders = currentSenders;
+    self.machSendersVideo = currentSenders;
     
     //invoke 'sample' to confirm that candidates are using CMIO/video inputs
     // ->note, will skip FaceTime.app on macOS Sierra, as it doesn't do CMIO stuff directly
@@ -272,9 +372,175 @@ bail:
     return videoProcs;
 }
 
-//get procs that currrently have sent Mach msg to *Assistant
+//enumerate all (recent) process that appear to be using the mic
+-(NSMutableArray*)enumAudioProcs
+{
+    //current procs
+    NSMutableArray* audioProcs = nil;
+    
+    //current mach senders
+    NSMutableDictionary* currentSenders = nil;
+    
+    //new senders
+    NSMutableArray* newSenders = nil;
+    
+    //current domain user clients (from i/o registry)
+    NSMutableDictionary* currentUserClients = nil;
+    
+    //new user clients
+    NSMutableArray* newUserClients = nil;
+    
+    //candidate audio procs
+    // ->those that have new mach message
+    NSMutableArray* candidateAudioProcs = nil;
+    
+    //itersection set
+    NSMutableSet* intersection = nil;
+    
+    //pid of coreaudio process
+    pid_t coreAudio = 0;
+    
+    //alloc array
+    newSenders = [NSMutableArray array];
+    
+    //alloc array
+    newUserClients = [NSMutableArray array];
+    
+    //alloc array
+    candidateAudioProcs = [NSMutableArray array];
+    
+    //sync this logic
+    // ->prevent baselining thread from doing anything
+    @synchronized(self)
+    {
+        //find coreaudio
+        coreAudio = [self findProcess:CORE_AUDIO];
+        if(0 == coreAudio)
+        {
+            //err msg
+            logMsg(LOG_ERR, @"failed to find coreaudio process");
+            
+            //bail
+            goto bail;
+        }
+        
+        //get procs that currrently have sent Mach msg to core audio
+        // ->returns dictionary of process id, and number of mach messages
+        currentSenders = [self enumMachSenders:coreAudio];
+        
+        //dbg msg
+        logMsg(LOG_DEBUG, [NSString stringWithFormat:@"found %lu current mach senders: %@", (unsigned long)currentSenders.count, currentSenders]);
+        
+        //add new senders or those w/ new mach msgs
+        for(NSNumber* processID in currentSenders.allKeys)
+        {
+            //ignore client/requestor (self)
+            if(clientPID == processID.intValue)
+            {
+                //skip
+                continue;
+            }
+            
+            //skip any that don't have new mach message
+            if( (nil != self.machSendersAudio[processID]) &&
+                ([self.machSendersAudio[processID] intValue] >= [currentSenders[processID] intValue]) )
+            {
+                //skip
+                continue;
+            }
+            
+            //ok new, so add
+            [newSenders addObject:processID];
+        }
+        
+        //dbg msg
+        logMsg(LOG_DEBUG, [NSString stringWithFormat:@"new mach senders: %@", newSenders]);
+        
+        //update iVar
+        self.machSendersAudio = currentSenders;
+        
+        //grab current 'IOPMrootDomain/RootDomainUserClient/IOUserClientCreator's
+        currentUserClients = [self enumDomainUserClients];
+        
+        //dbg msg
+        logMsg(LOG_DEBUG, [NSString stringWithFormat:@"found %lu current i/o registry user clients: %@", (unsigned long)currentUserClients.count, currentUserClients]);
+        
+        //add new user clients
+        for(NSNumber* processID in currentUserClients.allKeys)
+        {
+            //ignore client/requestor (self)
+            if(clientPID == processID.intValue)
+            {
+                //skip
+                continue;
+            }
+            
+            //skip any that don't have new mach message
+            if( (nil != self.userClients[processID]) &&
+                ([self.userClients[processID] intValue] >= [currentUserClients[processID] intValue]) )
+            {
+                //skip
+                continue;
+            }
+            
+            //ok new, so add
+            [newUserClients addObject:processID];
+        }
+        
+        //dbg msg
+        logMsg(LOG_DEBUG, [NSString stringWithFormat:@"new user clients: %@", newUserClients]);
+
+        //update iVar
+        self.userClients = currentUserClients;
+        
+        AudioUnitRender
+        
+        /*
+        //parse/check
+        // ->starts at end to find most recent IOUserClientCreator
+        for(NSNumber* domainUserClient in [domainUserClients reverseObjectEnumerator])
+        {
+            //no match?
+            // ->remove from candidate
+            if(YES != [candidateAudioProcs containsObject:domainUserClient])
+            {
+                //remove
+                
+                
+            }
+        }
+        */
+        
+        //init set for intersection
+        intersection = [NSMutableSet setWithArray:newSenders];
+        
+        //get procs that have sent mach messages *and* have an entry in the i/o registry
+        [intersection intersectSet:[NSMutableSet setWithArray:newUserClients]];
+        
+        //assign
+        candidateAudioProcs = [[intersection allObjects] mutableCopy];
+        
+        //dbg msg
+        logMsg(LOG_DEBUG, [NSString stringWithFormat:@"found %lu candidate audio procs: %@", (unsigned long)candidateAudioProcs.count, candidateAudioProcs]);
+        
+        //TODO: sample?
+        //invoke 'sample' to confirm that candidates are using CMIO/video inputs
+        // ->note, will skip FaceTime.app on macOS Sierra, as it doesn't do CMIO stuff directly
+        //audioProcs = [self sampleCandidates:candidateAudioProcs];
+        
+        audioProcs = candidateAudioProcs;
+        
+    }//sync
+    
+//bail
+bail:
+    
+    return audioProcs;
+}
+
+//get procs that currrently have sent Mach msg to a target process
 // ->returns dictionary of process id, and number of mach messages
--(NSMutableDictionary*)enumMachSenders:(pid_t)cameraAssistant
+-(NSMutableDictionary*)enumMachSenders:(pid_t)targetProcess
 {
     //senders
     NSMutableDictionary* senders = nil;
@@ -295,7 +561,7 @@ bail:
     senders = [NSMutableDictionary dictionary];
     
     //exec 'lsmp' w/ pid of camera asssistant to get mach ports
-    results = [[NSString alloc] initWithData:execTask(LSMP, @[@"-p", @(cameraAssistant).stringValue]) encoding:NSUTF8StringEncoding];
+    results = [[NSString alloc] initWithData:execTask(LSMP, @[@"-p", @(targetProcess).stringValue]) encoding:NSUTF8StringEncoding];
     if( (nil == results) ||
         (0 == results.length) )
     {
@@ -339,8 +605,8 @@ bail:
             continue;
         }
         
-        //ignore self
-        if(cameraAssistant == processID.intValue)
+        //ignore target process
+        if(targetProcess == processID.intValue)
         {
             //skip
             continue;
@@ -371,6 +637,108 @@ bail:
 bail:
     
     return senders;
+}
+
+//iterate thru i/o registry to get all RootDomainUserClient under IOPMrootDomain
+// ->returns dictionary of process id, and number of user client entries
+-(NSMutableDictionary*)enumDomainUserClients
+{
+    //matching service
+    io_service_t matchingService = 0;
+    
+    //iterator
+    io_iterator_t iterator = 0;
+    
+    //kids
+    io_registry_entry_t child = 0;
+    
+    //array of RootDomainUserClients
+    NSMutableDictionary* clients = nil;
+    
+    //client creator
+    CFTypeRef creator = 0;
+    
+    //for parsing
+    NSArray* components = nil;
+    
+    //process id
+    NSNumber* processID = nil;
+    
+    //alloc
+    clients = [NSMutableDictionary dictionary];
+    
+    //get IOPMrootDomain obj
+    matchingService = IOServiceGetMatchingService(kIOMasterPortDefault, IOServiceMatching("IOPMrootDomain"));
+    if(0 == matchingService)
+    {
+        //bail
+        goto bail;
+    }
+    
+    //get iterator
+    if(noErr != IORegistryEntryGetChildIterator(matchingService, kIOServicePlane, &iterator))
+    {
+        //bail
+        goto bail;
+    }
+    
+    //iterator over all children
+    // ->store all that have 'IOUserClientCreator'
+    while((child = IOIteratorNext(iterator)))
+    {
+        //try get creator
+        creator = IORegistryEntryCreateCFProperty(child, CFSTR("IOUserClientCreator"), kCFAllocatorDefault, 0);
+        
+        //always release child
+        IOObjectRelease(child);
+        
+        //if couldn't get a creator
+        // ->might just not be of RootDomainUserClient, so skip
+        if(0 == creator)
+        {
+            //skip
+            continue;
+        }
+        
+        //parse
+        components = [(__bridge NSString*)creator componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@" ,"]];
+        
+        //extact pid and save
+        if(components.count >= 4)
+        {
+            //grab pid
+            // format is: "pid 4781, process"
+            processID = [NSNumber numberWithShort:[components[0x1] intValue]];
+            if(0 != processID.intValue)
+            {
+                //add/inc to dictionary
+                clients[processID] = @([clients[processID] unsignedIntegerValue] + 1);
+            }
+        }
+        
+        //release
+        CFRelease(creator);
+    }
+    
+//bail
+bail:
+    
+    //release iterator
+    if(0 != iterator)
+    {
+        //release
+        IOObjectRelease(iterator);
+    }
+    
+    //release obj
+    if(0 != matchingService)
+    {
+        //release
+        IOObjectRelease(matchingService);
+    }
+    
+    return clients;
+
 }
 
 //invoke 'sample' to confirm candidates are using CMIO/video inputs
@@ -514,6 +882,7 @@ bail:
 }
 
 //set status of video
+// ->extra logic is executed to 'refresh' iVars when video is disabled
 -(void)updateVideoStatus:(BOOL)isEnabled
 {
     //sync
@@ -521,6 +890,39 @@ bail:
     {
         //set
         self.videoActive = isEnabled;
+        
+        //when video disabled
+        // ->re-enumerate mach senders
+        if(YES != isEnabled)
+        {
+            //enumerate mach senders
+            self.machSendersVideo = [self enumMachSenders:[self findCameraAssistant]];
+        }
+    }
+    
+    return;
+}
+
+//set status of audio
+// ->extra logic is executed to 'refresh' iVars when audio is disabled
+-(void)updateAudioStatus:(BOOL)isEnabled
+{
+    //sync
+    @synchronized(self)
+    {
+        //set
+        self.audioActive = isEnabled;
+        
+        //when audio disabled
+        // ->re-enumerate mach senders & i/o registry user clients
+        if(YES != isEnabled)
+        {
+            //enumerate mach senders
+            self.machSendersAudio = [self enumMachSenders:[self findProcess:CORE_AUDIO]];
+            
+            //enumerate i/o registry user clients
+            self.userClients = [self enumDomainUserClients];
+        }
     }
     
     return;

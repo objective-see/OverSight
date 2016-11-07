@@ -40,12 +40,34 @@
     return;
 }
 
+//call into emumerate to get (new) audio proc
+-(void)getAudioProcs:(void (^)(NSMutableArray *))reply
+{
+    //reply w/ video procs
+    reply([[Enumerator sharedManager] enumAudioProcs]);
+    
+    return;
+}
+
 //update status video
 // ->allows enumerator to stop baselining (when active), etc
 -(void)updateVideoStatus:(unsigned int)status reply:(void (^)(void))reply
 {
     //set status
     [[Enumerator sharedManager] updateVideoStatus:status];
+    
+    //reply
+    reply();
+    
+    return;
+}
+
+//update status audio
+// ->allows enumerator to stop baselining (when active), etc
+-(void)updateAudioStatus:(unsigned int)status reply:(void (^)(void))reply
+{
+    //set status
+    [[Enumerator sharedManager] updateAudioStatus:status];
     
     //reply
     reply();

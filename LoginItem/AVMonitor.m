@@ -206,7 +206,7 @@
         [self setVideoDevStatus:connectionID];
         
         //if video is already active
-        // ->start monitoring thread
+        // ->set status & start monitoring thread
         if(YES == self.videoActive)
         {
             //dbg msg
@@ -273,7 +273,32 @@
         //restore
         #pragma clang diagnostic pop
         
-        //save camera/status into device array
+        //set status
+        // ->will set 'videoActive' iVar
+        [self setAudioDevStatus:connectionID];
+
+        //if audio is already active
+        // ->tell XPC that it's active
+        //   TODO: monitor for hijacking?
+        if(YES == self.audioActive)
+        {
+            //dbg msg
+            logMsg(LOG_DEBUG, @"audio already active");//so will start polling for new video procs");
+            
+            //tell XPC audio is active
+            [[xpcConnection remoteObjectProxy] updateAudioStatus:self.audioActive reply:^{
+                
+                //signal sema
+                dispatch_semaphore_signal(waitSema);
+                
+            }];
+            
+            //wait until XPC is done
+            // ->XPC reply block will signal semaphore
+            dispatch_semaphore_wait(waitSema, DISPATCH_TIME_FOREVER);
+        }
+
+        //save mic/status into device array
         [devices addObject:@{EVENT_DEVICE:self.mic, EVENT_DEVICE_STATUS:@(self.audioActive)}];
         
         //register for audio events
@@ -649,6 +674,12 @@ bail:
     //event dictionary
     NSMutableDictionary* event = nil;
     
+    //xpc connection
+    __block NSXPCConnection* xpcConnection = nil;
+    
+    //wait semaphore
+    dispatch_semaphore_t waitSema = nil;
+    
     //init dictionary
     event = [NSMutableDictionary dictionary];
     
@@ -657,6 +688,7 @@ bail:
     {
         
     //set status
+    // ->updates 'audioActive' iVar
     [self setAudioDevStatus:deviceID];
         
     //send msg to status menu
@@ -671,11 +703,101 @@ bail:
     
     //dbg msg
     logMsg(LOG_DEBUG, [NSString stringWithFormat:@"got audio change notification; is running? %x", self.audioActive]);
-    
-    //generate notification
-    [self generateNotification:event];
         
+    //alloc XPC connection
+    xpcConnection = [[NSXPCConnection alloc] initWithServiceName:@"com.objective-see.OverSightXPC"];
+    
+    //set remote object interface
+    xpcConnection.remoteObjectInterface = [NSXPCInterface interfaceWithProtocol:@protocol(XPCProtocol)];
+    
+    //resume
+    [xpcConnection resume];
+    
+    //init wait semaphore
+    waitSema = dispatch_semaphore_create(0);
+    
+    //tell XPC about audio status
+    // ->for example, when audio is active, will stop baselining
+    [[xpcConnection remoteObjectProxy] updateAudioStatus:self.audioActive reply:^{
+        
+        //signal sema
+        dispatch_semaphore_signal(waitSema);
+        
+    }];
+    
+    //wait until XPC is done
+    // ->XPC reply block will signal semaphore
+    dispatch_semaphore_wait(waitSema, DISPATCH_TIME_FOREVER);
+    
+    //if video just started
+    // ->ask for video procs from XPC
+    if(YES == self.audioActive)
+    {
+        //dbg msg
+        logMsg(LOG_DEBUG, @"audio is active, so querying XPC to get audio process(s)");
+        
+        //set allowed classes
+        [xpcConnection.remoteObjectInterface setClasses: [NSSet setWithObjects: [NSMutableArray class], [NSNumber class], nil]
+                                            forSelector: @selector(getAudioProcs:) argumentIndex: 0 ofReply: YES];
+        
+        //invoke XPC service
+        [[xpcConnection remoteObjectProxy] getAudioProcs:^(NSMutableArray* audioProcesses)
+         {
+             //close connection
+             [xpcConnection invalidate];
+             
+             //nil out
+             xpcConnection = nil;
+             
+             //dbg msg
+             logMsg(LOG_DEBUG, [NSString stringWithFormat:@"audio procs from XPC: %@", audioProcesses]);
+             
+             //generate notification for each process
+             for(NSNumber* processID in audioProcesses)
+             {
+                 //set pid
+                 event[EVENT_PROCESS_ID] = processID;
+                 
+                 //generate notification
+                 [self generateNotification:event];
+             }
+             
+             //if no consumer process was found
+             // ->still alert user that webcam was activated, but without details/ability to block
+             if(0 == audioProcesses.count)
+             {
+                 //set pid
+                 event[EVENT_PROCESS_ID] = @0;
+                 
+                 //generate notification
+                 [self generateNotification:event];
+             }
+             
+             //signal sema
+             dispatch_semaphore_signal(waitSema);
+             
+         }];
+        
+        //wait until XPC is done
+        // ->XPC reply block will signal semaphore
+        dispatch_semaphore_wait(waitSema, DISPATCH_TIME_FOREVER);
     }
+    
+    //audio deactivated
+    // ->close XPC connection and alert user
+    else
+    {
+        //close connection
+        [xpcConnection invalidate];
+        
+        //nil out
+        xpcConnection = nil;
+        
+        //generate notification
+        [self generateNotification:event];
+    }
+
+    }//sync
     
 //bail
 bail:
@@ -801,9 +923,8 @@ bail:
     details = ((AVCaptureDevice*)event[EVENT_DEVICE]).localizedName;
     
     //customize buttons
-    // ->for mic, inactive events, or when consumer proc couldn't be ID'd, just say 'ok'
-    if( (YES == [event[EVENT_DEVICE] isKindOfClass:NSClassFromString(@"AVCaptureHALDevice")]) ||
-        (YES == [DEVICE_INACTIVE isEqual:event[EVENT_DEVICE_STATUS]]) ||
+    // ->inactive events, or when consumer proc couldn't be ID'd, just say 'ok'
+    if( (YES == [DEVICE_INACTIVE isEqual:event[EVENT_DEVICE_STATUS]]) ||
         (0 == [event[EVENT_PROCESS_ID] intValue]) )
     {
         //set other button title
@@ -814,7 +935,7 @@ bail:
     }
     
     //customize buttons
-    // ->for activated video; allow/block
+    // ->for activated audio/video; allow/block
     else
     {
         //get process name

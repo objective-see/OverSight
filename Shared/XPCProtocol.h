@@ -14,12 +14,19 @@
 //start enumerator
 -(void)initialize:(void (^)(void))reply;
 
+//get (new) audio procs
+-(void)getAudioProcs:(void (^)(NSMutableArray *))reply;
+
 //get (new) video procs
 -(void)getVideoProcs:(void (^)(NSMutableArray *))reply;
 
 //update status video
 // ->allows enumerator to stop baselining (when active), etc
 -(void)updateVideoStatus:(unsigned int)status reply:(void (^)(void))reply;
+
+//update status video
+// ->allows enumerator to stop baselining (when active), etc
+-(void)updateAudioStatus:(unsigned int)status reply:(void (^)(void))reply;
 
 //kill a process
 -(void)killProcess:(NSNumber*)processID reply:(void (^)(BOOL))reply;
