@@ -39,17 +39,6 @@
     //drop user privs
     setuid(getuid());
 
-    //first time, register defaults
-    // ->note: do this in here, since main app (with prefs) isn't run until user manually launches it
-    if(YES != [[NSFileManager defaultManager] fileExistsAtPath:[APP_PREFERENCES stringByExpandingTildeInPath]])
-    {
-        //dbg msg
-        logMsg(LOG_DEBUG, @"preference file not found; manually creating");
-
-        //write em out
-        [@{PREF_LOG_ACTIVITY:@YES, PREF_START_AT_LOGIN:@YES, PREF_RUN_HEADLESS:@NO, PREF_CHECK_4_UPDATES:@YES} writeToFile:[APP_PREFERENCES stringByExpandingTildeInPath] atomically:NO];
-    }
-    
     //load preferences
     preferences = [NSDictionary dictionaryWithContentsOfFile:[APP_PREFERENCES stringByExpandingTildeInPath]];
     

@@ -35,6 +35,9 @@
     //make window front
     [NSApp activateIgnoringOtherApps:YES];
     
+    //set button states
+    [self setButtonStates];
+    
     //set title
     self.window.title = [NSString stringWithFormat:@"OverSight Preferences (v. %@)", getAppVersion()];
     
@@ -45,9 +48,6 @@
 // ->init user interface
 -(void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
-    //set button states
-    [self setButtonStates];
-    
     //register for hotkey presses
     // ->for now, just cmd+q to quit app
     [self registerKeypressHandler];
@@ -59,8 +59,6 @@
         //start
         [self startLoginItem:NO];
     });
-    
-    
     
     return;
 }
@@ -172,6 +170,9 @@ bail:
     //preferences
     NSMutableDictionary* preferences = nil;
     
+    //path to login item
+    NSURL* loginItem = nil;
+    
     //load preferences
     preferences = [NSMutableDictionary dictionaryWithContentsOfFile:[APP_PREFERENCES stringByExpandingTildeInPath]];
     
@@ -197,8 +198,11 @@ bail:
         //set
         preferences[PREF_START_AT_LOGIN] = [NSNumber numberWithBool:[sender state]];
         
-        //toggle
+        //init path to login item
+        loginItem = [NSURL fileURLWithPath:[[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent:@"/Contents/Library/LoginItems/OverSight Helper.app"]];
         
+        //install
+        toggleLoginItem(loginItem, (int)[sender state]);
     }
     
     //set 'run in headless mode'
@@ -256,8 +260,11 @@ bail:
     //disable button
     self.check4UpdatesNow.enabled = NO;
     
-    //hide version msg
-    self.versionLabel.hidden = YES;
+    //reset
+    self.versionLabel.stringValue = @"";
+    
+    //re-draw
+    [self.versionLabel displayIfNeeded];
     
     //show spinner
     [self.spinner startAnimation:self];
@@ -283,6 +290,9 @@ bail:
     {
         //dbg msg
         logMsg(LOG_DEBUG, [NSString stringWithFormat:@"a new version (%@) is available", versionString]);
+        
+        //hide version message
+        self.versionLabel.hidden = YES;
         
         //alloc/init about window
         infoWindowController = [[InfoWindowController alloc] initWithWindowNibName:@"InfoWindow"];
@@ -312,7 +322,7 @@ bail:
     }
     
     //no new version
-    // ->just (debug) log msg
+    // ->stop animations/just (debug) log msg
     else
     {
         //dbg msg
@@ -326,6 +336,13 @@ bail:
         
         //show now new version message
         self.versionLabel.hidden = NO;
+        
+        //set message
+        self.versionLabel.stringValue = @"No new versions";
+        
+        //re-draw
+        [self.versionLabel displayIfNeeded];
+
     }
     
     return;
@@ -368,13 +385,16 @@ bail:
         logMsg(LOG_DEBUG, @"starting login item");
         
         //show overlay view on main thread
-        dispatch_sync(dispatch_get_main_queue(), ^{
+        dispatch_async(dispatch_get_main_queue(), ^{
         
             //pre-req
             [self.overlay setWantsLayer:YES];
             
-            //set overlay's view color to black
-            self.overlay.layer.backgroundColor = [NSColor whiteColor].CGColor;
+            //round edges
+            [self.overlay.layer setCornerRadius: 10];
+            
+            //set overlay's view color to white
+            self.overlay.layer.backgroundColor = [NSColor grayColor].CGColor;
             
             //make it semi-transparent
             self.overlay.alphaValue = 0.85;
@@ -382,8 +402,8 @@ bail:
             //show it
             self.overlay.hidden = NO;
             
-            //TODO:
-            //set message
+            //show message
+            self.statusMessage.hidden = NO;
             
             //show spinner
             self.progressIndicator.hidden = NO;
@@ -411,12 +431,46 @@ bail:
     //(re)obtain focus for app
     [[NSRunningApplication currentApplication] activateWithOptions:NSApplicationActivateIgnoringOtherApps];
     
-    //TODO:
-    //hide overlay
-    
+
 //bail
 bail:
-    
+
+    //hide overlay?
+    if(-1 == loginItemPID)
+    {
+        //sleep to give message some more time
+        [NSThread sleepForTimeInterval:1];
+        
+        //update message
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            //stop spinner
+            [self.progressIndicator stopAnimation:nil];
+            
+            //update
+            self.statusMessage.stringValue = @"started!";
+            
+        });
+        
+        //sleep to give message some more time
+        [NSThread sleepForTimeInterval:1];
+        
+        //hide overlay view on main thread
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+        //hide spinner
+        self.progressIndicator.hidden = YES;
+            
+        //hide view
+        self.overlay.hidden = YES;
+        
+        //hide message
+        self.statusMessage.hidden = YES;
+        
+        });
+        
+    }
+
     return;
 }
 

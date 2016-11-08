@@ -165,7 +165,7 @@ bail:
     
     //dbg msg
     logMsg(LOG_DEBUG, @"removed xattrz");
-
+    
     //init path to login item
     loginItem = [appPathDest stringByAppendingPathComponent:@"Contents/Library/LoginItems/OverSight Helper.app/Contents/MacOS/OverSight Helper"];
     

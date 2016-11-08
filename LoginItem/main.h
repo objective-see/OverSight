@@ -15,9 +15,4 @@
 
 /* FUNCTION DEFINITIONS */
 
-//toggle login item
-// ->either add (install) or remove (uninstall)
-BOOL toggleLoginItem(int toggleFlag);
-
-
 #endif /* main_h */

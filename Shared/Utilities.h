@@ -63,4 +63,8 @@ pid_t getProcessID(NSString* processName, uid_t userID);
 // ->then make it modal
 void makeModal(NSWindowController* windowController);
 
+//toggle login item
+// ->either add (install) or remove (uninstall)
+BOOL toggleLoginItem(NSURL* loginItem, int toggleFlag);
+
 #endif

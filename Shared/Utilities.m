@@ -132,7 +132,7 @@ BOOL setFileOwner(NSString* path, NSNumber* groupID, NSNumber* ownerID, BOOL rec
     NSDictionary* fileOwner = nil;
     
     //sub paths
-    NSArray *subPaths = nil;
+    NSArray* subPaths = nil;
     
     //full path
     // ->for recursive
@@ -720,6 +720,128 @@ void makeModal(NSWindowController* windowController)
     
     return;
 }
+
+//toggle login item
+// ->either add (install) or remove (uninstall)
+BOOL toggleLoginItem(NSURL* loginItem, int toggleFlag)
+{
+    //flag
+    BOOL wasToggled = NO;
+    
+    //login item ref
+    LSSharedFileListRef loginItemsRef = NULL;
+    
+    //login items
+    CFArrayRef loginItems = NULL;
+    
+    //current login item
+    CFURLRef currentLoginItem = NULL;
+    
+    //get reference to login items
+    loginItemsRef = LSSharedFileListCreate(NULL, kLSSharedFileListSessionLoginItems, NULL);
+    
+    //add (install)
+    if(ACTION_INSTALL_FLAG == toggleFlag)
+    {
+        //dbg msg
+        logMsg(LOG_DEBUG, @"adding login item");
+        
+        //add
+        LSSharedFileListItemRef itemRef = LSSharedFileListInsertItemURL(loginItemsRef, kLSSharedFileListItemLast, NULL, NULL, (__bridge CFURLRef)(loginItem), NULL, NULL);
+        
+        //release item ref
+        if(NULL != itemRef)
+        {
+            //dbg msg
+            logMsg(LOG_DEBUG, [NSString stringWithFormat:@"added %@/%@", loginItem, itemRef]);
+            
+            //release
+            CFRelease(itemRef);
+            
+            //reset
+            itemRef = NULL;
+        }
+        //failed
+        else
+        {
+            //err msg
+            logMsg(LOG_ERR, @"failed to added login item");
+            
+            //bail
+            goto bail;
+        }
+    }
+    //remove (uninstall)
+    else
+    {
+        //dbg msg
+        logMsg(LOG_DEBUG, @"removing login item");
+        
+        //grab existing login items
+        loginItems = LSSharedFileListCopySnapshot(loginItemsRef, nil);
+        
+        //iterate over all login items
+        // ->look for self, then remove it/them
+        for (id item in (__bridge NSArray *)loginItems)
+        {
+            //get current login item
+            if( (noErr != LSSharedFileListItemResolve((__bridge LSSharedFileListItemRef)item, 0, (CFURLRef*)&currentLoginItem, NULL)) ||
+                (NULL == currentLoginItem) )
+            {
+                //skip
+                continue;
+            }
+            
+            //current login item match self?
+            if ([(__bridge NSURL *)currentLoginItem isEqual:loginItem])
+            {
+                //remove
+                LSSharedFileListItemRemove(loginItemsRef, (__bridge LSSharedFileListItemRef)item);
+            }
+            
+            //release
+            if(NULL != currentLoginItem)
+            {
+                //release
+                CFRelease(currentLoginItem);
+                
+                //reset
+                currentLoginItem = NULL;
+            }
+            
+        }//all login items
+        
+    }//remove/uninstall
+    
+    //happy
+    wasToggled = YES;
+    
+//bail
+bail:
+    
+    //release login items
+    if(NULL != loginItems)
+    {
+        //release
+        CFRelease(loginItems);
+        
+        //reset
+        loginItems = NULL;
+    }
+    
+    //release login ref
+    if(NULL != loginItemsRef)
+    {
+        //release
+        CFRelease(loginItemsRef);
+        
+        //reset
+        loginItemsRef = NULL;
+    }
+    
+    return wasToggled;
+}
+
 
 
 

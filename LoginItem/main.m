@@ -7,6 +7,7 @@
 //
 
 #import "main.h"
+#import "Utilities.h"
 
 //go go go
 // ->either install/uninstall, or just launch normally
@@ -28,7 +29,10 @@ int main(int argc, const char * argv[])
             setuid(getuid());
 
             //install
-            toggleLoginItem(ACTION_INSTALL_FLAG);
+            toggleLoginItem([NSURL fileURLWithPath:[[NSBundle mainBundle] bundlePath]], ACTION_INSTALL_FLAG);
+            
+            //create default prefs
+            [@{PREF_LOG_ACTIVITY:@YES, PREF_START_AT_LOGIN:@YES, PREF_RUN_HEADLESS:@NO, PREF_CHECK_4_UPDATES:@YES} writeToFile:[APP_PREFERENCES stringByExpandingTildeInPath] atomically:NO];
             
             //bail
             goto bail;
@@ -40,7 +44,10 @@ int main(int argc, const char * argv[])
             setuid(getuid());
             
             //unistall
-            toggleLoginItem(ACTION_UNINSTALL_FLAG);
+            toggleLoginItem([NSURL fileURLWithPath:[[NSBundle mainBundle] bundlePath]], ACTION_UNINSTALL_FLAG);
+            
+            //delete prefs
+            [[NSFileManager defaultManager] removeItemAtPath:[APP_PREFERENCES stringByExpandingTildeInPath] error:nil];
             
             //bail
             goto bail;
@@ -54,131 +61,4 @@ int main(int argc, const char * argv[])
 bail:
     
     return iReturn;
-}
-
-//toggle login item
-// ->either add (install) or remove (uninstall)
-BOOL toggleLoginItem(int toggleFlag)
-{
-    //flag
-    BOOL wasToggled = NO;
-    
-    //path to self
-    NSURL* path2Self = NULL;
-    
-    //login item ref
-    LSSharedFileListRef loginItemsRef = NULL;
-    
-    //login items
-    CFArrayRef loginItems = NULL;
-    
-    //current login item
-    CFURLRef currentLoginItem = NULL;
-    
-    //init path to self
-    path2Self = [NSURL fileURLWithPath:[[NSBundle mainBundle] bundlePath]];
-    
-    //get reference to login items
-    loginItemsRef = LSSharedFileListCreate(NULL, kLSSharedFileListSessionLoginItems, NULL);
-    
-    //add (install)
-    if(ACTION_INSTALL_FLAG == toggleFlag)
-    {
-        //dbg msg
-        logMsg(LOG_DEBUG, @"adding login item");
-        
-        //add
-        LSSharedFileListItemRef itemRef = LSSharedFileListInsertItemURL(loginItemsRef, kLSSharedFileListItemLast, NULL, NULL, (__bridge CFURLRef)(path2Self), NULL, NULL);
-    
-        //release item ref
-        if(NULL != itemRef)
-        {
-            //dbg msg
-            logMsg(LOG_DEBUG, [NSString stringWithFormat:@"added %@/%@", path2Self, itemRef]);
-            
-            //release
-            CFRelease(itemRef);
-            
-            //reset
-            itemRef = NULL;
-        }
-        //failed
-        else
-        {
-            //err msg
-            logMsg(LOG_ERR, @"failed to added login item");
-            
-            //bail
-            goto bail;
-        }
-    }
-    //remove (uninstall)
-    else
-    {
-        //dbg msg
-        logMsg(LOG_DEBUG, @"removing login item");
-        
-        //grab existing login items
-        loginItems = LSSharedFileListCopySnapshot(loginItemsRef, nil);
-        
-        //iterate over all login items
-        // ->look for self, then remove it/them
-        for (id item in (__bridge NSArray *)loginItems)
-        {
-            //get current login item
-            if( (noErr != LSSharedFileListItemResolve((__bridge LSSharedFileListItemRef)item, 0, (CFURLRef*)&currentLoginItem, NULL)) ||
-                 (NULL == currentLoginItem) )
-            {
-                //skip
-                continue;
-            }
-                
-            //current login item match self?
-            if ([(__bridge NSURL *)currentLoginItem isEqual:path2Self])
-            {
-                //remove
-                LSSharedFileListItemRemove(loginItemsRef, (__bridge LSSharedFileListItemRef)item);
-            }
-            
-            //release
-            if(NULL != currentLoginItem)
-            {
-                //release
-                CFRelease(currentLoginItem);
-                
-                //reset
-                currentLoginItem = NULL;
-            }
-            
-        }//all login items
-        
-    }//remove/uninstall
-    
-    //happy
-    wasToggled = YES;
-    
-//bail
-bail:
-    
-    //release login items
-    if(NULL != loginItems)
-    {
-        //release
-        CFRelease(loginItems);
-        
-        //reset
-        loginItems = NULL;
-    }
-
-    //release login ref
-    if(NULL != loginItemsRef)
-    {
-        //release
-        CFRelease(loginItemsRef);
-        
-        //reset
-        loginItemsRef = NULL;
-    }
-    
-   return wasToggled;
 }
