@@ -942,7 +942,7 @@ bail:
         processName = getProcessName([event[EVENT_PROCESS_ID] intValue]);
         
         //set other button title
-        notification.otherButtonTitle = @"allow";
+        notification.otherButtonTitle = @"allowz";
         
         //set action title
         notification.actionButtonTitle = @"block";
@@ -1023,7 +1023,7 @@ bail:
 }
 
 //automatically invoked when user interacts w/ the notification popup
-// ->only action we care about, is killing the process if they click 'block'
+// ->handle rule creation, blocking/killing proc, etc
 -(void)userNotificationCenter:(NSUserNotificationCenter *)center didActivateNotification:(NSUserNotification *)notification
 {
     //xpc connection
@@ -1044,10 +1044,22 @@ bail:
     //alloc log msg
     sysLogMsg = [NSMutableString string];
     
-    //log event?
-    // ->but only allow/blocks (i.e. webcam activations)
-    if( (YES == [preferences[PREF_LOG_ACTIVITY] boolValue]) &&
-        (YES == [notification.actionButtonTitle isEqualToString:@"block"]) )
+    //dbg msg
+    logMsg(LOG_DEBUG, [NSString stringWithFormat:@"user responded to notification: %@", notification]);
+    
+    //for alerts without an action
+    // ->don't need to do anything!
+    if(YES != notification.hasActionButton)
+    {
+        //dbg msg
+        logMsg(LOG_DEBUG, @"popup w/o an action, no need to do anything");
+        
+        //bail
+        goto bail;
+    }
+    
+    //log user's response?
+    if(YES == [preferences[PREF_LOG_ACTIVITY] boolValue])
     {
         //init msg
         [sysLogMsg appendString:@"OVERSIGHT: "];
@@ -1069,14 +1081,23 @@ bail:
         syslog(LOG_ERR, "%s\n", sysLogMsg.UTF8String);
     }
     
-    //dbg msg
-    logMsg(LOG_DEBUG, [NSString stringWithFormat:@"use responded to notification: %@", notification]);
-    
-    //for video
-    // ->kill process if user clicked 'block'
-    if( (YES == [notification.actionButtonTitle isEqualToString:@"block"]) &&
-        (notification.activationType == NSUserNotificationActivationTypeActionButtonClicked))
+    //when user clicks 'allow'
+    // ->show popup w/ option to whitelist
+    if(notification.activationType == NSUserNotificationActivationTypeAdditionalActionClicked)
     {
+        //TODO: show popup
+        
+        //dbg msg
+        logMsg(LOG_DEBUG, @"user clicked 'allow'");
+    }
+    
+    //when user clicks 'block'
+    // ->kill the process to block it
+    else if(notification.activationType == NSUserNotificationActivationTypeActionButtonClicked)
+    {
+        //dbg msg
+        logMsg(LOG_DEBUG, @"user clicked 'block'");
+        
         //extract process id
         processID = notification.userInfo[EVENT_PROCESS_ID];
         if(nil == processID)
@@ -1087,7 +1108,7 @@ bail:
             //bail
             goto bail;
         }
-
+        
         //alloc XPC connection
         xpcConnection = [[NSXPCConnection alloc] initWithServiceName:@"com.objective-see.OverSightXPC"];
         
@@ -1102,22 +1123,22 @@ bail:
         
         //invoke XPC method 'killProcess' to terminate
         [[xpcConnection remoteObjectProxy] killProcess:processID reply:^(BOOL wasKilled)
-        {
-            //check for err
-            if(YES != wasKilled)
-            {
-                //err msg
-                logMsg(LOG_ERR, [NSString stringWithFormat:@"failed to kill/block: %@", processID]);
-                
-            }
-            
-            //close connection
-            [xpcConnection invalidate];
-            
-            //nil out
-            xpcConnection = nil;
-        }];
-         
+         {
+             //check for err
+             if(YES != wasKilled)
+             {
+                 //err msg
+                 logMsg(LOG_ERR, [NSString stringWithFormat:@"failed to kill/block: %@", processID]);
+                 
+             }
+             
+             //close connection
+             [xpcConnection invalidate];
+             
+             //nil out
+             xpcConnection = nil;
+         }];
+
     }//user clicked 'block'
     
 //bail
@@ -1125,7 +1146,6 @@ bail:
          
     return;
 }
-
 
 //monitor for new procs (video only at the moment)
 // ->runs until video is no longer in use (set elsewhere)

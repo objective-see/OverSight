@@ -36,6 +36,12 @@
 //OS minor version el capitan
 #define OS_MINOR_VERSION_EL_CAPITAN 11
 
+//install flag
+#define CMD_INSTALL "-install"
+
+//uninstall flag
+#define CMD_UNINSTALL "-uninstall"
+
 //action to install
 // ->also button title
 #define ACTION_INSTALL @"Install"
@@ -92,8 +98,13 @@
 //path to xattr
 #define XATTR @"/usr/bin/xattr"
 
+//path to sudo
+#define SUDO @"/usr/bin/sudo"
+
 //path to facetime
 #define FACE_TIME @"/Applications/FaceTime.app/Contents/MacOS/FaceTime"
+
+
 
 
 #endif

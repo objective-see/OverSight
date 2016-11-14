@@ -52,6 +52,18 @@
     // ->for now, just cmd+q to quit app
     [self registerKeypressHandler];
     
+    //create default prefs if there aren't any
+    // ->should only happen if new user runs the app
+    if(YES != [[NSFileManager defaultManager] fileExistsAtPath:[APP_PREFERENCES stringByExpandingTildeInPath]])
+    {
+        //dbg msg
+        logMsg(LOG_DEBUG, @"preference file not found; manually creating");
+        
+        //write em out
+        // ->note; set 'start at login' to false, since no prefs here, mean installer wasn't run (user can later toggle)
+        [@{PREF_LOG_ACTIVITY:@YES, PREF_START_AT_LOGIN:@NO, PREF_RUN_HEADLESS:@NO, PREF_CHECK_4_UPDATES:@YES} writeToFile:[APP_PREFERENCES stringByExpandingTildeInPath] atomically:NO];
+    }
+    
     //start login item in background
     // ->checks if already running though
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),

@@ -7,6 +7,7 @@
 //
 
 #import "main.h"
+#import "Logging.h"
 #import "Utilities.h"
 
 //go go go
@@ -17,22 +18,31 @@ int main(int argc, const char * argv[])
     int iReturn = 0;
     
     //dbg msg
-    logMsg(LOG_DEBUG, @"starting login item");
-
+    logMsg(LOG_DEBUG, [NSString stringWithFormat:@"starting login item (args: %@/user: %@)", [[NSProcessInfo processInfo] arguments], NSUserName()]);
+           
     //check for uninstall/install flags
     if(2 == argc)
     {
         //install
         if(0 == strcmp(argv[1], ACTION_INSTALL.UTF8String))
         {
+            //dbg msg
+            logMsg(LOG_DEBUG, @"running install logic");
+            
             //drop user privs
             setuid(getuid());
 
             //install
             toggleLoginItem([NSURL fileURLWithPath:[[NSBundle mainBundle] bundlePath]], ACTION_INSTALL_FLAG);
             
+            //dbg msg
+            logMsg(LOG_DEBUG, @"installed login item");
+            
             //create default prefs
             [@{PREF_LOG_ACTIVITY:@YES, PREF_START_AT_LOGIN:@YES, PREF_RUN_HEADLESS:@NO, PREF_CHECK_4_UPDATES:@YES} writeToFile:[APP_PREFERENCES stringByExpandingTildeInPath] atomically:NO];
+            
+            //dbg msg
+            logMsg(LOG_DEBUG, [NSString stringWithFormat:@"created preferences at: %@", [APP_PREFERENCES stringByExpandingTildeInPath]]);
             
             //bail
             goto bail;
@@ -40,14 +50,24 @@ int main(int argc, const char * argv[])
         //uninstall
         else if(0 == strcmp(argv[1], ACTION_UNINSTALL.UTF8String))
         {
+            //dbg msg
+            logMsg(LOG_DEBUG, @"running uninstall logic");
+            
             //drop user privs
             setuid(getuid());
             
             //unistall
             toggleLoginItem([NSURL fileURLWithPath:[[NSBundle mainBundle] bundlePath]], ACTION_UNINSTALL_FLAG);
             
+            //dbg msg
+            logMsg(LOG_DEBUG, @"removed login item");
+            
             //delete prefs
             [[NSFileManager defaultManager] removeItemAtPath:[APP_PREFERENCES stringByExpandingTildeInPath] error:nil];
+            
+            //dbg msg
+            logMsg(LOG_DEBUG, [NSString stringWithFormat:@"removed preferences from: %@", [APP_PREFERENCES stringByExpandingTildeInPath]]);
+            
             
             //bail
             goto bail;

@@ -21,4 +21,10 @@
 //spawn self as root
 BOOL spawnAsRoot(const char* path2Self);
 
+//install
+BOOL cmdlineInstall();
+
+//uninstall
+BOOL cmdlineUninstall();
+
 #endif /* main_h */

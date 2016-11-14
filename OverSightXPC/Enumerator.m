@@ -75,174 +75,13 @@ static NSArray* ignoredProcs = nil;
     return sharedEnumerator;
 }
 
-//find a process by name
--(pid_t)findProcess:(NSString*)processName
-{
-    //pid
-    pid_t processID = 0;
-    
-    //status
-    int status = -1;
-    
-    //# of procs
-    int numberOfProcesses = 0;
-    
-    //array of pids
-    pid_t* pids = NULL;
-    
-    //process path
-    NSString* processPath = nil;
-    
-    //get # of procs
-    numberOfProcesses = proc_listpids(PROC_ALL_PIDS, 0, NULL, 0);
-    
-    //alloc buffer for pids
-    pids = calloc(numberOfProcesses, sizeof(pid_t));
-    
-    //get list of pids
-    status = proc_listpids(PROC_ALL_PIDS, 0, pids, numberOfProcesses * sizeof(pid_t));
-    if(status < 0)
-    {
-        //bail
-        goto bail;
-    }
-    
-    //iterate over all pids
-    // ->get name for each via helper function
-    for(int i = 0; i < numberOfProcesses; ++i)
-    {
-        //skip blank pids
-        if(0 == pids[i])
-        {
-            //skip
-            continue;
-        }
-        
-        //get name
-        processPath = getProcessPath(pids[i]);
-        if( (nil == processPath) ||
-            (0 == processPath.length) )
-        {
-            //skip
-            continue;
-        }
-        
-        //match?
-        if(YES == [processPath isEqualToString:processName])
-        {
-            //save
-            processID = pids[i];
-            
-            //pau
-            break;
-        }
-        
-    }
-    
-//bail
-bail:
-    
-    //free buffer
-    if(NULL != pids)
-    {
-        //free
-        free(pids);
-    }
-    
-    return processID;
-}
-
-//TODO: replace with [self findProcess]!!
-//find 'VDCAssistant' or 'AppleCameraAssistant'
--(pid_t)findCameraAssistant
-{
-    //pid of assistant
-    pid_t cameraAssistant = 0;
-    
-    //status
-    int status = -1;
-    
-    //# of procs
-    int numberOfProcesses = 0;
-    
-    //array of pids
-    pid_t* pids = NULL;
-    
-    //process path
-    NSString* processPath = nil;
-    
-    //get # of procs
-    numberOfProcesses = proc_listpids(PROC_ALL_PIDS, 0, NULL, 0);
-    
-    //alloc buffer for pids
-    pids = calloc(numberOfProcesses, sizeof(pid_t));
-    
-    //get list of pids
-    status = proc_listpids(PROC_ALL_PIDS, 0, pids, numberOfProcesses * sizeof(pid_t));
-    if(status < 0)
-    {
-        //bail
-        goto bail;
-    }
-    
-    //iterate over all pids
-    // ->get name for each via helper function
-    for(int i = 0; i < numberOfProcesses; ++i)
-    {
-        //skip blank pids
-        if(0 == pids[i])
-        {
-            //skip
-            continue;
-        }
-        
-        //get name
-        processPath = getProcessPath(pids[i]);
-        if( (nil == processPath) ||
-            (0 == processPath.length) )
-        {
-            //skip
-            continue;
-        }
-        
-        //is 'VDCAssistant'?
-        if(YES == [processPath isEqualToString:VDC_ASSISTANT])
-        {
-            //save
-            cameraAssistant = pids[i];
-            
-            //pau
-            break;
-        }
-        
-        //is 'AppleCameraAssistant'?
-        else if(YES == [processPath isEqualToString:APPLE_CAMERA_ASSISTANT])
-        {
-            //save
-            cameraAssistant = pids[i];
-            
-            //pau
-            break;
-        }
-    }
-    
-//bail
-bail:
-    
-    //free buffer
-    if(NULL != pids)
-    {
-        //free
-        free(pids);
-    }
-    
-    return cameraAssistant;
-}
-
 //forever, baseline by getting all current procs that have sent a mach msg to *Assistant / coreaudio
 // ->logic only exec'd while camera/mic is not in use, so these are all just baselined procs
 -(void)start
 {
+    //camera assistant
+    pid_t cameraAssistant = 0;
+    
     //baseline forever
     // ->though logic will skip if video or mic is active (respectively)
     while(YES)
@@ -256,8 +95,27 @@ bail:
                 //dbg msg
                 logMsg(LOG_DEBUG, @"baselining mach senders for video...");
                 
+                //find camera assistant
+                // ->first look for 'VDCAssistant'
+                cameraAssistant = findProcess(VDC_ASSISTANT);
+                if(0 == cameraAssistant)
+                {
+                    //look for 'AppleCameraAssistant'
+                    cameraAssistant = findProcess(APPLE_CAMERA_ASSISTANT);
+                }
+                
+                //sanity check
+                if(0 == cameraAssistant)
+                {
+                    //nap for a minute
+                    [NSThread sleepForTimeInterval:60];
+                    
+                    //next
+                    continue;
+                }
+                
                 //enumerate procs that have send mach messages
-                self.machSendersVideo = [self enumMachSenders:[self findCameraAssistant]];
+                self.machSendersVideo = [self enumMachSenders:cameraAssistant];
                 
                 //dbg msg
                 logMsg(LOG_DEBUG, [NSString stringWithFormat:@"found %lu baselined mach senders: %@", (unsigned long)self.machSendersVideo.count, self.machSendersVideo]);
@@ -270,7 +128,7 @@ bail:
                 logMsg(LOG_DEBUG, @"baselining mach senders for audio...");
                 
                 //enumerate procs that have send mach messages
-                self.machSendersAudio = [self enumMachSenders:[self findProcess:CORE_AUDIO]];
+                self.machSendersAudio = [self enumMachSenders:findProcess(CORE_AUDIO)];
                 
                 //dbg msg
                 logMsg(LOG_DEBUG, [NSString stringWithFormat:@"found %lu baselined mach senders: %@", (unsigned long)self.machSendersAudio.count, self.machSendersVideo]);
@@ -317,8 +175,15 @@ bail:
     @synchronized(self)
     {
 
-    //find 'VDCAssistant' or 'AppleCameraAssistant'
-    cameraAssistant = [self findCameraAssistant];
+    //first look for 'VDCAssistant'
+    cameraAssistant = findProcess(VDC_ASSISTANT);
+    if(0 == cameraAssistant)
+    {
+        //look for 'AppleCameraAssistant'
+        cameraAssistant = findProcess(APPLE_CAMERA_ASSISTANT);
+    }
+    
+    //sanity check
     if(0 == cameraAssistant)
     {
         //err msg
@@ -327,7 +192,7 @@ bail:
         //bail
         goto bail;
     }
-    
+        
     //get procs that currrently have sent Mach msg to *Assistant
     // ->returns dictionary of process id, and number of mach messages
     currentSenders = [self enumMachSenders:cameraAssistant];
@@ -414,7 +279,7 @@ bail:
     @synchronized(self)
     {
         //find coreaudio
-        coreAudio = [self findProcess:CORE_AUDIO];
+        coreAudio = findProcess(CORE_AUDIO);
         if(0 == coreAudio)
         {
             //err msg
@@ -803,7 +668,7 @@ bail:
         }
         
         //sampling a process creates a temp file
-        //->delete it!
+        //->make sure we delete it this file to clean up ;)
         [self deleteSampleFile:processPath];
         
         //for now, just check for 'CMIOGraph::DoWork'
@@ -885,6 +750,9 @@ bail:
 // ->extra logic is executed to 'refresh' iVars when video is disabled
 -(void)updateVideoStatus:(BOOL)isEnabled
 {
+    //camera assistant
+    pid_t cameraAssistant = 0;
+    
     //sync
     @synchronized(self)
     {
@@ -895,10 +763,32 @@ bail:
         // ->re-enumerate mach senders
         if(YES != isEnabled)
         {
+            //first, look for 'VDCAssistant'
+            cameraAssistant = findProcess(VDC_ASSISTANT);
+            if(0 == cameraAssistant)
+            {
+                //look for 'AppleCameraAssistant'
+                cameraAssistant = findProcess(APPLE_CAMERA_ASSISTANT);
+            }
+            
+            //sanity check
+            if(0 == cameraAssistant)
+            {
+                //err msg
+                logMsg(LOG_ERR, @"failed to find VDCAssistant/AppleCameraAssistant process");
+                
+                //bail
+                goto bail;
+            }
+            
             //enumerate mach senders
-            self.machSendersVideo = [self enumMachSenders:[self findCameraAssistant]];
+            self.machSendersVideo = [self enumMachSenders:cameraAssistant];
         }
-    }
+        
+    }//sync
+    
+//bail
+bail:
     
     return;
 }
@@ -918,7 +808,7 @@ bail:
         if(YES != isEnabled)
         {
             //enumerate mach senders
-            self.machSendersAudio = [self enumMachSenders:[self findProcess:CORE_AUDIO]];
+            self.machSendersAudio = [self enumMachSenders:findProcess(CORE_AUDIO)];
             
             //enumerate i/o registry user clients
             self.userClients = [self enumDomainUserClients];

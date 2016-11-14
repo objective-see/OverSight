@@ -21,7 +21,7 @@
 {
     //return var
     BOOL wasConfigured = NO;
-    
+
     //install
     // ->starts on success
     if(ACTION_INSTALL_FLAG == parameter)
@@ -139,6 +139,9 @@ bail:
     //path to login item
     NSString* loginItem = nil;
     
+    //logged in user
+    NSString* user = nil;
+    
     //set src path
     // ->orginally stored in installer app's /Resource bundle
     appPathSrc = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:APP_NAME];
@@ -169,9 +172,20 @@ bail:
     //init path to login item
     loginItem = [appPathDest stringByAppendingPathComponent:@"Contents/Library/LoginItems/OverSight Helper.app/Contents/MacOS/OverSight Helper"];
     
+    //get user
+    user = loggedinUser();
+    if(nil == user)
+    {
+        //err msg
+        logMsg(LOG_ERR, @"failed to determine logged-in user");
+        
+        //bail
+        goto bail;
+    }
+
     //call into login item to install itself
-    // ->runs as non-root, so can access user's login items, etc
-    execTask(loginItem, @[ACTION_INSTALL]);
+    // ->runs as logged in user, so can access user's login items, etc
+    execTask(SUDO, @[@"-u", user, loginItem, ACTION_INSTALL]);
     
     //dbg msg
     logMsg(LOG_DEBUG, [NSString stringWithFormat:@"persisted %@", loginItem]);
@@ -280,6 +294,9 @@ bail:
     
     //path to login item
     NSString* loginItem = nil;
+    
+    //logged in user
+    NSString* user = nil;
 
     //init path
     appPath = [APPS_FOLDER stringByAppendingPathComponent:APP_NAME];
@@ -287,13 +304,31 @@ bail:
     //init path to login item
     loginItem = [appPath stringByAppendingPathComponent:@"Contents/Library/LoginItems/OverSight Helper.app/Contents/MacOS/OverSight Helper"];
     
-    //call into login item to install itself
-    // ->runs as non-root, so can access user's login items, etc
-    execTask(loginItem, @[ACTION_UNINSTALL]);
+    //get user
+    user = loggedinUser();
+    if(nil == user)
+    {
+        //err msg
+        logMsg(LOG_ERR, @"failed to determine logged-in user");
+        
+        //set flag
+        bAnyErrors = YES;
+        
+        //keep uninstalling...
+        
+    }
     
-    //dbg msg
-    logMsg(LOG_DEBUG, [NSString stringWithFormat:@"unpersisted %@", loginItem]);
-  
+    //unistall login item
+    else
+    {
+        //call into login item to uninstall itself
+        // ->runs as logged in user, so can access user's login items, etc
+        execTask(SUDO, @[@"-u", user, loginItem, ACTION_UNINSTALL]);
+        
+        //dbg msg
+        logMsg(LOG_DEBUG, [NSString stringWithFormat:@"unpersisted %@", loginItem]);
+    }
+
     //delete folder
     if(YES != [[NSFileManager defaultManager] removeItemAtPath:appPath error:&error])
     {
@@ -305,7 +340,6 @@ bail:
         
         //keep uninstalling...
     }
-    
     
     //only success when there were no errors
     if(YES != bAnyErrors)

@@ -67,4 +67,10 @@ void makeModal(NSWindowController* windowController);
 // ->either add (install) or remove (uninstall)
 BOOL toggleLoginItem(NSURL* loginItem, int toggleFlag);
 
+//get logged in user
+NSString* loggedinUser();
+
+//find a process by name
+pid_t findProcess(NSString* processName);
+
 #endif

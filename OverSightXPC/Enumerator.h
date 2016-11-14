@@ -57,9 +57,6 @@
 // ->ensures its only invoke while camera is not in use, so these are all just baselined procs
 -(void)start;
 
-//find 'VDCAssistant' or 'AppleCameraAssistant'
--(pid_t)findCameraAssistant;
-
 //enumerate all (recent) process that appear to be using the mic
 -(NSMutableArray*)enumAudioProcs;
 

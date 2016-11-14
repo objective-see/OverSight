@@ -20,6 +20,7 @@
 #import <CommonCrypto/CommonDigest.h>
 #import <SystemConfiguration/SystemConfiguration.h>
 
+
 //get OS version
 NSDictionary* getOSVersion()
 {
@@ -294,6 +295,9 @@ NSData* execTask(NSString* binaryPath, NSArray* arguments)
     
     //set task's output
     [task setStandardOutput:outPipe];
+    
+    //dbg msg
+    logMsg(LOG_DEBUG, [NSString stringWithFormat:@"@exec'ing %@ (args: %@)", binaryPath, arguments]);
     
     //wrap task launch
     @try
@@ -727,7 +731,7 @@ BOOL toggleLoginItem(NSURL* loginItem, int toggleFlag)
 {
     //flag
     BOOL wasToggled = NO;
-    
+
     //login item ref
     LSSharedFileListRef loginItemsRef = NULL;
     
@@ -765,11 +769,14 @@ BOOL toggleLoginItem(NSURL* loginItem, int toggleFlag)
         else
         {
             //err msg
-            logMsg(LOG_ERR, @"failed to added login item");
+            logMsg(LOG_ERR, @"failed to add login item");
             
             //bail
             goto bail;
         }
+        
+        //happy
+        wasToggled = YES;
     }
     //remove (uninstall)
     else
@@ -797,6 +804,9 @@ BOOL toggleLoginItem(NSURL* loginItem, int toggleFlag)
             {
                 //remove
                 LSSharedFileListItemRemove(loginItemsRef, (__bridge LSSharedFileListItemRef)item);
+                
+                //happy
+                wasToggled = YES;
             }
             
             //release
@@ -812,9 +822,6 @@ BOOL toggleLoginItem(NSURL* loginItem, int toggleFlag)
         }//all login items
         
     }//remove/uninstall
-    
-    //happy
-    wasToggled = YES;
     
 //bail
 bail:
@@ -842,7 +849,114 @@ bail:
     return wasToggled;
 }
 
+//get logged in user
+NSString* loggedinUser()
+{
+    //store
+    SCDynamicStoreRef store = nil;
+    
+    //user
+    NSString* user = nil;
+    
+    //create store
+    store = SCDynamicStoreCreate(NULL, CFSTR("GetConsoleUser"), NULL, NULL);
+    if(NULL == store)
+    {
+        //bail
+        goto bail;
+    }
+    
+    //get user
+    user = CFBridgingRelease(SCDynamicStoreCopyConsoleUser(store, NULL, NULL));
+    
+//bail
+bail:
+    
+    //release store
+    if(NULL != store)
+    {
+        //release
+        CFRelease(store);
+    }
+    
+    return user;
+}
 
-
+//find a process by name
+pid_t findProcess(NSString* processName)
+{
+    //pid
+    pid_t processID = 0;
+    
+    //status
+    int status = -1;
+    
+    //# of procs
+    int numberOfProcesses = 0;
+    
+    //array of pids
+    pid_t* pids = NULL;
+    
+    //process path
+    NSString* processPath = nil;
+    
+    //get # of procs
+    numberOfProcesses = proc_listpids(PROC_ALL_PIDS, 0, NULL, 0);
+    
+    //alloc buffer for pids
+    pids = calloc(numberOfProcesses, sizeof(pid_t));
+    
+    //get list of pids
+    status = proc_listpids(PROC_ALL_PIDS, 0, pids, numberOfProcesses * sizeof(pid_t));
+    if(status < 0)
+    {
+        //bail
+        goto bail;
+    }
+    
+    //iterate over all pids
+    // ->get name for each via helper function
+    for(int i = 0; i < numberOfProcesses; ++i)
+    {
+        //skip blank pids
+        if(0 == pids[i])
+        {
+            //skip
+            continue;
+        }
+        
+        //get name
+        processPath = getProcessPath(pids[i]);
+        if( (nil == processPath) ||
+           (0 == processPath.length) )
+        {
+            //skip
+            continue;
+        }
+        
+        //match?
+        if(YES == [processPath isEqualToString:processName])
+        {
+            //save
+            processID = pids[i];
+            
+            //pau
+            break;
+        }
+        
+    }//all procs
+    
+//bail
+bail:
+    
+    //free buffer
+    if(NULL != pids)
+    {
+        //free
+        free(pids);
+    }
+    
+    return processID;
+}
 
 

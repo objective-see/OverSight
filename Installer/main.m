@@ -7,6 +7,8 @@
 //
 
 #import "main.h"
+#import "Consts.h"
+#import "Configure.h"
 #import <Cocoa/Cocoa.h>
 
 int main(int argc, const char * argv[])
@@ -16,38 +18,106 @@ int main(int argc, const char * argv[])
     
     @autoreleasepool
     {
-        
-    //check for r00t
-    // ->then spawn self via auth exec
-    if(0 != geteuid())
-    {
-        //dbg msg
-        logMsg(LOG_DEBUG, @"non-root installer instance");
-        
-        //spawn as root
-        if(YES != spawnAsRoot(argv[0]))
+        //handle '-install' / '-uninstall'
+        // ->this performs non-UI logic for easier automated deployment
+        if( (argc >= 2) &&
+            (YES != [[NSString stringWithUTF8String:argv[1]] hasPrefix:@"-psn_"]) )
         {
-            //err msg
-            logMsg(LOG_ERR, @"failed to spawn self as r00t");
+            //first check rooot
+            if(0 != geteuid())
+            {
+                //err msg
+                printf("\nERROR: '%s' option, requires root\n\n", argv[1]);
+                
+                //bail
+                goto bail;
+            }
             
-            //bail
-            goto bail;
-        }
+            //handle install
+            if(0 == strcmp(argv[1], CMD_INSTALL))
+            {
+                //install
+                if(YES != cmdlineInstall())
+                {
+                    //err msg
+                    printf("\nERROR: install failed\n\n");
+                    
+                    //bail
+                    goto bail;
+                }
+                
+                //dbg msg
+                printf("OVERSIGHT: install ok!\n");
+                
+                //happy
+                retVar = 0;
+            }
+            
+            //handle uninstall
+            else if(0 == strcmp(argv[1], CMD_UNINSTALL))
+            {
+                //uninstall
+                if(YES != cmdlineUninstall())
+                {
+                    //err msg
+                    printf("\nERROR: install failed\n\n");
+                }
+                
+                //dbg msg
+                printf("OVERSIGHT: uninstall ok!\n");
+                
+                //happy
+                retVar = 0;
+            }
+            
+            //invalid arg
+            else
+            {
+                //err msg
+                printf("\nERROR: '%s', is an invalid option\n\n", argv[1]);
+                
+                //bail
+                goto bail;
+            }
+            
+        }//args
         
-        //happy
-        retVar = 0;
-    }
-    
-    //otherwise
-    // ->just kick off app, as we're root now
-    else
-    {
-        //dbg msg
-        logMsg(LOG_DEBUG, @"root installer instance");
-        
-        //app away
-        retVar = NSApplicationMain(argc, (const char **)argv);
-    }
+        //no args
+        else
+        {
+            //check for r00t
+            // ->then spawn self via auth exec
+            if(0 != geteuid())
+            {
+                //dbg msg
+                logMsg(LOG_DEBUG, @"non-root installer instance");
+                
+                //spawn as root
+                if(YES != spawnAsRoot(argv[0]))
+                {
+                    //err msg
+                    logMsg(LOG_ERR, @"failed to spawn self as r00t");
+                    
+                    //bail
+                    goto bail;
+                }
+                
+                //happy
+                retVar = 0;
+            }
+            
+            //otherwise
+            // ->just kick off app, as we're root now
+            else
+            {
+                //dbg msg
+                logMsg(LOG_DEBUG, @"root installer instance");
+                
+                //app away
+                retVar = NSApplicationMain(argc, (const char **)argv);
+            }
+            
+        }//no args
     
     }//pool
 
@@ -119,3 +189,18 @@ bail:
     
     return bRet;
 }
+
+//install
+BOOL cmdlineInstall()
+{
+    //do it!
+    return [[[Configure alloc] init] configure:ACTION_INSTALL_FLAG];
+}
+
+//uninstall
+BOOL cmdlineUninstall()
+{
+    //do it!
+    return [[[Configure alloc] init] configure:ACTION_UNINSTALL_FLAG];
+}
+
