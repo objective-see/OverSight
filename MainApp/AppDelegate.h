@@ -29,6 +29,9 @@
 //run in headless mode button
 @property (weak) IBOutlet NSButton *runHeadless;
 
+//disable 'inactive' alerts
+@property (weak) IBOutlet NSButton *disableInactive;
+
 //check for updates now button
 @property (weak) IBOutlet NSButton *check4UpdatesNow;
 

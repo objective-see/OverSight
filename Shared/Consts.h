@@ -89,6 +89,9 @@
 //start at login
 #define PREF_START_AT_LOGIN @"startAtLogin"
 
+//disable 'inactive' alerts
+#define PREF_DISABLE_INACTIVE @"disableInactive"
+
 //keycode for 'q'
 #define KEYCODE_Q 0x0C
 

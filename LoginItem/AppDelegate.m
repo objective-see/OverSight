@@ -11,6 +11,8 @@
 #import "Utilities.h"
 #import "AppDelegate.h"
 
+//TODO: "I have a dual monitor setup and just noticed that the alert came up on the other monitor, not the one that Skype was launched on."
+
 
 @interface AppDelegate ()
 

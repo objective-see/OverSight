@@ -888,6 +888,17 @@ bail:
     //always (manually) load preferences
     preferences = [NSDictionary dictionaryWithContentsOfFile:[APP_PREFERENCES stringByExpandingTildeInPath]];
     
+    //check if user wants to ingnore inactive alerts
+    if( (YES == [preferences[PREF_DISABLE_INACTIVE] boolValue]) &&
+        (YES == [DEVICE_INACTIVE isEqual:event[EVENT_DEVICE_STATUS]]) )
+    {
+        //dbg msg
+        logMsg(LOG_DEBUG, @"user has decided to ingore 'inactive' events, so bailing");
+        
+        //bail
+        goto bail;
+    }
+    
     //set title
     // ->audio device
     if(YES == [event[EVENT_DEVICE] isKindOfClass:NSClassFromString(@"AVCaptureHALDevice")])

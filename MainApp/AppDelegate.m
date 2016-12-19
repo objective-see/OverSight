@@ -61,7 +61,7 @@
         
         //write em out
         // ->note; set 'start at login' to false, since no prefs here, mean installer wasn't run (user can later toggle)
-        [@{PREF_LOG_ACTIVITY:@YES, PREF_START_AT_LOGIN:@NO, PREF_RUN_HEADLESS:@NO, PREF_CHECK_4_UPDATES:@YES} writeToFile:[APP_PREFERENCES stringByExpandingTildeInPath] atomically:NO];
+        [@{PREF_LOG_ACTIVITY:@YES, PREF_START_AT_LOGIN:@NO, PREF_RUN_HEADLESS:@NO, PREF_DISABLE_INACTIVE:@NO, PREF_CHECK_4_UPDATES:@YES} writeToFile:[APP_PREFERENCES stringByExpandingTildeInPath] atomically:NO];
     }
     
     //start login item in background
@@ -98,6 +98,9 @@
     
     //set 'run headless' button state
     self.runHeadless.state = [preferences[PREF_RUN_HEADLESS] boolValue];
+    
+    //set 'disable inactive' button state
+    self.disableInactive.state = [preferences[PREF_DISABLE_INACTIVE] boolValue];
     
     //set 'automatically check for updates' button state
     self.check4Updates.state = [preferences[PREF_CHECK_4_UPDATES] boolValue];
@@ -200,7 +203,6 @@ bail:
     {
         //set
         preferences[PREF_CHECK_4_UPDATES] = [NSNumber numberWithBool:[sender state]];
-        
     }
     
     //set 'start at login'
@@ -231,6 +233,13 @@ bail:
             //start
             [self startLoginItem:YES];
         });
+    }
+    
+    //set 'disable inactive alerts'
+    else if(sender == self.disableInactive)
+    {
+        //set
+        preferences[PREF_DISABLE_INACTIVE] = [NSNumber numberWithBool:[sender state]];
     }
     
     //save em
@@ -425,8 +434,7 @@ bail:
             
         });
     }
-                      
-    
+                
     //init path
     loginItem = [[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent:@"/Contents/Library/LoginItems/OverSight Helper.app"];
     

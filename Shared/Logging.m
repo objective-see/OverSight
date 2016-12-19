@@ -6,6 +6,8 @@
 //  Copyright (c) 2016 Objective-See. All rights reserved.
 //
 
+//TODO: add os_log_with_type for 10.12+
+
 #import "Consts.h"
 #import "Logging.h"
 #import "Utilities.h"
