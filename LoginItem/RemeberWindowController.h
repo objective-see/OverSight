@@ -8,7 +8,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface AboutWindowController : NSWindowController <NSWindowDelegate>
+@interface RememberWindowController : NSWindowController <NSWindowDelegate>
 {
     
 }
@@ -16,12 +16,11 @@
 /* PROPERTIES */
 
 //version label/string
-@property (weak) IBOutlet NSTextField *versionLabel;
+@property (weak) IBOutlet NSTextField *windowText;
 
 /* METHODS */
 
-//invoked when user clicks 'more info' button
-// ->open OverSights webpage
-- (IBAction)moreInfo:(id)sender;
+//configure window w/ dynamic text
+-(void)configure:(NSUserNotification*)notification;
 
 @end

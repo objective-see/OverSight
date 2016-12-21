@@ -18,6 +18,8 @@
 		7D17CFE51D8133840017B475 /* AVMonitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D17CFE11D81121E0017B475 /* AVMonitor.m */; };
 		7D17D0101D8136C60017B475 /* OverSightXPC.xpc in Embed XPC Services */ = {isa = PBXBuildFile; fileRef = 7DC9C8121D641A350017D143 /* OverSightXPC.xpc */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		7D3B524C1D9B3A74006568D9 /* libbsm.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D9A7DED1D8CACE30091C1AF /* libbsm.tbd */; };
+		7D6216731E078D65002C1774 /* RemeberWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D6216701E078C09002C1774 /* RemeberWindowController.m */; };
+		7D6216741E07BB27002C1774 /* RememberPopup.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7D62166E1E078BDD002C1774 /* RememberPopup.xib */; };
 		7D62457C1D84FB8900870565 /* Enumerator.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D62457B1D84FB8900870565 /* Enumerator.m */; };
 		7D6245801D85348E00870565 /* Utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D62457F1D85348E00870565 /* Utilities.m */; };
 		7D6245851D87C43900870565 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7D6245841D87C43900870565 /* Images.xcassets */; };
@@ -108,6 +110,9 @@
 		7D17CFE11D81121E0017B475 /* AVMonitor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AVMonitor.m; sourceTree = "<group>"; };
 		7D17CFE21D81121E0017B475 /* AVMonitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AVMonitor.h; sourceTree = "<group>"; };
 		7D32457A1DA59A3700AE0711 /* main.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = main.h; sourceTree = "<group>"; };
+		7D62166E1E078BDD002C1774 /* RememberPopup.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = RememberPopup.xib; sourceTree = "<group>"; };
+		7D6216701E078C09002C1774 /* RemeberWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RemeberWindowController.m; sourceTree = "<group>"; };
+		7D6216721E078C13002C1774 /* RemeberWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RemeberWindowController.h; sourceTree = "<group>"; };
 		7D62457A1D84FB8900870565 /* Enumerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Enumerator.h; sourceTree = "<group>"; };
 		7D62457B1D84FB8900870565 /* Enumerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Enumerator.m; sourceTree = "<group>"; };
 		7D62457E1D85348E00870565 /* Utilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utilities.h; sourceTree = "<group>"; };
@@ -277,6 +282,9 @@
 		8B5755C319DA3F9300799E6B /* LoginItem */ = {
 			isa = PBXGroup;
 			children = (
+				7D6216721E078C13002C1774 /* RemeberWindowController.h */,
+				7D6216701E078C09002C1774 /* RemeberWindowController.m */,
+				7D62166E1E078BDD002C1774 /* RememberPopup.xib */,
 				7D17C5131D658FE20066232A /* Images */,
 				8B5755C919DA3F9300799E6B /* AppDelegate.m */,
 				7D17CFE21D81121E0017B475 /* AVMonitor.h */,
@@ -363,7 +371,7 @@
 		8B57559319DA3E9500799E6B /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0800;
+				LastUpgradeCheck = 0810;
 				ORGANIZATIONNAME = "Cory Bohon";
 				TargetAttributes = {
 					7DC9C8111D641A350017D143 = {
@@ -435,6 +443,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7D6216741E07BB27002C1774 /* RememberPopup.xib in Resources */,
 				7D9A7DE81D893E4F0091C1AF /* InfoWindow.xib in Resources */,
 				7D6245951D87E14800870565 /* MainMenu.xib in Resources */,
 				7D6245931D87E13200870565 /* icon.png in Resources */,
@@ -479,6 +488,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7D6216731E078D65002C1774 /* RemeberWindowController.m in Sources */,
 				7D6245881D87C57600870565 /* Logging.m in Sources */,
 				7D6245801D85348E00870565 /* Utilities.m in Sources */,
 				7D17CFE51D8133840017B475 /* AVMonitor.m in Sources */,

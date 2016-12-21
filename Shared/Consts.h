@@ -107,6 +107,26 @@
 //path to facetime
 #define FACE_TIME @"/Applications/FaceTime.app/Contents/MacOS/FaceTime"
 
+//event keys
+//#define EVENT_SOURCE @"source"
+#define EVENT_DEVICE @"device"
+#define EVENT_TIMESTAMP @"timestamp"
+#define EVENT_DEVICE_STATUS @"status"
+#define EVENT_PROCESS_ID @"processID"
+#define EVENT_PROCESS_NAME @"processName"
+
+
+//source audio
+#define SOURCE_AUDIO @0x1
+
+//source video
+#define SOURCE_VIDEO @0x2
+
+//always allow button
+#define BUTTON_ALWAYS_ALLOW 100
+
+//no/close button
+#define BUTTON_NO 101
 
 
 

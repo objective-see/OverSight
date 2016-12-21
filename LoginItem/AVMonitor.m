@@ -18,9 +18,12 @@
 
 @synthesize mic;
 @synthesize camera;
+@synthesize lastEvent;
 @synthesize audioActive;
 @synthesize videoActive;
+@synthesize lastNotification;
 @synthesize videoMonitorThread;
+@synthesize rememberWindowController;
 
 //init
 -(id)init
@@ -443,6 +446,9 @@ bail:
     // ->update menu to show (all) devices & their status
     [((AppDelegate*)[[NSApplication sharedApplication] delegate]).statusBarMenuController updateStatusItemMenu:devices];
 
+    //add timestamp
+    event[EVENT_TIMESTAMP] = [NSDate date];
+        
     //add device
     event[EVENT_DEVICE] = self.camera;
     
@@ -695,6 +701,9 @@ bail:
     // ->update menu to show (all) devices & their status
     [((AppDelegate*)[[NSApplication sharedApplication] delegate]).statusBarMenuController updateStatusItemMenu:@[@{EVENT_DEVICE:self.mic, EVENT_DEVICE_STATUS:@(self.audioActive)},@{EVENT_DEVICE:self.camera, EVENT_DEVICE_STATUS:@(self.videoActive)}]];
 
+    //add timestamp
+    event[EVENT_TIMESTAMP] = [NSDate date];
+        
     //add device
     event[EVENT_DEVICE] = self.mic;
     
@@ -860,6 +869,10 @@ bail:
     //notification
     NSUserNotification* notification = nil;
     
+    //device
+    // ->audio or video
+    NSNumber* deviceType = nil;
+    
     //title
     NSMutableString* title = nil;
     
@@ -885,6 +898,32 @@ bail:
     //alloc log msg
     sysLogMsg = [NSMutableString string];
     
+    //check if event is essentially a duplicate (facetime, etc)
+    if(nil != self.lastEvent)
+    {
+        //TODO: remove
+        //NSLog(@"difference %f", fabs([self.lastEvent[EVENT_TIMESTAMP] timeIntervalSinceDate:event[EVENT_TIMESTAMP]]));
+        
+        //less than 10 second ago?
+        if(fabs([self.lastEvent[EVENT_TIMESTAMP] timeIntervalSinceDate:event[EVENT_TIMESTAMP]]) < 10)
+        {
+            //same process/device/action
+            if( (YES == [self.lastEvent[EVENT_PROCESS_ID] isEqual:event[EVENT_PROCESS_ID]]) &&
+                (YES == [self.lastEvent[EVENT_DEVICE] isEqual:event[EVENT_DEVICE]]) &&
+                (YES == [self.lastEvent[EVENT_DEVICE_STATUS] isEqual:event[EVENT_DEVICE_STATUS]]) )
+            {
+                //update
+                self.lastEvent = event;
+                
+                //bail to ignore
+                goto bail;
+            }
+        }
+    }//'same' event check
+    
+    //update last event
+    self.lastEvent = event;
+    
     //always (manually) load preferences
     preferences = [NSDictionary dictionaryWithContentsOfFile:[APP_PREFERENCES stringByExpandingTildeInPath]];
     
@@ -899,19 +938,24 @@ bail:
         goto bail;
     }
     
-    //set title
-    // ->audio device
+    //set device and title for audio
     if(YES == [event[EVENT_DEVICE] isKindOfClass:NSClassFromString(@"AVCaptureHALDevice")])
     {
         //add
         [title appendString:@"Audio Device"];
+        
+        //set device
+        deviceType = SOURCE_AUDIO;
+        
     }
-    //add source
-    // ->video device
+    //set device and title for video
     else
     {
         //add
         [title appendString:@"Video Device"];
+        
+        //set device
+        deviceType = SOURCE_VIDEO;
     }
     
     //add action
@@ -953,14 +997,14 @@ bail:
         processName = getProcessName([event[EVENT_PROCESS_ID] intValue]);
         
         //set other button title
-        notification.otherButtonTitle = @"allowz";
+        notification.otherButtonTitle = @"allow";
         
         //set action title
         notification.actionButtonTitle = @"block";
         
-        //set pid in user info
-        // ->allows code to try kill proc (later) if user clicks 'block'
-        notification.userInfo = @{EVENT_PROCESS_ID:event[EVENT_PROCESS_ID]};
+        //set pid/name/device into user info
+        // ->allows code to whitelist proc and/or kill proc (later) if user clicks 'block'
+        notification.userInfo = @{EVENT_PROCESS_ID:event[EVENT_PROCESS_ID], EVENT_PROCESS_NAME:processName, EVENT_DEVICE:deviceType};
         
         //set details
         // ->name of process using it / icon too?
@@ -998,6 +1042,9 @@ bail:
     
     //set subtitle
     [notification setSubtitle:details];
+    
+    //set id
+    notification.identifier = [[NSUUID UUID] UUIDString];
     
     //set notification
     [[NSUserNotificationCenter defaultUserNotificationCenter] setDelegate:self];
@@ -1058,6 +1105,24 @@ bail:
     //dbg msg
     logMsg(LOG_DEBUG, [NSString stringWithFormat:@"user responded to notification: %@", notification]);
     
+    //ignore if this notification was already seen
+    // ->need this logic, since have to determine if 'allow' was invoke indirectly
+    if(nil != self.lastNotification)
+    {
+        //same?
+        if(YES == [self.lastNotification isEqualToString:notification.identifier])
+        {
+            //update
+            self.lastNotification = notification.identifier;
+            
+            //ignore
+            goto bail;
+        }
+    }
+    
+    //update
+    self.lastNotification = notification.identifier;
+    
     //for alerts without an action
     // ->don't need to do anything!
     if(YES != notification.hasActionButton)
@@ -1092,11 +1157,33 @@ bail:
         syslog(LOG_ERR, "%s\n", sysLogMsg.UTF8String);
     }
     
-    //when user clicks 'allow'
-    // ->show popup w/ option to whitelist
-    if(notification.activationType == NSUserNotificationActivationTypeAdditionalActionClicked)
+    //check if user clicked 'allow' via user info (since OS doesn't directly deliver this)
+    // ->if allow was clicked, show a popup w/ option to rember ('whitelist') the application
+    if( (nil != notification.userInfo) &&
+        (NSUserNotificationActivationTypeAdditionalActionClicked == [notification.userInfo[@"activationType"] integerValue]) )
     {
-        //TODO: show popup
+        //alloc/init settings window
+        if(nil == self.rememberWindowController)
+        {
+            //alloc/init
+            rememberWindowController = [[RememberWindowController alloc] initWithWindowNibName:@"RememberPopup"];
+        }
+        
+        //center window
+        [[self.rememberWindowController window] center];
+        
+        //show it
+        [self.rememberWindowController showWindow:self];
+        
+        //manually configure
+        // ->invoke here as the outlets will be set
+        [self.rememberWindowController configure:notification];
+        
+        //make it key window
+        [self.rememberWindowController.window makeKeyAndOrderFront:self];
+        
+        //make window front
+        [NSApp activateIgnoringOtherApps:YES];
         
         //dbg msg
         logMsg(LOG_DEBUG, @"user clicked 'allow'");
@@ -1104,7 +1191,7 @@ bail:
     
     //when user clicks 'block'
     // ->kill the process to block it
-    else if(notification.activationType == NSUserNotificationActivationTypeActionButtonClicked)
+    else if(NSUserNotificationActivationTypeActionButtonClicked == notification.activationType)
     {
         //dbg msg
         logMsg(LOG_DEBUG, @"user clicked 'block'");
@@ -1140,7 +1227,6 @@ bail:
              {
                  //err msg
                  logMsg(LOG_ERR, [NSString stringWithFormat:@"failed to kill/block: %@", processID]);
-                 
              }
              
              //close connection
@@ -1155,6 +1241,75 @@ bail:
 //bail
 bail:
          
+    return;
+}
+
+//manually monitor delivered notifications to see if user closes alert
+// ->can't detect 'allow' otherwise :/ (see: http://stackoverflow.com/questions/21110714/mac-os-x-nsusernotificationcenter-notification-get-dismiss-event-callback)
+-(void)userNotificationCenter:(NSUserNotificationCenter *)center didDeliverNotification:(NSUserNotification *)notification
+{
+    //flag
+    __block BOOL notificationStillPresent;
+    
+    //user dictionary
+    __block NSMutableDictionary* userInfo = nil;
+    
+    //only process notifications have 'allow' / 'block'
+    if(YES == notification.hasActionButton)
+    {
+        //monitor in background to see if alert was dismissed
+        // ->invokes normal 'didActivateNotification' callback when alert is dimsissed
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+        ^{
+                //monitor all delivered notifications until it goes away
+                do {
+                    
+                    //reset
+                    notificationStillPresent = NO;
+                   
+                    //check all delivered notifications
+                    for (NSUserNotification *nox in [[NSUserNotificationCenter defaultUserNotificationCenter] deliveredNotifications])
+                    {
+                        //check
+                        if(YES == [nox.identifier isEqualToString:notification.identifier])
+                        {
+                            //found!
+                            notificationStillPresent = YES;
+                            
+                            //exit loop
+                            break;
+                        }
+                    }
+                    
+                    //nap if notification is still there
+                    if(YES == notificationStillPresent)
+                    {
+                        //nap
+                        [NSThread sleepForTimeInterval:0.25f];
+                    }
+                    
+                //keep monitoring until its gone
+                } while(YES == notificationStillPresent);
+            
+                //alert was dismissed
+                // ->invoke 'didActivateNotification' to process if it was an 'allow/block' alert
+                dispatch_async(dispatch_get_main_queue(),
+                ^{
+                        //grab user info dictionary
+                        userInfo = [notification.userInfo mutableCopy];
+                    
+                        //add activation type
+                        userInfo[@"activationType"] = [NSNumber numberWithInteger:NSUserNotificationActivationTypeAdditionalActionClicked];
+                    
+                        //update
+                        notification.userInfo =  userInfo;
+                    
+                        //deliver
+                        [self userNotificationCenter:center didActivateNotification:notification];
+                });
+            });
+        }
+
     return;
 }
 
@@ -1212,7 +1367,7 @@ bail:
                  }
                  
                  //generate notification
-                 [self generateNotification:@{EVENT_DEVICE:self.camera, EVENT_DEVICE_STATUS:DEVICE_ACTIVE, EVENT_PROCESS_ID:processID}];
+                 [self generateNotification:@{EVENT_TIMESTAMP:[NSDate date], EVENT_DEVICE:self.camera, EVENT_DEVICE_STATUS:DEVICE_ACTIVE, EVENT_PROCESS_ID:processID}];
              }
              
              //signal sema

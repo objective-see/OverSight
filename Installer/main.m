@@ -21,7 +21,7 @@ int main(int argc, const char * argv[])
         //handle '-install' / '-uninstall'
         // ->this performs non-UI logic for easier automated deployment
         if( (argc >= 2) &&
-            (YES != [[NSString stringWithUTF8String:argv[1]] hasPrefix:@"-psn_"]) )
+            ( (0 == strcmp(argv[1], CMD_INSTALL)) || (0 == strcmp(argv[1], CMD_UNINSTALL)) ) )
         {
             //first check rooot
             if(0 != geteuid())
@@ -69,56 +69,44 @@ int main(int argc, const char * argv[])
                 //happy
                 retVar = 0;
             }
+        
+            //bail
+            goto bail;
             
-            //invalid arg
-            else
+        }//args
+        
+        //check for r00t
+        // ->then spawn self via auth exec
+        if(0 != geteuid())
+        {
+            //dbg msg
+            logMsg(LOG_DEBUG, @"non-root installer instance");
+            
+            //spawn as root
+            if(YES != spawnAsRoot(argv[0]))
             {
                 //err msg
-                printf("\nERROR: '%s', is an invalid option\n\n", argv[1]);
+                logMsg(LOG_ERR, @"failed to spawn self as r00t");
                 
                 //bail
                 goto bail;
             }
             
-        }//args
+            //happy
+            retVar = 0;
+        }
         
-        //no args
+        //otherwise
+        // ->just kick off app, as we're root now
         else
         {
-            //check for r00t
-            // ->then spawn self via auth exec
-            if(0 != geteuid())
-            {
-                //dbg msg
-                logMsg(LOG_DEBUG, @"non-root installer instance");
-                
-                //spawn as root
-                if(YES != spawnAsRoot(argv[0]))
-                {
-                    //err msg
-                    logMsg(LOG_ERR, @"failed to spawn self as r00t");
-                    
-                    //bail
-                    goto bail;
-                }
-                
-                //happy
-                retVar = 0;
-            }
+            //dbg msg
+            logMsg(LOG_DEBUG, @"root installer instance");
             
-            //otherwise
-            // ->just kick off app, as we're root now
-            else
-            {
-                //dbg msg
-                logMsg(LOG_DEBUG, @"root installer instance");
-                
-                //app away
-                retVar = NSApplicationMain(argc, (const char **)argv);
-            }
-            
-        }//no args
-    
+            //app away
+            retVar = NSApplicationMain(argc, (const char **)argv);
+        }
+        
     }//pool
 
 //bail

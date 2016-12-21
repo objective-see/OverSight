@@ -13,19 +13,12 @@
 #import <CoreMediaIO/CMIOHardware.h>
 #import <AVFoundation/AVFoundation.h>
 
+#import "RemeberWindowController.h"
 
 /* DEFINES */
 
 #define VIDEO_DISABLED 0x0
 #define VIDEO_ENABLED  0x1
-
-#define EVENT_SOURCE @"source"
-#define EVENT_DEVICE @"device"
-#define EVENT_DEVICE_STATUS @"status"
-#define EVENT_PROCESS_ID @"processID"
-
-#define SOURCE_AUDIO @0x1
-#define SOURCE_VIDEO @0x2
 
 #define DEVICE_INACTIVE @0x0
 #define DEVICE_ACTIVE   @0x1
@@ -52,6 +45,17 @@
 
 //monitor thread
 @property(nonatomic, retain)NSThread* videoMonitorThread;
+
+//remember popup/window controller
+@property(nonatomic, retain)RememberWindowController* rememberWindowController;
+
+//last event
+@property(nonatomic, retain)NSDictionary* lastEvent;
+
+//last notification
+@property(nonatomic, retain)NSString* lastNotification;
+
+
 
 /* METHODS */
 
