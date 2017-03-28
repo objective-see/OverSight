@@ -15,4 +15,7 @@
 
 /* FUNCTION DEFINITIONS */
 
+//send XPC message to remove process from whitelist file
+void unWhiteList(NSString* process);
+
 #endif /* main_h */

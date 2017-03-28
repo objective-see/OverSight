@@ -6,6 +6,7 @@
 //  Copyright (c) 2016 Objective-See. All rights reserved.
 //
 
+#import "Consts.h"
 #import "Logging.h"
 #import "Utilities.h"
 #import "Enumerator.h"
@@ -75,6 +76,129 @@
     return;
 }
 
+//whitelist a process
+-(void)whitelistProcess:(NSString*)processPath reply:(void (^)(BOOL))reply
+{
+    //flag
+    BOOL wasAdded = NO;
+    
+    //path to whitelist
+    NSString* path = nil;
+    
+    //whitelist
+    NSMutableArray* whiteList = nil;
+    
+    //error
+    NSError* error = nil;
+    
+    //init path to whitelist
+    path = [[APP_SUPPORT_DIRECTORY stringByExpandingTildeInPath] stringByAppendingPathComponent:FILE_WHITELIST];
+    
+    //load whitelist
+    whiteList = [NSMutableArray arrayWithContentsOfFile:path];
+    
+    //failed to load
+    // ->might not exist yet, so alloc
+    if(nil == whiteList)
+    {
+        //alloc
+        whiteList = [NSMutableArray array];
+    }
+    
+    //add
+    [whiteList addObject:processPath];
+    
+    //check if intermediate dirs exist
+    // ->create them if they aren't there yet
+    if(YES != [[NSFileManager defaultManager] fileExistsAtPath:[APP_SUPPORT_DIRECTORY stringByExpandingTildeInPath]])
+    {
+        //dbg msg
+        logMsg(LOG_DEBUG, [NSString stringWithFormat:@"XPC: creating app support directory: %@", [APP_SUPPORT_DIRECTORY stringByExpandingTildeInPath]]);
+        
+        //create
+        if(YES != [[NSFileManager defaultManager] createDirectoryAtPath: [APP_SUPPORT_DIRECTORY stringByExpandingTildeInPath] withIntermediateDirectories:YES attributes:nil error:&error])
+        {
+            //err msg
+            logMsg(LOG_ERR, [NSString stringWithFormat:@"XPC: failed to create directory: %@", error]);
+            
+            //bail
+            goto bail;
+        }
+    }
+    
+    //save to disk
+    if(YES != [whiteList writeToFile:path atomically:YES])
+    {
+        //err msg
+        logMsg(LOG_ERR, [NSString stringWithFormat:@"XPC: failed to save %@ -> %@", processPath, path]);
+        
+        //bail
+        goto bail;
+    }
+    
+    //happy
+    wasAdded = YES;
+    
+//bail
+bail:
+    
+    //reply
+    reply(wasAdded);
+    
+    return;
+}
+
+//remove a process from the whitelist file
+-(void)unWhitelistProcess:(NSString*)processPath reply:(void (^)(BOOL))reply
+{
+    //flag
+    BOOL wasRemoved = NO;
+    
+    //path to whitelist
+    NSString* path = nil;
+    
+    //whitelist
+    NSMutableArray* whiteList = nil;
+    
+    //init path to whitelist
+    path = [[APP_SUPPORT_DIRECTORY stringByExpandingTildeInPath] stringByAppendingPathComponent:FILE_WHITELIST];
+    
+    //load whitelist
+    whiteList = [NSMutableArray arrayWithContentsOfFile:path];
+    if(nil == whiteList)
+    {
+        //err msg
+        logMsg(LOG_ERR, [NSString stringWithFormat:@"XPC: failed to load whitelist from %@", path]);
+        
+        //bail
+        goto bail;
+    }
+    
+    //remove item
+    [whiteList removeObject:processPath];
+    
+    //save to disk
+    if(YES != [whiteList writeToFile:path atomically:YES])
+    {
+        //err msg
+        logMsg(LOG_ERR, [NSString stringWithFormat:@"XPC: failed to save updated whitelist to %@", path]);
+        
+        //bail
+        goto bail;
+    }
+    
+    //happy
+    wasRemoved = YES;
+    
+//bail
+bail:
+    
+    //reply
+    reply(wasRemoved);
+    
+    return;
+}
+
 //kill a process
 -(void)killProcess:(NSNumber*)processID reply:(void (^)(BOOL))reply
 {
@@ -85,7 +209,7 @@
     if(-1 == kill(processID.intValue, SIGKILL))
     {
         //err msg
-        logMsg(LOG_ERR, [NSString stringWithFormat:@"failed to kill %@, with %d", processID, errno]);
+        logMsg(LOG_ERR, [NSString stringWithFormat:@"XPC: failed to kill %@, with %d", processID, errno]);
         
         //bail
         goto bail;

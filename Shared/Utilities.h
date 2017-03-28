@@ -1,6 +1,6 @@
 //
 //  Utilities.h
-//  WhatsYourSign
+//  OverSight
 //
 //  Created by Patrick Wardle on 7/7/16.
 //  Copyright (c) 2016 Objective-See. All rights reserved.
@@ -58,6 +58,10 @@ NSString* getProcessName(pid_t pid);
 //given a process name
 // ->get the (first) instance of that process
 pid_t getProcessID(NSString* processName, uid_t userID);
+
+//get an icon for a process
+// ->for apps, this will be app's icon, otherwise just a standard system one
+NSImage* getIconForProcess(NSString* path);
 
 //wait until a window is non nil
 // ->then make it modal

@@ -3,7 +3,7 @@
 //  OverSight
 //
 //  Created by Patrick Wardle on 9/16/16.
-//  Copyright © 2016 Cory Bohon. All rights reserved.
+//  Copyright (c) 2016 Objective-See. All rights reserved.
 //
 
 #ifndef main_h

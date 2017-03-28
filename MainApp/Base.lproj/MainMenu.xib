@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11542" systemVersion="16B2555" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11762" systemVersion="16D32" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11542"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11762"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -19,7 +19,7 @@
                 <outlet property="check4UpdatesNow" destination="M9W-tZ-0Z8" id="PKA-ah-dde"/>
                 <outlet property="disableInactive" destination="Nf6-uL-uwr" id="7js-Vr-2nI"/>
                 <outlet property="logActivity" destination="rVS-uv-DNf" id="5XJ-Ec-mNt"/>
-                <outlet property="overlay" destination="bHg-M3-YdC" id="dTJ-FV-0Bt"/>
+                <outlet property="overlay" destination="ewJ-2y-7Qh" id="tzX-7g-UCn"/>
                 <outlet property="progressIndicator" destination="K08-2Z-AIq" id="0K0-Ao-9Ad"/>
                 <outlet property="runHeadless" destination="7bS-hN-Wc7" id="dbA-Sv-fUR"/>
                 <outlet property="spinner" destination="sph-QU-dL4" id="uwr-2X-sg8"/>
@@ -159,25 +159,6 @@
                             <action selector="manageRules:" target="Voe-Tx-rLC" id="UuK-ti-hYN"/>
                         </connections>
                     </button>
-                    <customView hidden="YES" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bHg-M3-YdC">
-                        <rect key="frame" x="27" y="116" width="426" height="155"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <subviews>
-                            <textField hidden="YES" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="u4r-or-Aue">
-                                <rect key="frame" x="-5" y="68" width="437" height="20"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="starting monitor...." id="vap-C0-2c8">
-                                    <font key="font" size="13" name="Menlo-Regular"/>
-                                    <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                            <progressIndicator hidden="YES" wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" maxValue="100" bezeled="NO" indeterminate="YES" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="K08-2Z-AIq">
-                                <rect key="frame" x="197" y="96" width="32" height="32"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                            </progressIndicator>
-                        </subviews>
-                    </customView>
                 </subviews>
             </view>
         </window>
@@ -205,6 +186,26 @@
             </items>
             <point key="canvasLocation" x="-49" y="-382"/>
         </menu>
+        <customView id="ewJ-2y-7Qh" userLabel="Overlay">
+            <rect key="frame" x="0.0" y="0.0" width="480" height="360"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+            <subviews>
+                <textField hidden="YES" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="u4r-or-Aue">
+                    <rect key="frame" x="18" y="164" width="444" height="25"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="message..." id="vap-C0-2c8">
+                        <font key="font" size="17" name="Menlo-Bold"/>
+                        <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <progressIndicator hidden="YES" wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" maxValue="100" bezeled="NO" indeterminate="YES" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="K08-2Z-AIq">
+                    <rect key="frame" x="224" y="197" width="32" height="32"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                </progressIndicator>
+            </subviews>
+            <point key="canvasLocation" x="765" y="150"/>
+        </customView>
     </objects>
     <resources>
         <image name="icon" width="512" height="512"/>

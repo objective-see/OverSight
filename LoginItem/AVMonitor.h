@@ -43,6 +43,12 @@
 //flag indicating video (camera) is active
 @property BOOL videoActive;
 
+//flag indicating an audio active alert was shown
+@property BOOL showAudioDeactivation;
+
+//flag indicating a video active alert was shown
+@property BOOL showVideoDeactivation;
+
 //monitor thread
 @property(nonatomic, retain)NSThread* videoMonitorThread;
 
@@ -55,9 +61,15 @@
 //last notification
 @property(nonatomic, retain)NSString* lastNotification;
 
+//whitelisted procs
+@property(nonatomic, retain)NSMutableArray* whiteList;
+
 
 
 /* METHODS */
+
+//load whitelist
+-(void)loadWhitelist;
 
 //kicks off thread to monitor
 -(BOOL)monitor;

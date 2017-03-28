@@ -7,6 +7,7 @@
 //
 
 #import "Consts.h"
+#import "Logging.h"
 #import "Configure.h"
 #import "Utilities.h"
 #import "ConfigureWindowController.h"
@@ -108,47 +109,60 @@
     //action
     NSUInteger action = 0;
     
-    //hide 'get more info' button
-    self.moreInfoButton.hidden = YES;
+    //dbg msg
+    logMsg(LOG_DEBUG, [NSString stringWithFormat:@"handling action click: %@", buttonTitle]);
     
-    //set action
-    // ->install daemon
-    if(YES == [buttonTitle isEqualToString:ACTION_INSTALL])
+    //close?
+    // ->just exit
+    if(YES == [buttonTitle isEqualToString:ACTION_CLOSE])
     {
-        //set
-        action = ACTION_INSTALL_FLAG;
+        //close
+        [self.window close];
     }
-    //set action
-    // ->uninstall daemon
+    
+    //install/uninstall logic handlers
     else
     {
-        //set
-        action = ACTION_UNINSTALL_FLAG;
+        
+        //hide 'get more info' button
+        self.moreInfoButton.hidden = YES;
+        
+        //set action
+        // ->install daemon
+        if(YES == [buttonTitle isEqualToString:ACTION_INSTALL])
+        {
+            //set
+            action = ACTION_INSTALL_FLAG;
+        }
+        //set action
+        // ->uninstall daemon
+        else
+        {
+            //set
+            action = ACTION_UNINSTALL_FLAG;
+        }
+        
+        //disable 'x' button
+        // ->don't want user killing app during install/upgrade
+        [[self.window standardWindowButton:NSWindowCloseButton] setEnabled:NO];
+        
+        //clear status msg
+        [self.statusMsg setStringValue:@""];
+        
+        //force redraw of status msg
+        // ->sometime doesn't refresh (e.g. slow VM)
+        [self.statusMsg setNeedsDisplay:YES];
+        
+        //invoke logic to install/uninstall
+        // ->do in background so UI doesn't block
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+        ^{
+            //install/uninstall
+            [self lifeCycleEvent:action];
+        
+        });
     }
-    
-    //disable 'x' button
-    // ->don't want user killing app during install/upgrade
-    [[self.window standardWindowButton:NSWindowCloseButton] setEnabled:NO];
-    
-    //clear status msg
-    [self.statusMsg setStringValue:@""];
-    
-    //force redraw of status msg
-    // ->sometime doesn't refresh (e.g. slow VM)
-    [self.statusMsg setNeedsDisplay:YES];
-    
-    //invoke logic to install/uninstall
-    // ->do in background so UI doesn't block
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
-    ^{
-        //install/uninstall
-        [self lifeCycleEvent:action];
-    
-    });
 
-//bail
-bail:
-    
     return;
 }
 
@@ -195,7 +209,7 @@ bail:
     
     //sleep
     // ->allow 'install' || 'uninstall' msg to show up
-    sleep(1);
+    [NSThread sleepForTimeInterval:1.0f];
     
     //perform action (install | uninstall)
     // ->perform background actions
@@ -336,26 +350,33 @@ bail:
     //set status msg
     [self.statusMsg setStringValue:resultMsg];
     
-    //toggle buttons
-    // ->after install turn on 'uninstall' and off 'install'
+    //update button
+    // ->after install change butter to 'close'
     if(ACTION_INSTALL_FLAG == event)
     {
-        //enable uninstall
-        self.uninstallButton.enabled = YES;
+        //set button title to 'close'
+        self.installButton.title = ACTION_CLOSE;
         
-        //disable install
-        self.installButton.enabled = NO;
+        //enable
+        self.installButton.enabled = YES;
+        
+        //make it active
+        [self.window makeFirstResponder:self.installButton];
     }
-    //toggle buttons
-    // ->after uninstall turn off 'uninstall' and on 'install'
+    //update button
+    // ->after uninstall change butter to 'close'
     else
     {
-        //disable
-        self.uninstallButton.enabled = NO;
+        //set button title to 'close'
+        self.uninstallButton.title = ACTION_CLOSE;
         
-        //enable close button
-        self.installButton.enabled = YES;
+        //enable
+        self.uninstallButton.enabled = YES;
+        
+        //make it active
+        [self.window makeFirstResponder:self.uninstallButton];
     }
+
 
     //ok to re-enable 'x' button
     [[self.window standardWindowButton:NSWindowCloseButton] setEnabled:YES];

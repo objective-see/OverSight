@@ -37,6 +37,10 @@
 		7D9A7DEC1D8BE1E00091C1AF /* Exception.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D17C5311D659E580066232A /* Exception.m */; };
 		7D9A7DF21D8F2C900091C1AF /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7D6245841D87C43900870565 /* Images.xcassets */; };
 		7DAF4B7F1D657192000DA31A /* StatusBarMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DAF4B7D1D656FD3000DA31A /* StatusBarMenu.m */; };
+		7DC038021E87025100349474 /* RulesWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DC038001E87025100349474 /* RulesWindowController.m */; };
+		7DC038031E87025100349474 /* Rules.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7DC038011E87025100349474 /* Rules.xib */; };
+		7DC038061E8716F700349474 /* RuleRowCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DC038051E8716F700349474 /* RuleRowCell.m */; };
+		7DC038091E8717B200349474 /* RuleRow.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DC038081E8717B200349474 /* RuleRow.m */; };
 		7DC9C8171D641A350017D143 /* OverSightXPC.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DC9C8161D641A350017D143 /* OverSightXPC.m */; };
 		7DC9C8191D641A350017D143 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DC9C8181D641A350017D143 /* main.m */; };
 		8B5755A119DA3E9500799E6B /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B5755A019DA3E9500799E6B /* main.m */; };
@@ -125,6 +129,13 @@
 		7D9A7DEF1D8CADD10091C1AF /* main.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = main.h; path = OverSightXPC/main.h; sourceTree = "<group>"; };
 		7DAF4B7C1D656FD3000DA31A /* StatusBarMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StatusBarMenu.h; sourceTree = "<group>"; };
 		7DAF4B7D1D656FD3000DA31A /* StatusBarMenu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StatusBarMenu.m; sourceTree = "<group>"; };
+		7DC037FF1E87025100349474 /* RulesWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RulesWindowController.h; sourceTree = "<group>"; };
+		7DC038001E87025100349474 /* RulesWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RulesWindowController.m; sourceTree = "<group>"; };
+		7DC038011E87025100349474 /* Rules.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = Rules.xib; sourceTree = "<group>"; };
+		7DC038041E8716F700349474 /* RuleRowCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RuleRowCell.h; sourceTree = "<group>"; };
+		7DC038051E8716F700349474 /* RuleRowCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RuleRowCell.m; sourceTree = "<group>"; };
+		7DC038071E8717B200349474 /* RuleRow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RuleRow.h; sourceTree = "<group>"; };
+		7DC038081E8717B200349474 /* RuleRow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RuleRow.m; sourceTree = "<group>"; };
 		7DC9C8121D641A350017D143 /* OverSightXPC.xpc */ = {isa = PBXFileReference; explicitFileType = "wrapper.xpc-service"; includeInIndex = 0; path = OverSightXPC.xpc; sourceTree = BUILT_PRODUCTS_DIR; };
 		7DC9C8151D641A350017D143 /* OverSightXPC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OverSightXPC.h; sourceTree = "<group>"; };
 		7DC9C8161D641A350017D143 /* OverSightXPC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OverSightXPC.m; sourceTree = "<group>"; };
@@ -262,9 +273,16 @@
 		8B57559D19DA3E9500799E6B /* MainApp */ = {
 			isa = PBXGroup;
 			children = (
+				7DC038071E8717B200349474 /* RuleRow.h */,
+				7DC038081E8717B200349474 /* RuleRow.m */,
+				7DC038041E8716F700349474 /* RuleRowCell.h */,
+				7DC038051E8716F700349474 /* RuleRowCell.m */,
 				8B5755A219DA3E9500799E6B /* AppDelegate.h */,
 				8B5755A319DA3E9500799E6B /* AppDelegate.m */,
 				8B5755A719DA3E9500799E6B /* MainMenu.xib */,
+				7DC037FF1E87025100349474 /* RulesWindowController.h */,
+				7DC038001E87025100349474 /* RulesWindowController.m */,
+				7DC038011E87025100349474 /* Rules.xib */,
 				8B57559E19DA3E9500799E6B /* Supporting Files */,
 			);
 			path = MainApp;
@@ -371,7 +389,7 @@
 		8B57559319DA3E9500799E6B /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0810;
+				LastUpgradeCheck = 0820;
 				ORGANIZATIONNAME = "Cory Bohon";
 				TargetAttributes = {
 					7DC9C8111D641A350017D143 = {
@@ -431,6 +449,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7D9A7DF21D8F2C900091C1AF /* Images.xcassets in Resources */,
+				7DC038031E87025100349474 /* Rules.xib in Resources */,
 				7D6245921D87D46800870565 /* InfoWindow.xib in Resources */,
 				7D17C53C1D659E580066232A /* icon.png in Resources */,
 				8B5755A919DA3E9500799E6B /* MainMenu.xib in Resources */,
@@ -474,12 +493,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7DC038061E8716F700349474 /* RuleRowCell.m in Sources */,
+				7DC038021E87025100349474 /* RulesWindowController.m in Sources */,
 				7D6245911D87D39E00870565 /* InfoWindowController.m in Sources */,
 				7D62458B1D87CE0900870565 /* AboutWindowController.m in Sources */,
 				7D6245891D87C58400870565 /* Logging.m in Sources */,
 				8B5755A419DA3E9500799E6B /* AppDelegate.m in Sources */,
 				8B5755A119DA3E9500799E6B /* main.m in Sources */,
 				7D17C53B1D659E580066232A /* Exception.m in Sources */,
+				7DC038091E8717B200349474 /* RuleRow.m in Sources */,
 				7D17C53F1D659E580066232A /* Utilities.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -586,6 +608,7 @@
 				CODE_SIGN_IDENTITY = "Developer ID Application: Objective-See, LLC (VBG97UB4TA)";
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;

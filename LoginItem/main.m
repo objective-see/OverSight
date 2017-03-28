@@ -9,6 +9,7 @@
 #import "main.h"
 #import "Logging.h"
 #import "Utilities.h"
+#import "../Shared/XPCProtocol.h"
 
 //go go go
 // ->either install/uninstall, or just launch normally
@@ -20,11 +21,11 @@ int main(int argc, const char * argv[])
     //dbg msg
     logMsg(LOG_DEBUG, [NSString stringWithFormat:@"starting login item (args: %@/user: %@)", [[NSProcessInfo processInfo] arguments], NSUserName()]);
            
-    //check for uninstall/install flags
+    //check for uninstall/install flags, and process to remove from whitelist
     if(2 == argc)
     {
         //install
-        if(0 == strcmp(argv[1], ACTION_INSTALL.UTF8String))
+        if(0 == strcmp(argv[1], CMD_INSTALL))
         {
             //dbg msg
             logMsg(LOG_DEBUG, @"running install logic");
@@ -48,7 +49,7 @@ int main(int argc, const char * argv[])
             goto bail;
         }
         //uninstall
-        else if(0 == strcmp(argv[1], ACTION_UNINSTALL.UTF8String))
+        else if(0 == strcmp(argv[1], CMD_UNINSTALL))
         {
             //dbg msg
             logMsg(LOG_DEBUG, @"running uninstall logic");
@@ -68,9 +69,21 @@ int main(int argc, const char * argv[])
             //dbg msg
             logMsg(LOG_DEBUG, [NSString stringWithFormat:@"removed preferences from: %@", [APP_PREFERENCES stringByExpandingTildeInPath]]);
             
-            
             //bail
             goto bail;
+        }
+        
+        //assume its a path to a process to remove from whitelist
+        else
+        {
+            //dbg msg
+            logMsg(LOG_DEBUG, @"running 'un-whitelist me' logic");
+            
+            //remove from whitelist file
+            unWhiteList([NSString stringWithUTF8String:argv[1]]);
+            
+            //don't bail
+            // ->let it start (as it was killed)
         }
     }
     
@@ -81,4 +94,46 @@ int main(int argc, const char * argv[])
 bail:
     
     return iReturn;
+}
+
+//send XPC message to remove process from whitelist file
+void unWhiteList(NSString* process)
+{
+    //xpc connection
+    __block NSXPCConnection* xpcConnection = nil;
+
+    //init XPC
+    xpcConnection = [[NSXPCConnection alloc] initWithServiceName:@"com.objective-see.OverSightXPC"];
+    
+    //set remote object interface
+    xpcConnection.remoteObjectInterface = [NSXPCInterface interfaceWithProtocol:@protocol(XPCProtocol)];
+    
+    //resume
+    [xpcConnection resume];
+    
+    //dbg msg
+    logMsg(LOG_DEBUG, [NSString stringWithFormat:@"sending XPC message to remove %@ from whitelist file", process]);
+    
+    //invoke XPC method 'whitelistProcess' to add process to white list
+    [[xpcConnection remoteObjectProxy] unWhitelistProcess:process reply:^(BOOL wasRemoved)
+     {
+         //dbg msg
+         logMsg(LOG_DEBUG, [NSString stringWithFormat:@"got XPC response: %d", wasRemoved]);
+         
+         //err msg ono failure
+         if(YES != wasRemoved)
+         {
+             //err msg
+             logMsg(LOG_ERR, [NSString stringWithFormat:@"failed to remove %@ from whitelist", process]);
+         }
+         
+         //close connection
+         [xpcConnection invalidate];
+         
+         //nil out
+         xpcConnection = nil;
+         
+     }];
+    
+    return;
 }

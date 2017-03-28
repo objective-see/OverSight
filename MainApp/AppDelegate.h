@@ -9,6 +9,8 @@
 #import <Cocoa/Cocoa.h>
 #import "InfoWindowController.h"
 #import "AboutWindowController.h"
+#import "RulesWindowController.h"
+
 
 @interface AppDelegate : NSObject <NSApplicationDelegate>
 
@@ -47,6 +49,9 @@
 //about window controller
 @property(nonatomic, retain)AboutWindowController* aboutWindowController;
 
+//rules
+@property(nonatomic, retain)RulesWindowController* rulesWindowController;
+
 //overlay view
 @property (weak) IBOutlet NSView *overlay;
 
@@ -80,8 +85,8 @@
 //'manage rules' button handler
 -(IBAction)manageRules:(id)sender;
 
-//start the login item
--(void)startLoginItem:(BOOL)shouldRestart;
+//(re)start the login item
+-(void)startLoginItem:(BOOL)shouldRestart args:(NSArray*)args;
 
 @end
 

@@ -25,7 +25,7 @@
 #define PRODUCT_URL @"https://objective-see.com/products/oversight.html"
 
 //product version url
-#define PRODUCT_VERSION_URL @"https://objective-see.com/products/versions/oversight.json"
+#define PRODUCT_VERSION_URL @"https://objective-see.com/products.json"
 
 //OS version x
 #define OS_MAJOR_VERSION_X 10
@@ -50,11 +50,21 @@
 // ->also button title
 #define ACTION_UNINSTALL @"Uninstall"
 
+//button title
+// ->Close
+#define ACTION_CLOSE @"Close"
+
 //flag to uninstall
 #define ACTION_UNINSTALL_FLAG 0
 
 //flag to install
 #define ACTION_INSTALL_FLAG 1
+
+//flag for partial uninstall (leave whitelist)
+#define UNINSTALL_PARIAL 0
+
+//flag for full uninstall
+#define UNINSTALL_FULL 1
 
 //error msg
 #define KEY_ERROR_MSG @"errorMsg"
@@ -107,14 +117,22 @@
 //path to facetime
 #define FACE_TIME @"/Applications/FaceTime.app/Contents/MacOS/FaceTime"
 
+//app support directory
+#define APP_SUPPORT_DIRECTORY @"~/Library/Application Support/Objective-See/OverSight"
+
+//whitelist
+#define FILE_WHITELIST @"whitelist.plist"
+
 //event keys
-//#define EVENT_SOURCE @"source"
 #define EVENT_DEVICE @"device"
-#define EVENT_TIMESTAMP @"timestamp"
+#define EVENT_TIMESTAMP @"timeStamp"
 #define EVENT_DEVICE_STATUS @"status"
 #define EVENT_PROCESS_ID @"processID"
 #define EVENT_PROCESS_NAME @"processName"
+#define EVENT_PROCESS_PATH @"processPath"
 
+//unknown process
+#define PROCESS_UNKNOWN @"<unknown>"
 
 //source audio
 #define SOURCE_AUDIO @0x1
@@ -128,6 +146,8 @@
 //no/close button
 #define BUTTON_NO 101
 
+//id (tag) for detailed text in rules table
+#define TABLE_ROW_SUB_TEXT_TAG 101
 
 
 #endif

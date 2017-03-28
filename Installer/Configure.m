@@ -41,7 +41,8 @@
             [self stop];
             
             //uninstall
-            if(YES != [self uninstall])
+            // ->but do partial (leave whitelist)
+            if(YES != [self uninstall:UNINSTALL_PARIAL])
             {
                 //bail
                 goto bail;
@@ -89,7 +90,7 @@
         logMsg(LOG_DEBUG, @"uninstalling...");
         
         //uninstall
-        if(YES != [self uninstall])
+        if(YES != [self uninstall:UNINSTALL_FULL])
         {
             //bail
             goto bail;
@@ -185,7 +186,7 @@ bail:
 
     //call into login item to install itself
     // ->runs as logged in user, so can access user's login items, etc
-    execTask(SUDO, @[@"-u", user, loginItem, ACTION_INSTALL]);
+    execTask(SUDO, @[@"-u", user, loginItem, [NSString stringWithUTF8String:CMD_INSTALL]]);
     
     //dbg msg
     logMsg(LOG_DEBUG, [NSString stringWithFormat:@"persisted %@", loginItem]);
@@ -277,7 +278,7 @@ bail:
 
 //uninstall
 // ->delete app
--(BOOL)uninstall
+-(BOOL)uninstall:(NSUInteger)type
 {
     //return/status var
     BOOL wasUninstalled = NO;
@@ -286,23 +287,26 @@ bail:
     // ->since want to try all uninstall steps, but record if any fail
     BOOL bAnyErrors = NO;
     
-    //path to finder sync
-    NSString* appPath = nil;
+    //path to login item
+    NSString* loginItem = nil;
+    
+    //path to installed app
+    NSString* installedAppPath = nil;
     
     //error
     NSError* error = nil;
     
-    //path to login item
-    NSString* loginItem = nil;
-    
     //logged in user
     NSString* user = nil;
-
-    //init path
-    appPath = [APPS_FOLDER stringByAppendingPathComponent:APP_NAME];
     
     //init path to login item
-    loginItem = [appPath stringByAppendingPathComponent:@"Contents/Library/LoginItems/OverSight Helper.app/Contents/MacOS/OverSight Helper"];
+    loginItem = [[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:APP_NAME] stringByAppendingPathComponent:@"Contents/Library/LoginItems/OverSight Helper.app/Contents/MacOS/OverSight Helper"];
+    
+    //init path to installed app
+    installedAppPath = [APPS_FOLDER stringByAppendingPathComponent:APP_NAME];
+    
+    //dbg msg
+    logMsg(LOG_DEBUG, @"uninstalling login item");
     
     //get user
     user = loggedinUser();
@@ -315,30 +319,59 @@ bail:
         bAnyErrors = YES;
         
         //keep uninstalling...
-        
     }
     
     //unistall login item
     else
     {
+        //dbg msg
+        logMsg(LOG_DEBUG, [NSString stringWithFormat:@"telling login item %@, to uninstall itself", loginItem]);
+        
         //call into login item to uninstall itself
         // ->runs as logged in user, so can access user's login items, etc
-        execTask(SUDO, @[@"-u", user, loginItem, ACTION_UNINSTALL]);
+        execTask(SUDO, @[@"-u", user, loginItem, [NSString stringWithUTF8String:CMD_UNINSTALL]]);
         
         //dbg msg
         logMsg(LOG_DEBUG, [NSString stringWithFormat:@"unpersisted %@", loginItem]);
     }
+    
+    //dbg msg
+    logMsg(LOG_DEBUG, @"deleting app");
 
     //delete folder
-    if(YES != [[NSFileManager defaultManager] removeItemAtPath:appPath error:&error])
+    if(YES != [[NSFileManager defaultManager] removeItemAtPath:installedAppPath error:&error])
     {
         //err msg
-        logMsg(LOG_ERR, [NSString stringWithFormat:@"failed to delete app %@ (%@)", appPath, error]);
+        logMsg(LOG_ERR, [NSString stringWithFormat:@"failed to delete app %@ (%@)", installedAppPath, error]);
         
         //set flag
         bAnyErrors = YES;
         
         //keep uninstalling...
+    }
+    
+    //full uninstall?
+    // ->remove app support directory too
+    if(UNINSTALL_FULL == type)
+    {
+        //dbg msg
+        logMsg(LOG_DEBUG, @"full, so also deleting app support directory");
+        
+        //delete app support folder
+        if(YES == [[NSFileManager defaultManager] fileExistsAtPath:[APP_SUPPORT_DIRECTORY stringByExpandingTildeInPath]])
+        {
+            //delete
+            if(YES != [self removeAppSupport])
+            {
+                //err msg
+                logMsg(LOG_ERR, [NSString stringWithFormat:@"failed to delete app support directory %@", APP_SUPPORT_DIRECTORY]);
+                
+                //set flag
+                bAnyErrors = YES;
+                
+                //keep uninstalling...
+            }
+        }
     }
     
     //only success when there were no errors
@@ -349,6 +382,49 @@ bail:
     }
 
     return wasUninstalled;
+}
+
+//remove ~/Library/Application Support/Objective-See/OverSight
+// and also  ~/Library/Application Support/Objective-See/ if nothing else is in there (no other products)
+-(BOOL)removeAppSupport
+{
+    //flag
+    BOOL removedDirectory = NO;
+    
+    //error
+    NSError* error = nil;
+    
+    //delete OverSight directory
+    if(YES != [[NSFileManager defaultManager] removeItemAtPath:[APP_SUPPORT_DIRECTORY stringByExpandingTildeInPath] error:&error])
+    {
+        //err msg
+        logMsg(LOG_ERR, [NSString stringWithFormat:@"failed to delete OverSight's app support directory %@ (%@)", APP_SUPPORT_DIRECTORY, error]);
+        
+        //bail
+        goto bail;
+    }
+    
+    //anything left in ~/Library/Application Support/Objective-See/?
+    // ->nope: delete it
+    if(0 == [[[NSFileManager defaultManager] contentsOfDirectoryAtPath:[[APP_SUPPORT_DIRECTORY stringByExpandingTildeInPath] stringByDeletingLastPathComponent] error:nil] count])
+    {
+        if(YES != [[NSFileManager defaultManager] removeItemAtPath:[[APP_SUPPORT_DIRECTORY stringByExpandingTildeInPath] stringByDeletingLastPathComponent] error:&error])
+        {
+            //err msg
+            logMsg(LOG_ERR, [NSString stringWithFormat:@"failed to delete Objective-See's app support directory %@ (%@)", [APP_SUPPORT_DIRECTORY stringByDeletingLastPathComponent], error]);
+            
+            //bail
+            goto bail;
+        }
+    }
+    
+    //happy
+    removedDirectory = YES;
+    
+//bail
+bail:
+    
+    return removedDirectory;
 }
 
 

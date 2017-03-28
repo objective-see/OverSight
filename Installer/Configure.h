@@ -29,7 +29,7 @@
 -(BOOL)install;
 
 //uninstall
--(BOOL)uninstall;
+-(BOOL)uninstall:(NSUInteger)type;
 
 @end
 

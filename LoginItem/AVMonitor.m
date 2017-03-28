@@ -19,11 +19,15 @@
 @synthesize mic;
 @synthesize camera;
 @synthesize lastEvent;
+@synthesize whiteList;
 @synthesize audioActive;
-@synthesize videoActive;
 @synthesize lastNotification;
 @synthesize videoMonitorThread;
+@synthesize showAudioDeactivation;
+@synthesize showVideoDeactivation;
 @synthesize rememberWindowController;
+
+//TODO: fix hang!!
 
 //init
 -(id)init
@@ -32,10 +36,46 @@
     self = [super init];
     if(nil != self)
     {
-        
+        //load whitelist
+        [self loadWhitelist];
     }
     
     return self;
+}
+
+//load whitelist
+-(void)loadWhitelist
+{
+    //path
+    NSString* path = nil;
+    
+    //init path
+    path = [[APP_SUPPORT_DIRECTORY stringByExpandingTildeInPath] stringByAppendingPathComponent:FILE_WHITELIST];
+    
+    //dbg msg
+    logMsg(LOG_DEBUG, [NSString stringWithFormat:@"loading whitelist %@", path]);
+    
+    //since file is created by priv'd XPC, it shouldn't be writeable
+    // ...unless somebody maliciously creates it, so we check if that here
+    if(YES == [[NSFileManager defaultManager] isWritableFileAtPath:path])
+    {
+        //err msg
+        logMsg(LOG_ERR, @"whitelist is writable, so ignoring!");
+        
+        //bail
+        goto bail;
+    }
+    
+    //load
+    self.whiteList = [NSMutableArray arrayWithContentsOfFile:path];
+    
+    //dbg msg
+    logMsg(LOG_DEBUG, [NSString stringWithFormat:@"whitelist: %@", self.whiteList]);
+    
+//bail
+bail:
+    
+    return;
 }
 
 //grab first apple camera, or default
@@ -397,7 +437,6 @@ bail:
     return;
 }
 
-
 //helper function
 // ->determines if video went active/inactive then invokes notification generator method
 -(void)handleVideoNotification:(CMIOObjectID)deviceID addresses:(const CMIOObjectPropertyAddress[]) addresses
@@ -479,6 +518,7 @@ bail:
         
     }];
     
+    //TODO: maybe add timeout here?
     //wait until XPC is done
     // ->XPC reply block will signal semaphore
     dispatch_semaphore_wait(waitSema, DISPATCH_TIME_FOREVER);
@@ -864,7 +904,8 @@ bail:
 }
 
 //build and display notification
--(void)generateNotification:(NSDictionary*)event
+// ->handles extra logic like ignore whitelisted apps, disable alerts (if user has turned that off), etc
+-(void)generateNotification:(NSMutableDictionary*)event
 {
     //notification
     NSUserNotification* notification = nil;
@@ -883,6 +924,9 @@ bail:
     //process name
     NSString* processName = nil;
     
+    //process path
+    NSString* processPath = nil;
+    
     //log msg
     NSMutableString* sysLogMsg = nil;
     
@@ -898,44 +942,18 @@ bail:
     //alloc log msg
     sysLogMsg = [NSMutableString string];
     
-    //check if event is essentially a duplicate (facetime, etc)
-    if(nil != self.lastEvent)
+    //dbg msg
+    logMsg(LOG_DEBUG, [NSString stringWithFormat:@"generating notification for %@", event]);
+    
+    //get process name
+    processName = getProcessName([event[EVENT_PROCESS_ID] intValue]);
+    
+    //get process path
+    processPath = getProcessPath([event[EVENT_PROCESS_ID] intValue]);
+    if(nil == processPath)
     {
-        //TODO: remove
-        //NSLog(@"difference %f", fabs([self.lastEvent[EVENT_TIMESTAMP] timeIntervalSinceDate:event[EVENT_TIMESTAMP]]));
-        
-        //less than 10 second ago?
-        if(fabs([self.lastEvent[EVENT_TIMESTAMP] timeIntervalSinceDate:event[EVENT_TIMESTAMP]]) < 10)
-        {
-            //same process/device/action
-            if( (YES == [self.lastEvent[EVENT_PROCESS_ID] isEqual:event[EVENT_PROCESS_ID]]) &&
-                (YES == [self.lastEvent[EVENT_DEVICE] isEqual:event[EVENT_DEVICE]]) &&
-                (YES == [self.lastEvent[EVENT_DEVICE_STATUS] isEqual:event[EVENT_DEVICE_STATUS]]) )
-            {
-                //update
-                self.lastEvent = event;
-                
-                //bail to ignore
-                goto bail;
-            }
-        }
-    }//'same' event check
-    
-    //update last event
-    self.lastEvent = event;
-    
-    //always (manually) load preferences
-    preferences = [NSDictionary dictionaryWithContentsOfFile:[APP_PREFERENCES stringByExpandingTildeInPath]];
-    
-    //check if user wants to ingnore inactive alerts
-    if( (YES == [preferences[PREF_DISABLE_INACTIVE] boolValue]) &&
-        (YES == [DEVICE_INACTIVE isEqual:event[EVENT_DEVICE_STATUS]]) )
-    {
-        //dbg msg
-        logMsg(LOG_DEBUG, @"user has decided to ingore 'inactive' events, so bailing");
-        
-        //bail
-        goto bail;
+        //set to something
+        processPath = PROCESS_UNKNOWN;
     }
     
     //set device and title for audio
@@ -956,6 +974,88 @@ bail:
         
         //set device
         deviceType = SOURCE_VIDEO;
+    }
+    
+    //ignore whitelisted processes
+    // ->for activation events, can check process path
+    if( (YES == [DEVICE_ACTIVE isEqual:event[EVENT_DEVICE_STATUS]]) &&
+        (YES == [self.whiteList containsObject:processPath]) )
+    {
+        //dbg msg
+        logMsg(LOG_DEBUG, [NSString stringWithFormat:@"activation alert for process %@ is whitelisted, so ignoring", processPath]);
+        
+        //bail
+        goto bail;
+    }
+    //ignore whitelisted processes
+    // ->for deactivation, ignore when no activation alert was shown (cuz process will have likely died, so no pid/path, etc)
+    if(YES == [DEVICE_INACTIVE isEqual:event[EVENT_DEVICE_STATUS]])
+    {
+        //ignore audio inactive event, if no active event was shown
+        if( (SOURCE_AUDIO.intValue == deviceType.intValue) &&
+            (YES != self.showAudioDeactivation) )
+        {
+            //dbg msg
+            logMsg(LOG_DEBUG, @"deactivation audio alert doesn't have an activation alert (whitelisted?), so ignoring");
+            
+            //bail
+            goto bail;
+        }
+        
+        //ignore video inactive event, if no active event was shown
+        if( (SOURCE_VIDEO.intValue == deviceType.intValue) &&
+            (YES != self.showVideoDeactivation) )
+        {
+            //dbg msg
+            logMsg(LOG_DEBUG, @"deactivation video alert doesn't have an activation alert (whitelisted?), so ignoring");
+        
+            //bail
+            goto bail;
+        }
+        
+        //dbg msg
+        logMsg(LOG_DEBUG, @"got deactivation alert, but neither showVideoDeactivation nor showVideoDeactivation is set...");
+    }
+    
+    //check if event is essentially a duplicate (facetime, etc)
+    if(nil != self.lastEvent)
+    {
+        //less than 10 second ago?
+        if(fabs([self.lastEvent[EVENT_TIMESTAMP] timeIntervalSinceDate:event[EVENT_TIMESTAMP]]) < 10)
+        {
+            //same process/device/action
+            if( (YES == [self.lastEvent[EVENT_PROCESS_ID] isEqual:event[EVENT_PROCESS_ID]]) &&
+                (YES == [self.lastEvent[EVENT_DEVICE] isEqual:event[EVENT_DEVICE]]) &&
+                (YES == [self.lastEvent[EVENT_DEVICE_STATUS] isEqual:event[EVENT_DEVICE_STATUS]]) )
+            {
+                //dbg msg
+                logMsg(LOG_DEBUG, [NSString stringWithFormat:@"alert for %@ would be same as previous (%@), so ignoring", event, self.lastEvent]);
+                
+                //update
+                self.lastEvent = event;
+                
+                //bail to ignore
+                goto bail;
+            }
+        }
+        
+    }//'same' event check
+    
+    //update last event
+    self.lastEvent = event;
+    
+    //always (manually) load preferences
+    preferences = [NSDictionary dictionaryWithContentsOfFile:[APP_PREFERENCES stringByExpandingTildeInPath]];
+    
+    //check if user wants to ingnore inactive alerts
+    if( (YES == [preferences[PREF_DISABLE_INACTIVE] boolValue]) &&
+        (YES == [DEVICE_INACTIVE isEqual:event[EVENT_DEVICE_STATUS]]) )
+    {
+        //dbg msg
+        logMsg(LOG_DEBUG, @"user has decided to ingore 'inactive' events, so ingoring A/V going to disable state");
+        
+        //bail
+        goto bail;
     }
     
     //add action
@@ -993,9 +1093,6 @@ bail:
     // ->for activated audio/video; allow/block
     else
     {
-        //get process name
-        processName = getProcessName([event[EVENT_PROCESS_ID] intValue]);
-        
         //set other button title
         notification.otherButtonTitle = @"allow";
         
@@ -1004,7 +1101,7 @@ bail:
         
         //set pid/name/device into user info
         // ->allows code to whitelist proc and/or kill proc (later) if user clicks 'block'
-        notification.userInfo = @{EVENT_PROCESS_ID:event[EVENT_PROCESS_ID], EVENT_PROCESS_NAME:processName, EVENT_DEVICE:deviceType};
+        notification.userInfo = @{EVENT_PROCESS_ID:event[EVENT_PROCESS_ID], EVENT_PROCESS_PATH:processPath, EVENT_PROCESS_NAME:processName, EVENT_DEVICE:deviceType};
         
         //set details
         // ->name of process using it / icon too?
@@ -1019,18 +1116,19 @@ bail:
         
         //no process?
         // ->just add title / details
-        if(nil == processName)
+        if( (nil == processName) ||
+            (YES == [processName isEqualToString:PROCESS_UNKNOWN]) )
         {
             //add
             [sysLogMsg appendFormat:@"%@ (%@)", title, details];
         }
         
         //process
-        // ->add title / details / process path
+        // ->add title / details / process name / process path
         else
         {
             //add
-            [sysLogMsg appendFormat:@"%@ (process: %@, %@)", title, details, processName];
+            [sysLogMsg appendFormat:@"%@ (%@, process: %@/%@)", title, details, processName, processPath];
         }
         
         //write it out to syslog
@@ -1051,6 +1149,41 @@ bail:
     
     //deliver notification
     [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
+    
+    //set flag saying we showed an 'activated' alert
+    // ->allows us to ignore 'inactive' events that had a whitelisted 'activate' event
+    if(YES == [DEVICE_ACTIVE isEqual:event[EVENT_DEVICE_STATUS]])
+    {
+        //audio
+        if(SOURCE_AUDIO.intValue == deviceType.intValue)
+        {
+            //set
+            self.showAudioDeactivation = YES;
+        }
+        //video
+        else
+        {
+            //set
+            self.showVideoDeactivation = YES;
+        }
+    }
+    //inactive alert
+    // ->unset flags
+    else
+    {
+        //audio
+        if(SOURCE_AUDIO.intValue == deviceType.intValue)
+        {
+            //set
+            self.showAudioDeactivation = NO;
+        }
+        //video
+        else
+        {
+            //set
+            self.showVideoDeactivation = NO;
+        }
+    }
     
     //for 'went inactive' notification
     // ->automatically close after some time
@@ -1128,7 +1261,7 @@ bail:
     if(YES != notification.hasActionButton)
     {
         //dbg msg
-        logMsg(LOG_DEBUG, @"popup w/o an action, no need to do anything");
+        logMsg(LOG_DEBUG, @"popup without an action, no need to do anything");
         
         //bail
         goto bail;
@@ -1159,9 +1292,23 @@ bail:
     
     //check if user clicked 'allow' via user info (since OS doesn't directly deliver this)
     // ->if allow was clicked, show a popup w/ option to rember ('whitelist') the application
+    //   don't do this for 'block' since that kills the app, so obv, that'd be bad to always do!
     if( (nil != notification.userInfo) &&
         (NSUserNotificationActivationTypeAdditionalActionClicked == [notification.userInfo[@"activationType"] integerValue]) )
     {
+        //dbg msg
+        logMsg(LOG_DEBUG, @"user clicked 'allow'");
+        
+        //can't remember process that we didn't find the path for
+        if(YES == [notification.userInfo[EVENT_PROCESS_PATH] isEqualToString:PROCESS_UNKNOWN])
+        {
+            //dbg msg
+            logMsg(LOG_DEBUG, @"don't have a process path, so not displaying whitelisting popup");
+
+            //bail
+            goto bail;
+        }
+     
         //alloc/init settings window
         if(nil == self.rememberWindowController)
         {
@@ -1177,16 +1324,13 @@ bail:
         
         //manually configure
         // ->invoke here as the outlets will be set
-        [self.rememberWindowController configure:notification];
+        [self.rememberWindowController configure:notification avMonitor:self];
         
         //make it key window
         [self.rememberWindowController.window makeKeyAndOrderFront:self];
         
         //make window front
         [NSApp activateIgnoringOtherApps:YES];
-        
-        //dbg msg
-        logMsg(LOG_DEBUG, @"user clicked 'allow'");
     }
     
     //when user clicks 'block'
@@ -1367,7 +1511,7 @@ bail:
                  }
                  
                  //generate notification
-                 [self generateNotification:@{EVENT_TIMESTAMP:[NSDate date], EVENT_DEVICE:self.camera, EVENT_DEVICE_STATUS:DEVICE_ACTIVE, EVENT_PROCESS_ID:processID}];
+                 [self generateNotification:[@{EVENT_TIMESTAMP:[NSDate date], EVENT_DEVICE:self.camera, EVENT_DEVICE_STATUS:DEVICE_ACTIVE, EVENT_PROCESS_ID:processID} mutableCopy]];
              }
              
              //signal sema

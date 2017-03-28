@@ -1,6 +1,6 @@
 //
 //  Utilities.m
-//  WhatsYourSign
+//  OverSight
 //
 //  Created by Patrick Wardle on 7/7/16.
 //  Copyright (c) 2016 Objective-See. All rights reserved.
@@ -611,6 +611,89 @@ bail:
     return processID;
 }
 
+
+//get an icon for a process
+// ->for apps, this will be app's icon, otherwise just a standard system one
+NSImage* getIconForProcess(NSString* path)
+{
+    //icon's file name
+    NSString* iconFile = nil;
+    
+    //icon's path
+    NSString* iconPath = nil;
+    
+    //icon's path extension
+    NSString* iconExtension = nil;
+    
+    //icon
+    NSImage* icon = nil;
+    
+    //system's document icon
+    static NSData* documentIcon = nil;
+    
+    //bundle
+    NSBundle* appBundle = nil;
+    
+    //first try grab bundle
+    // ->then extact icon from this
+    appBundle = findAppBundle(path);
+    if(nil != appBundle)
+    {
+        //get file
+        iconFile = appBundle.infoDictionary[@"CFBundleIconFile"];
+        
+        //get path extension
+        iconExtension = [iconFile pathExtension];
+        
+        //if its blank (i.e. not specified)
+        // ->go with 'icns'
+        if(YES == [iconExtension isEqualTo:@""])
+        {
+            //set type
+            iconExtension = @"icns";
+        }
+        
+        //set full path
+        iconPath = [appBundle pathForResource:[iconFile stringByDeletingPathExtension] ofType:iconExtension];
+        
+        //load it
+        icon = [[NSImage alloc] initWithContentsOfFile:iconPath];
+    }
+    
+    //process is not an app or couldn't get icon
+    // ->try to get it via shared workspace
+    if( (nil == appBundle) ||
+        (nil == icon) )
+    {
+        //extract icon
+        icon = [[NSWorkspace sharedWorkspace] iconForFile:path];
+        
+        //load system document icon
+        // ->static var, so only load once
+        if(nil == documentIcon)
+        {
+            //load
+            documentIcon = [[[NSWorkspace sharedWorkspace] iconForFileType:
+                             NSFileTypeForHFSTypeCode(kGenericDocumentIcon)] TIFFRepresentation];
+        }
+        
+        //if 'iconForFile' method doesn't find and icon, it returns the system 'document' icon
+        // ->the system 'applicatoon' icon seems more applicable, so use that here...
+        if(YES == [[icon TIFFRepresentation] isEqual:documentIcon])
+        {
+            //set icon to system 'applicaiton' icon
+            icon = [[NSWorkspace sharedWorkspace]
+                         iconForFileType: NSFileTypeForHFSTypeCode(kGenericApplicationIcon)];
+        }
+        
+        //'iconForFileType' returns small icons
+        // ->so set size to 128
+        [icon setSize:NSMakeSize(128, 128)];
+    }
+    
+    return icon;
+}
+
 //determine if there is a new version
 // -1, YES or NO
 NSInteger isNewVersion(NSMutableString* versionString)
@@ -628,7 +711,7 @@ NSInteger isNewVersion(NSMutableString* versionString)
     installedVersion = getAppVersion();
     
     //get latest version
-    // ->will query internet (bb's website)
+    // ->will query internet (obj-see website)
     latestVersion = getLatestVersion();
     if(nil == latestVersion)
     {
@@ -656,7 +739,7 @@ bail:
 NSString* getLatestVersion()
 {
     //version data
-    NSData* versionData = nil;
+    __block NSData* versionData = nil;
     
     //version dictionary
     NSDictionary* versionDictionary = nil;
@@ -664,8 +747,22 @@ NSString* getLatestVersion()
     //latest version
     NSString* latestVersion = nil;
     
-    //get version from remote URL
-    versionData = [[NSData alloc] initWithContentsOfURL:[NSURL URLWithString:PRODUCT_VERSION_URL]];
+    //run in background if main thread
+    if(YES == [NSThread isMainThread])
+    {
+        //run in background
+        dispatch_sync(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+        ^{
+            //get version data
+            versionData = [[NSData alloc] initWithContentsOfURL:[NSURL URLWithString:PRODUCT_VERSION_URL]];
+        });
+    }
+    //no need to background
+    else
+    {
+        //get version from remote URL
+        versionData = [[NSData alloc] initWithContentsOfURL:[NSURL URLWithString:PRODUCT_VERSION_URL]];
+    }
     
     //sanity check
     if(nil == versionData)
@@ -958,5 +1055,3 @@ bail:
     
     return processID;
 }
-
-

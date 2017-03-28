@@ -7,10 +7,17 @@
 //
 
 #import "Consts.h"
+#import "Logging.h"
+#import "AVMonitor.h"
 #import "Utilities.h"
+#import "../Shared/XPCProtocol.h"
 #import "RemeberWindowController.h"
 
+
 @implementation RememberWindowController
+
+@synthesize avMonitor;
+@synthesize processPath;
 
 //@synthesize versionLabel;
 
@@ -50,8 +57,9 @@
 }
 */
 
-//configure window w/ dynamic text
--(void)configure:(NSUserNotification*)notification
+//save stuff into iVars
+// ->configure window w/ dynamic text
+-(void)configure:(NSUserNotification*)notification avMonitor:(AVMonitor*)monitor;
 {
     //process ID
     NSNumber* processID = nil;
@@ -62,11 +70,18 @@
     //device type
     NSString* deviceType = nil;
     
+    //save monitor into iVar
+    self.avMonitor = monitor;
+    
     //grab process id
     processID = notification.userInfo[EVENT_PROCESS_ID];
     
     //grab process name
     processName = notification.userInfo[EVENT_PROCESS_NAME];
+    
+    //grab process path
+    // ->saved into iVar for whitelisting
+    self.processPath = notification.userInfo[EVENT_PROCESS_PATH];
     
     //set device type for audio
     if(SOURCE_AUDIO.intValue == [notification.userInfo[EVENT_DEVICE] intValue])
@@ -87,18 +102,64 @@
     return;
 }
 
-//automatically invoked when user clicks button 'yes' / 'no'
+//automatically invoked when user clicks button 'Allow'
 -(IBAction)buttonHandler:(id)sender
 {
-    //handle 'always allow'  (whitelist) button
+    //xpc connection
+    __block NSXPCConnection* xpcConnection = nil;
+    
+    //dbg msg
+    logMsg(LOG_DEBUG, [NSString stringWithFormat:@"handling user response for 'allow' popup: %ld", (long)((NSButton*)sender).tag]);
+    
+    //handle 'always allow' (whitelist) button
     if(BUTTON_ALWAYS_ALLOW == ((NSButton*)sender).tag)
     {
-        //TODO: whitelist
+        //init XPC
+        xpcConnection = [[NSXPCConnection alloc] initWithServiceName:@"com.objective-see.OverSightXPC"];
+        
+        //set remote object interface
+        xpcConnection.remoteObjectInterface = [NSXPCInterface interfaceWithProtocol:@protocol(XPCProtocol)];
+        
+        //resume
+        [xpcConnection resume];
+        
+        //dbg msg
+        logMsg(LOG_DEBUG, @"sending XPC message to whitelist");
+        
+        //invoke XPC method 'whitelistProcess' to add process to white list
+        [[xpcConnection remoteObjectProxy] whitelistProcess:self.processPath reply:^(BOOL wasWhitelisted)
+         {
+             //dbg msg
+             logMsg(LOG_DEBUG, [NSString stringWithFormat:@"got XPC response: %d", wasWhitelisted]);
+             
+             //reload whitelist on success
+             if(YES == wasWhitelisted)
+             {
+                 //reload AVMonitor's whitelist
+                 [self.avMonitor loadWhitelist];
+             }
+             //err
+             // ->log msg
+             else
+             {
+                 //err msg
+                 logMsg(LOG_ERR, [NSString stringWithFormat:@"failed to whitelist: %@", self.processPath]);
+             }
+    
+             //close connection
+             [xpcConnection invalidate];
+             
+             //nil out
+             xpcConnection = nil;
+             
+         }];
     }
+    
+//bail
+bail:
     
     //always close
     [self.window close];
-
 
     return;
 }

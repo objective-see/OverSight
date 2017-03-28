@@ -385,6 +385,15 @@ bail:
         //assign
         candidateAudioProcs = [[intersection allObjects] mutableCopy];
         
+        //if there aren't any new i/o registy clients and only one new mach sender
+        // ->use that! (e.g. Siri, reactivated)
+        if( (0 == candidateAudioProcs.count) &&
+            (1 == newSenders.count) )
+        {
+            //assign as candidate
+            [candidateAudioProcs addObject:newSenders.firstObject];
+        }
+        
         //dbg msg
         logMsg(LOG_DEBUG, [NSString stringWithFormat:@"found %lu candidate audio procs: %@", (unsigned long)candidateAudioProcs.count, candidateAudioProcs]);
         

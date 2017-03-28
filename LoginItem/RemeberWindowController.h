@@ -8,6 +8,8 @@
 
 #import <Cocoa/Cocoa.h>
 
+@class AVMonitor;
+
 @interface RememberWindowController : NSWindowController <NSWindowDelegate>
 {
     
@@ -15,12 +17,21 @@
 
 /* PROPERTIES */
 
+//process path
+// ->used for whitelisting
+@property (nonatomic, retain)NSString* processPath;
+
+//instance of av monitor
+@property (nonatomic, retain)AVMonitor* avMonitor;
+
 //version label/string
 @property (weak) IBOutlet NSTextField *windowText;
 
+
 /* METHODS */
 
-//configure window w/ dynamic text
--(void)configure:(NSUserNotification*)notification;
+//save stuff into iVars
+// ->configure window w/ dynamic text
+-(void)configure:(NSUserNotification*)notification avMonitor:(AVMonitor*)monitor;
 
 @end

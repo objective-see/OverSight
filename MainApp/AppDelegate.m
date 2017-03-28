@@ -11,7 +11,6 @@
 #import "Utilities.h"
 #import "AppDelegate.h"
 
-
 @interface AppDelegate ()
 
 @property (weak) IBOutlet NSWindow *window;
@@ -21,6 +20,7 @@
 
 @synthesize infoWindowController;
 @synthesize aboutWindowController;
+@synthesize rulesWindowController;
 
 //center window
 // ->also make front, init title bar, etc
@@ -29,14 +29,14 @@
     //center
     [self.window center];
     
+    //set button states
+    [self setButtonStates];
+    
     //make it key window
     [self.window makeKeyAndOrderFront:self];
     
     //make window front
     [NSApp activateIgnoringOtherApps:YES];
-    
-    //set button states
-    [self setButtonStates];
     
     //set title
     self.window.title = [NSString stringWithFormat:@"OverSight Preferences (v. %@)", getAppVersion()];
@@ -48,6 +48,9 @@
 // ->init user interface
 -(void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
+    //dbg msg
+    logMsg(LOG_DEBUG, @"OverSight Preferences App Launched");
+    
     //register for hotkey presses
     // ->for now, just cmd+q to quit app
     [self registerKeypressHandler];
@@ -69,7 +72,8 @@
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
     ^{
         //start
-        [self startLoginItem:NO];
+        // -> 'NO' means don't start if already running
+        [self startLoginItem:NO args:nil];
     });
     
     return;
@@ -109,6 +113,7 @@
 }
 
 //register handler for hot keys
+// ->for now, it just handles cmd+q to quit
 -(void)registerKeypressHandler
 {
     //event handler
@@ -226,12 +231,15 @@ bail:
         //set
         preferences[PREF_RUN_HEADLESS] = [NSNumber numberWithBool:[sender state]];
         
+        //save em now so new instance of login item can read them
+        [preferences writeToFile:[APP_PREFERENCES stringByExpandingTildeInPath] atomically:YES];
+        
         //restart login item in background
         // ->will read prefs, and run in headless mode
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
         ^{
             //start
-            [self startLoginItem:YES];
+            [self startLoginItem:YES args:nil];
         });
     }
     
@@ -305,8 +313,11 @@ bail:
     //alloc string
     versionString = [NSMutableString string];
     
+    //dbg msg
+    logMsg(LOG_DEBUG, @"checking for new version");
+    
     //check if available version is newer
-    // ->show update window
+    // ->show update popup/window
     if(YES == isNewVersion(versionString))
     {
         //dbg msg
@@ -343,7 +354,7 @@ bail:
     }
     
     //no new version
-    // ->stop animations/just (debug) log msg
+    // ->stop animations, etc
     else
     {
         //dbg msg
@@ -359,18 +370,17 @@ bail:
         self.versionLabel.hidden = NO;
         
         //set message
-        self.versionLabel.stringValue = @"No new versions";
+        self.versionLabel.stringValue = @"no new versions";
         
         //re-draw
         [self.versionLabel displayIfNeeded];
-
     }
     
     return;
 }
 
-//start the login item
--(void)startLoginItem:(BOOL)shouldRestart
+//(re)start the login item
+-(void)startLoginItem:(BOOL)shouldRestart args:(NSArray*)args
 {
     //path to login item
     NSString* loginItem = nil;
@@ -378,126 +388,182 @@ bail:
     //login item's pid
     pid_t loginItemPID = -1;
     
-    //get pid of login item
+    //error
+    NSError* error = nil;
+    
+    //config (args, etc)
+    // ->can't be nil, so init to blank here
+    NSDictionary* configuration = @{};
+    
+    //get pid of login item for user
     loginItemPID = getProcessID(@"OverSight Helper", getuid());
     
-    //already running?
-    // ->kill the login item
-    if( (YES == shouldRestart) &&
-        (-1 != loginItemPID) )
-    {
-        //kill
-        kill(loginItemPID, SIGTERM);
-        
-        //sleep
-        sleep(2);
-        
-        //really kill
-        kill(loginItemPID, SIGKILL);
-        
-        //reset pid
-        loginItemPID = -1;
-    }
-    
-    //start not already running
-    if(-1 == loginItemPID)
+    //no need to start if already running
+    // ->well, and if 'shouldRestart' is not set
+    if( (-1 != loginItemPID) &&
+        (YES != shouldRestart) )
     {
         //dbg msg
-        logMsg(LOG_DEBUG, @"starting login item");
-        
-        //show overlay view on main thread
-        dispatch_async(dispatch_get_main_queue(), ^{
-        
-            //pre-req
-            [self.overlay setWantsLayer:YES];
-            
-            //round edges
-            [self.overlay.layer setCornerRadius: 10];
-            
-            //set overlay's view color to white
-            self.overlay.layer.backgroundColor = [NSColor grayColor].CGColor;
-            
-            //make it semi-transparent
-            self.overlay.alphaValue = 0.85;
-            
-            //show it
-            self.overlay.hidden = NO;
-            
-            //show message
-            self.statusMessage.hidden = NO;
-            
-            //show spinner
-            self.progressIndicator.hidden = NO;
-            
-            //animate it
-            [self.progressIndicator startAnimation:nil];
-            
-        });
-    }
-                
-    //init path
-    loginItem = [[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent:@"/Contents/Library/LoginItems/OverSight Helper.app"];
-    
-    //launch it
-    if(YES != [[NSWorkspace sharedWorkspace] launchApplication:loginItem])
-    {
-        //err msg
-        logMsg(LOG_ERR, [NSString stringWithFormat:@"failed to start login item, %@", loginItem]);
+        logMsg(LOG_DEBUG, @"login item already running and 'shouldRestart' not set, so no need to start it!");
         
         //bail
         goto bail;
     }
     
-    //(re)obtain focus for app
-    [[NSRunningApplication currentApplication] activateWithOptions:NSApplicationActivateIgnoringOtherApps];
+    //running?
+    // ->kill
+    else if(-1 != loginItemPID)
+    {
+        //kill it
+        kill(loginItemPID, SIGTERM);
+        
+        //sleep
+        [NSThread sleepForTimeInterval:1.0f];
+        
+        //really kill
+        kill(loginItemPID, SIGKILL);
+    }
     
-
+    //dbg msg
+    logMsg(LOG_DEBUG, @"starting login item");
+    
+    //add overlay
+    [self addOverlay:shouldRestart];
+    
+    //init path to login item
+    loginItem = [[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent:@"/Contents/Library/LoginItems/OverSight Helper.app"];
+    
+    //any args?
+    // ->init config with them args
+    if(nil != args)
+    {
+        //add args
+        configuration = @{NSWorkspaceLaunchConfigurationArguments:args};
+    }
+    
+    //launch it
+    [[NSWorkspace sharedWorkspace] launchApplicationAtURL:[NSURL fileURLWithPath:loginItem] options:NSWorkspaceLaunchWithoutActivation configuration:configuration error:&error];
+    
+    //remove overlay
+    [self removeOverlay];
+    
+    //check if login launch was ok
+    // ->do down here, since always want to remove overlay
+    if(nil != error)
+    {
+        //err msg
+        logMsg(LOG_ERR, [NSString stringWithFormat:@"failed to start login item, %@/%@", loginItem, error]);
+        
+        //bail
+        goto bail;
+    }
+    
+    
 //bail
 bail:
 
-    //hide overlay?
-    if(-1 == loginItemPID)
-    {
-        //sleep to give message some more time
-        [NSThread sleepForTimeInterval:1];
+    return;
+}
+
+//add overlay to main window
+-(void)addOverlay:(BOOL)restarting
+{
+    //show overlay view on main thread
+    dispatch_async(dispatch_get_main_queue(), ^{
         
-        //update message
-        dispatch_async(dispatch_get_main_queue(), ^{
-            
-            //stop spinner
-            [self.progressIndicator stopAnimation:nil];
-            
-            //update
-            self.statusMessage.stringValue = @"started!";
-            
-        });
+        //frame
+        NSRect frame = {0};
         
-        //sleep to give message some more time
-        [NSThread sleepForTimeInterval:1];
+        //pre-req
+        [self.overlay setWantsLayer:YES];
         
-        //hide overlay view on main thread
-        dispatch_async(dispatch_get_main_queue(), ^{
-            
+        //get main window's frame
+        frame = self.window.frame;
+       
+        //set origin to 0/0
+        frame.origin = CGPointZero;
+        
+        //update overlay to take up entire window
+        self.overlay.frame = frame;
+        
+        //set overlay's view color to white
+        self.overlay.layer.backgroundColor = [NSColor whiteColor].CGColor;
+        
+        //make it semi-transparent
+        self.overlay.alphaValue = 0.85;
+        
+        //set start message
+        if(YES != restarting)
+        {
+            //set
+            self.statusMessage.stringValue = @"starting monitor...";
+        }
+        //set restart message
+        else
+        {
+            //set
+            self.statusMessage.stringValue = @"(re)starting monitor...";
+        }
+        
+        //show message
+        self.statusMessage.hidden = NO;
+        
+        //show spinner
+        self.progressIndicator.hidden = NO;
+        
+        //animate it
+        [self.progressIndicator startAnimation:nil];
+        
+        //add to main window
+        [self.window.contentView addSubview:self.overlay];
+        
+        //show
+        self.overlay.hidden = NO;
+        
+    });
+    
+    return;
+}
+
+//remove overlay from main window
+-(void)removeOverlay
+{
+    //sleep to give message more viewing time
+    [NSThread sleepForTimeInterval:2];
+    
+    //remove overlay view on main thread
+    dispatch_async(dispatch_get_main_queue(), ^{
+        
         //hide spinner
         self.progressIndicator.hidden = YES;
-            
+        
         //hide view
         self.overlay.hidden = YES;
         
         //hide message
         self.statusMessage.hidden = YES;
         
-        });
+        //remove
+        [self.overlay removeFromSuperview];
         
-    }
-
+    });
+    
     return;
 }
 
-
-//manage rules
+//button handle when user clicks 'Manage Rules'
+// ->just shwo the rules window
 -(IBAction)manageRules:(id)sender
 {
+    //alloc
+    rulesWindowController = [[RulesWindowController alloc] initWithWindowNibName:@"Rules"];
+
+    //center window
+    [[self.rulesWindowController window] center];
+    
+    //show it
+    [self.rulesWindowController showWindow:self];
+    
     return;
 }
 
