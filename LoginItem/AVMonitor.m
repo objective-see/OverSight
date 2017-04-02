@@ -21,13 +21,10 @@
 @synthesize lastEvent;
 @synthesize whiteList;
 @synthesize audioActive;
+@synthesize activationAlerts;
 @synthesize lastNotification;
 @synthesize videoMonitorThread;
-@synthesize showAudioDeactivation;
-@synthesize showVideoDeactivation;
 @synthesize rememberWindowController;
-
-//TODO: fix hang!!
 
 //init
 -(id)init
@@ -36,6 +33,9 @@
     self = [super init];
     if(nil != self)
     {
+        //alloc
+        activationAlerts = [NSMutableDictionary dictionary];
+        
         //load whitelist
         [self loadWhitelist];
     }
@@ -53,7 +53,9 @@
     path = [[APP_SUPPORT_DIRECTORY stringByExpandingTildeInPath] stringByAppendingPathComponent:FILE_WHITELIST];
     
     //dbg msg
+    #ifdef DEBUG
     logMsg(LOG_DEBUG, [NSString stringWithFormat:@"loading whitelist %@", path]);
+    #endif
     
     //since file is created by priv'd XPC, it shouldn't be writeable
     // ...unless somebody maliciously creates it, so we check if that here
@@ -70,7 +72,9 @@
     self.whiteList = [NSMutableArray arrayWithContentsOfFile:path];
     
     //dbg msg
+    #ifdef DEBUG
     logMsg(LOG_DEBUG, [NSString stringWithFormat:@"whitelist: %@", self.whiteList]);
+    #endif
     
 //bail
 bail:
@@ -89,7 +93,9 @@ bail:
     cameras = [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo];
     
     //dbg msg
+    #ifdef DEBUG
     logMsg(LOG_DEBUG, [NSString stringWithFormat:@"cameras: %@", cameras]);
+    #endif
     
     //look for camera that belongs to apple
     for(AVCaptureDevice* currentCamera in cameras)
@@ -113,7 +119,9 @@ bail:
         self.camera = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
         
         //dbg msg
+        #ifdef DEBUG
         logMsg(LOG_DEBUG, [NSString stringWithFormat:@"didn't find apple camera, grabbed default: %@", self.camera]);
+        #endif
     }
     
     return;
@@ -130,7 +138,9 @@ bail:
     mics = [AVCaptureDevice devicesWithMediaType:AVMediaTypeAudio];
     
     //dbg msg
+    #ifdef DEBUG
     logMsg(LOG_DEBUG, [NSString stringWithFormat:@"mics: %@", mics]);
+    #endif
     
     //look for mic that belongs to apple
     for(AVCaptureDevice* currentMic in mics)
@@ -156,7 +166,9 @@ bail:
         self.mic = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeAudio];
         
         //dbg msg
+        #ifdef DEBUG
         logMsg(LOG_DEBUG, [NSString stringWithFormat:@"didn't find apple 'imic', grabbed default: %@", self.mic]);
+        #endif
     }
     
     return;
@@ -199,7 +211,9 @@ bail:
     [xpcConnection resume];
     
     //dbg msg
+    #ifdef DEBUG
     logMsg(LOG_DEBUG, @"telling XPC service to begin base-lining mach messages");
+    #endif
     
     //init wait semaphore
     waitSema = dispatch_semaphore_create(0);
@@ -253,14 +267,15 @@ bail:
         if(YES == self.videoActive)
         {
             //dbg msg
+            #ifdef DEBUG
             logMsg(LOG_DEBUG, @"video already active, so will start polling for new video procs");
+            #endif
             
             //tell XPC video is active
             [[xpcConnection remoteObjectProxy] updateVideoStatus:self.videoActive reply:^{
                 
                 //signal sema
                 dispatch_semaphore_signal(waitSema);
-                
             }];
             
             //wait until XPC is done
@@ -281,7 +296,9 @@ bail:
         if(YES != [self watchVideo:connectionID])
         {
             //err msg
+            #ifdef DEBUG
             logMsg(LOG_DEBUG, @"failed to watch for video events");
+            #endif
             
             //set err
             wasErrors = YES;
@@ -322,11 +339,13 @@ bail:
 
         //if audio is already active
         // ->tell XPC that it's active
-        //   TODO: monitor for hijacking?
+        //   TODO: monitor for piggybacking?
         if(YES == self.audioActive)
         {
             //dbg msg
-            logMsg(LOG_DEBUG, @"audio already active");//so will start polling for new video procs");
+            #ifdef DEBUG
+            logMsg(LOG_DEBUG, @"audio already active");
+            #endif
             
             //tell XPC audio is active
             [[xpcConnection remoteObjectProxy] updateAudioStatus:self.audioActive reply:^{
@@ -348,7 +367,9 @@ bail:
         if(YES != [self watchAudio:connectionID])
         {
             //err msg
+            #ifdef DEBUG
             logMsg(LOG_DEBUG, @"failed to watch for audio events");
+            #endif
             
             //set err
             wasErrors = YES;
@@ -495,7 +516,9 @@ bail:
     event[EVENT_DEVICE_STATUS] = [NSNumber numberWithInt:self.videoActive];
     
     //dbg msg
+    #ifdef DEBUG
     logMsg(LOG_DEBUG, [NSString stringWithFormat:@"got video change notification; is running? %x", self.videoActive]);
+    #endif
     
     //alloc XPC connection
     xpcConnection = [[NSXPCConnection alloc] initWithServiceName:@"com.objective-see.OverSightXPC"];
@@ -518,7 +541,6 @@ bail:
         
     }];
     
-    //TODO: maybe add timeout here?
     //wait until XPC is done
     // ->XPC reply block will signal semaphore
     dispatch_semaphore_wait(waitSema, DISPATCH_TIME_FOREVER);
@@ -528,7 +550,9 @@ bail:
     if(YES == self.videoActive)
     {
         //dbg msg
+        #ifdef DEBUG
         logMsg(LOG_DEBUG, @"video is active, so querying XPC to get video process(s)");
+        #endif
         
         //set allowed classes
         [xpcConnection.remoteObjectInterface setClasses: [NSSet setWithObjects: [NSMutableArray class], [NSNumber class], nil]
@@ -544,7 +568,9 @@ bail:
              xpcConnection = nil;
              
              //dbg msg
+             #ifdef DEBUG
              logMsg(LOG_DEBUG, [NSString stringWithFormat:@"video procs from XPC: %@", videoProcesses]);
+            #endif
              
              //generate notification for each process
              for(NSNumber* processID in videoProcesses)
@@ -599,7 +625,9 @@ bail:
         if(YES != videoMonitorThread.isExecuting)
         {
             //dbg msg
+            #ifdef DEBUG
             logMsg(LOG_DEBUG, @"(re)Starting polling/monitor thread");
+            #endif
             
             //alloc
             videoMonitorThread = [[NSThread alloc] initWithTarget:self selector:@selector(monitor4Procs) object:nil];
@@ -611,7 +639,9 @@ bail:
         else
         {
             //dbg msg
+            #ifdef DEBUG
             logMsg(LOG_DEBUG, @"polling/monitor thread still running");
+            #endif
         }
     }
     
@@ -651,7 +681,6 @@ bail:
     {
         //invoke helper function
         [self handleVideoNotification:deviceID addresses:addresses];
-        
     };
     
     //register (add) property block listener
@@ -751,7 +780,9 @@ bail:
     event[EVENT_DEVICE_STATUS] = [NSNumber numberWithInt:self.audioActive];
     
     //dbg msg
+    #ifdef DEBUG
     logMsg(LOG_DEBUG, [NSString stringWithFormat:@"got audio change notification; is running? %x", self.audioActive]);
+    #endif
         
     //alloc XPC connection
     xpcConnection = [[NSXPCConnection alloc] initWithServiceName:@"com.objective-see.OverSightXPC"];
@@ -783,7 +814,9 @@ bail:
     if(YES == self.audioActive)
     {
         //dbg msg
+        #ifdef DEBUG
         logMsg(LOG_DEBUG, @"audio is active, so querying XPC to get audio process(s)");
+        #endif
         
         //set allowed classes
         [xpcConnection.remoteObjectInterface setClasses: [NSSet setWithObjects: [NSMutableArray class], [NSNumber class], nil]
@@ -799,7 +832,9 @@ bail:
              xpcConnection = nil;
              
              //dbg msg
+             #ifdef DEBUG
              logMsg(LOG_DEBUG, [NSString stringWithFormat:@"audio procs from XPC: %@", audioProcesses]);
+            #endif
              
              //generate notification for each process
              for(NSNumber* processID in audioProcesses)
@@ -933,6 +968,9 @@ bail:
     //preferences
     NSDictionary* preferences = nil;
     
+    //flag
+    BOOL matchingActivationAlert = NO;
+    
     //alloc notificaiton
     notification = [[NSUserNotification alloc] init];
     
@@ -943,7 +981,9 @@ bail:
     sysLogMsg = [NSMutableString string];
     
     //dbg msg
+    #ifdef DEBUG
     logMsg(LOG_DEBUG, [NSString stringWithFormat:@"generating notification for %@", event]);
+    #endif
     
     //get process name
     processName = getProcessName([event[EVENT_PROCESS_ID] intValue]);
@@ -982,7 +1022,9 @@ bail:
         (YES == [self.whiteList containsObject:processPath]) )
     {
         //dbg msg
+        #ifdef DEBUG
         logMsg(LOG_DEBUG, [NSString stringWithFormat:@"activation alert for process %@ is whitelisted, so ignoring", processPath]);
+        #endif
         
         //bail
         goto bail;
@@ -991,30 +1033,33 @@ bail:
     // ->for deactivation, ignore when no activation alert was shown (cuz process will have likely died, so no pid/path, etc)
     if(YES == [DEVICE_INACTIVE isEqual:event[EVENT_DEVICE_STATUS]])
     {
-        //ignore audio inactive event, if no active event was shown
-        if( (SOURCE_AUDIO.intValue == deviceType.intValue) &&
-            (YES != self.showAudioDeactivation) )
+        //any active alerts?
+        // ->note: we make to check if the type matches
+        for(NSUUID* key in self.activationAlerts.allKeys)
+        {
+            //same type?
+            if(event[EVENT_DEVICE] == self.activationAlerts[key][EVENT_DEVICE])
+            {
+                //got match
+                matchingActivationAlert = YES;
+                
+                //no need to check more
+                break;
+            }
+        }
+        
+        //no match?
+        // ->bail, as means process was whitelisted so no activation was shown
+        if(YES != matchingActivationAlert)
         {
             //dbg msg
-            logMsg(LOG_DEBUG, @"deactivation audio alert doesn't have an activation alert (whitelisted?), so ignoring");
-            
+            #ifdef DEBUG
+            logMsg(LOG_DEBUG, @"deactivation alert doesn't have an activation alert (whitelisted?), so ignoring");
+            #endif
+
             //bail
             goto bail;
         }
-        
-        //ignore video inactive event, if no active event was shown
-        if( (SOURCE_VIDEO.intValue == deviceType.intValue) &&
-            (YES != self.showVideoDeactivation) )
-        {
-            //dbg msg
-            logMsg(LOG_DEBUG, @"deactivation video alert doesn't have an activation alert (whitelisted?), so ignoring");
-        
-            //bail
-            goto bail;
-        }
-        
-        //dbg msg
-        logMsg(LOG_DEBUG, @"got deactivation alert, but neither showVideoDeactivation nor showVideoDeactivation is set...");
     }
     
     //check if event is essentially a duplicate (facetime, etc)
@@ -1029,7 +1074,9 @@ bail:
                 (YES == [self.lastEvent[EVENT_DEVICE_STATUS] isEqual:event[EVENT_DEVICE_STATUS]]) )
             {
                 //dbg msg
+                #ifdef DEBUG
                 logMsg(LOG_DEBUG, [NSString stringWithFormat:@"alert for %@ would be same as previous (%@), so ignoring", event, self.lastEvent]);
+                #endif
                 
                 //update
                 self.lastEvent = event;
@@ -1052,7 +1099,9 @@ bail:
         (YES == [DEVICE_INACTIVE isEqual:event[EVENT_DEVICE_STATUS]]) )
     {
         //dbg msg
+        #ifdef DEBUG
         logMsg(LOG_DEBUG, @"user has decided to ingore 'inactive' events, so ingoring A/V going to disable state");
+        #endif
         
         //bail
         goto bail;
@@ -1077,21 +1126,11 @@ bail:
     // ->name of device
     details = ((AVCaptureDevice*)event[EVENT_DEVICE]).localizedName;
     
-    //customize buttons
-    // ->inactive events, or when consumer proc couldn't be ID'd, just say 'ok'
-    if( (YES == [DEVICE_INACTIVE isEqual:event[EVENT_DEVICE_STATUS]]) ||
-        (0 == [event[EVENT_PROCESS_ID] intValue]) )
-    {
-        //set other button title
-        notification.otherButtonTitle = @"ok";
+    //ALERT 1:
+    // ->activate alert with lots of info
+    if( (YES == [DEVICE_ACTIVE isEqual:event[EVENT_DEVICE_STATUS]]) &&
+        (0 != [event[EVENT_PROCESS_ID] intValue]) )
         
-        //remove action button
-        notification.hasActionButton = NO;
-    }
-    
-    //customize buttons
-    // ->for activated audio/video; allow/block
-    else
     {
         //set other button title
         notification.otherButtonTitle = @"allow";
@@ -1099,15 +1138,47 @@ bail:
         //set action title
         notification.actionButtonTitle = @"block";
         
+        //remove action button
+        notification.hasActionButton = YES;
+        
         //set pid/name/device into user info
         // ->allows code to whitelist proc and/or kill proc (later) if user clicks 'block'
-        notification.userInfo = @{EVENT_PROCESS_ID:event[EVENT_PROCESS_ID], EVENT_PROCESS_PATH:processPath, EVENT_PROCESS_NAME:processName, EVENT_DEVICE:deviceType};
+        notification.userInfo = @{EVENT_PROCESS_ID:event[EVENT_PROCESS_ID], EVENT_PROCESS_PATH:processPath, EVENT_PROCESS_NAME:processName, EVENT_DEVICE:deviceType, EVENT_ALERT_TYPE:ALERT_ACTIVATE};
         
         //set details
         // ->name of process using it / icon too?
         [notification setInformativeText:[NSString stringWithFormat:@"process: %@ (%@)", processName, event[EVENT_PROCESS_ID]]];
     }
-
+    
+    //ALERT 2:
+    // ->activate alert, with no process info
+    else if( (YES == [DEVICE_ACTIVE isEqual:event[EVENT_DEVICE_STATUS]]) &&
+         (0 == [event[EVENT_PROCESS_ID] intValue]) )
+    {
+        //set other button title
+        notification.otherButtonTitle = @"ok";
+        
+        //remove action button
+        notification.hasActionButton = NO;
+        
+        //set type
+        notification.userInfo = @{EVENT_DEVICE:deviceType, EVENT_ALERT_TYPE:ALERT_ACTIVATE};
+    }
+    
+    //ALERT 3:
+    // ->inactive alert, with no process info
+    else
+    {
+        //set other button title
+        notification.otherButtonTitle = @"ok";
+        
+        //remove action button
+        notification.hasActionButton = NO;
+        
+        //set type
+        notification.userInfo = @{EVENT_DEVICE:deviceType, EVENT_ALERT_TYPE:ALERT_INACTIVE};
+    }
+    
     //log event?
     if(YES == [preferences[PREF_LOG_ACTIVITY] boolValue])
     {
@@ -1150,57 +1221,51 @@ bail:
     //deliver notification
     [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
     
-    //set flag saying we showed an 'activated' alert
-    // ->allows us to ignore 'inactive' events that had a whitelisted 'activate' event
+    //save displayed activation alerts
     if(YES == [DEVICE_ACTIVE isEqual:event[EVENT_DEVICE_STATUS]])
     {
-        //audio
-        if(SOURCE_AUDIO.intValue == deviceType.intValue)
-        {
-            //set
-            self.showAudioDeactivation = YES;
-        }
-        //video
-        else
-        {
-            //set
-            self.showVideoDeactivation = YES;
-        }
+        //save
+        self.activationAlerts[notification.identifier] = event;
     }
-    //inactive alert
-    // ->unset flags
-    else
+    
+    //for 'went inactive' notification automatically close
+    //  ->unless there still is an active alert on the screen
+    if(YES == [DEVICE_INACTIVE isEqual:event[EVENT_DEVICE_STATUS]])
     {
-        //audio
-        if(SOURCE_AUDIO.intValue == deviceType.intValue)
+        //any active alerts still visible?
+        // ->note: we make to check if the type matches
+        for(NSUUID* key in self.activationAlerts.allKeys)
         {
-            //set
-            self.showAudioDeactivation = NO;
+            //same type?
+            if(event[EVENT_DEVICE] == self.activationAlerts[key][EVENT_DEVICE])
+            {
+                //got match
+                matchingActivationAlert = YES;
+                
+                //no need to check more
+                break;
+            }
         }
-        //video
-        else
+        
+        //go match
+        // ->close if not still visible
+        if(YES != matchingActivationAlert)
         {
-            //set
-            self.showVideoDeactivation = NO;
+            //dbg msg
+            #ifdef DEBUG
+            logMsg(LOG_DEBUG, @"automatically closing deactivation alert");
+            #endif
+            
+            //delay, then close
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+                
+                //close
+                [NSUserNotificationCenter.defaultUserNotificationCenter removeDeliveredNotification:notification];
+                
+            });
         }
     }
     
-    //for 'went inactive' notification
-    // ->automatically close after some time
-    if(YES == [DEVICE_INACTIVE isEqual:event[EVENT_DEVICE_STATUS]])
-    {
-        //dbg msg
-        logMsg(LOG_DEBUG, @"event is 'went inactive', so will automatically close");
-        
-        //close after 2 seconds
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-            
-            //close
-            [NSUserNotificationCenter.defaultUserNotificationCenter removeDeliveredNotification:notification];
-            
-        });
-    }
-
 //bail
 bail:
     
@@ -1223,6 +1288,9 @@ bail:
     //process id
     NSNumber* processID = nil;
     
+    //device type
+    NSNumber* deviceType = nil;
+    
     //preferences
     NSDictionary* preferences = nil;
     
@@ -1236,7 +1304,9 @@ bail:
     sysLogMsg = [NSMutableString string];
     
     //dbg msg
+    #ifdef DEBUG
     logMsg(LOG_DEBUG, [NSString stringWithFormat:@"user responded to notification: %@", notification]);
+    #endif
     
     //ignore if this notification was already seen
     // ->need this logic, since have to determine if 'allow' was invoke indirectly
@@ -1253,6 +1323,38 @@ bail:
         }
     }
     
+    //when it's a deactivation alert
+    // ->remove all activation alerts that match the same type
+    if(ALERT_INACTIVE.intValue == [notification.userInfo[EVENT_ALERT_TYPE] intValue])
+    {
+        //remove any active alerts
+        // ->note: we make to check if the type matches
+        for(NSUUID* key in self.activationAlerts.allKeys)
+        {
+            //check stored activation alert type
+            // ->audio
+            if(YES == [self.activationAlerts[key][EVENT_DEVICE] isKindOfClass:NSClassFromString(@"AVCaptureHALDevice")])
+            {
+                //set device
+                deviceType = SOURCE_AUDIO;
+            }
+            //check stored activation alert type
+            // ->video
+            else
+            {
+                //set device
+                deviceType = SOURCE_VIDEO;
+            }
+            
+            //same type?
+            if( [notification.userInfo[EVENT_DEVICE] intValue] == deviceType.intValue)
+            {
+                //remove
+                [self.activationAlerts removeObjectForKey:key];
+            }
+        }
+    }
+
     //update
     self.lastNotification = notification.identifier;
     
@@ -1261,7 +1363,9 @@ bail:
     if(YES != notification.hasActionButton)
     {
         //dbg msg
+        #ifdef DEBUG
         logMsg(LOG_DEBUG, @"popup without an action, no need to do anything");
+        #endif
         
         //bail
         goto bail;
@@ -1291,19 +1395,22 @@ bail:
     }
     
     //check if user clicked 'allow' via user info (since OS doesn't directly deliver this)
-    // ->if allow was clicked, show a popup w/ option to rember ('whitelist') the application
-    //   don't do this for 'block' since that kills the app, so obv, that'd be bad to always do!
-    if( (nil != notification.userInfo) &&
-        (NSUserNotificationActivationTypeAdditionalActionClicked == [notification.userInfo[@"activationType"] integerValue]) )
+    // ->show a popup w/ option to remember ('whitelist') the application
+    //   don't do this for 'block' since that kills the app, so obv, that'd be bad to *always* do!
+    if(NSUserNotificationActivationTypeAdditionalActionClicked == [notification.userInfo[@"activationType"] integerValue])
     {
         //dbg msg
+        #ifdef DEBUG
         logMsg(LOG_DEBUG, @"user clicked 'allow'");
+        #endif
         
         //can't remember process that we didn't find the path for
         if(YES == [notification.userInfo[EVENT_PROCESS_PATH] isEqualToString:PROCESS_UNKNOWN])
         {
             //dbg msg
+            #ifdef DEBUG
             logMsg(LOG_DEBUG, @"don't have a process path, so not displaying whitelisting popup");
+            #endif
 
             //bail
             goto bail;
@@ -1338,7 +1445,9 @@ bail:
     else if(NSUserNotificationActivationTypeActionButtonClicked == notification.activationType)
     {
         //dbg msg
+        #ifdef DEBUG
         logMsg(LOG_DEBUG, @"user clicked 'block'");
+        #endif
         
         //extract process id
         processID = notification.userInfo[EVENT_PROCESS_ID];
@@ -1361,7 +1470,9 @@ bail:
         [xpcConnection resume];
         
         //dbg msg
+        #ifdef DEBUG
         logMsg(LOG_DEBUG, [NSString stringWithFormat:@"invoking XPC method to kill: %@", processID]);
+        #endif
         
         //invoke XPC method 'killProcess' to terminate
         [[xpcConnection remoteObjectProxy] killProcess:processID reply:^(BOOL wasKilled)
@@ -1397,48 +1508,49 @@ bail:
     
     //user dictionary
     __block NSMutableDictionary* userInfo = nil;
-    
-    //only process notifications have 'allow' / 'block'
-    if(YES == notification.hasActionButton)
-    {
-        //monitor in background to see if alert was dismissed
-        // ->invokes normal 'didActivateNotification' callback when alert is dimsissed
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
-        ^{
-                //monitor all delivered notifications until it goes away
-                do {
-                    
-                    //reset
-                    notificationStillPresent = NO;
-                   
-                    //check all delivered notifications
-                    for (NSUserNotification *nox in [[NSUserNotificationCenter defaultUserNotificationCenter] deliveredNotifications])
+
+    //monitor in background to see if alert was dismissed
+    // ->invokes normal 'didActivateNotification' callback when alert is dimsissed
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+    ^{
+            //monitor all delivered notifications until it goes away
+            do {
+                
+                //reset
+                notificationStillPresent = NO;
+               
+                //check all delivered notifications
+                for (NSUserNotification *nox in [[NSUserNotificationCenter defaultUserNotificationCenter] deliveredNotifications])
+                {
+                    //check
+                    if(YES == [nox.identifier isEqualToString:notification.identifier])
                     {
-                        //check
-                        if(YES == [nox.identifier isEqualToString:notification.identifier])
-                        {
-                            //found!
-                            notificationStillPresent = YES;
-                            
-                            //exit loop
-                            break;
-                        }
+                        //found!
+                        notificationStillPresent = YES;
+                        
+                        //exit loop
+                        break;
                     }
-                    
-                    //nap if notification is still there
-                    if(YES == notificationStillPresent)
+                }
+                
+                //nap if notification is still there
+                if(YES == notificationStillPresent)
+                {
+                    //nap
+                    [NSThread sleepForTimeInterval:0.25f];
+                }
+                
+            //keep monitoring until its gone
+            } while(YES == notificationStillPresent);
+        
+            //alert was dismissed
+            // ->invoke 'didActivateNotification' to process if it was an 'allow/block' alert
+            dispatch_async(dispatch_get_main_queue(),
+            ^{
+                    //add extra info for activation alerts
+                    // ->will allow callback to identify we delivered via this mechanism
+                    if(YES == notification.hasActionButton)
                     {
-                        //nap
-                        [NSThread sleepForTimeInterval:0.25f];
-                    }
-                    
-                //keep monitoring until its gone
-                } while(YES == notificationStillPresent);
-            
-                //alert was dismissed
-                // ->invoke 'didActivateNotification' to process if it was an 'allow/block' alert
-                dispatch_async(dispatch_get_main_queue(),
-                ^{
                         //grab user info dictionary
                         userInfo = [notification.userInfo mutableCopy];
                     
@@ -1447,13 +1559,13 @@ bail:
                     
                         //update
                         notification.userInfo =  userInfo;
-                    
-                        //deliver
-                        [self userNotificationCenter:center didActivateNotification:notification];
-                });
+                    }
+                
+                    //deliver
+                    [self userNotificationCenter:center didActivateNotification:notification];
             });
-        }
-
+        });
+    
     return;
 }
 
@@ -1468,7 +1580,9 @@ bail:
     dispatch_semaphore_t waitSema = nil;
     
     //dbg msg
+    #ifdef DEBUG
     logMsg(LOG_DEBUG, @"[MONITOR THREAD] video is active, so polling for new procs");
+    #endif
     
     //alloc XPC connection
     xpcConnection = [[NSXPCConnection alloc] initWithServiceName:@"com.objective-see.OverSightXPC"];
@@ -1490,14 +1604,18 @@ bail:
         waitSema = dispatch_semaphore_create(0);
         
         //dbg msg
+        #ifdef DEBUG
         logMsg(LOG_DEBUG, @"[MONITOR THREAD] (re)Asking XPC for (new) video procs");
+        #endif
         
         //invoke XPC service to get (new) video procs
         // ->will generate user notifications for any new processes
         [[xpcConnection remoteObjectProxy] getVideoProcs:^(NSMutableArray* videoProcesses)
          {
              //dbg msg
+             #ifdef DEBUG
              logMsg(LOG_DEBUG, [NSString stringWithFormat:@"[MONITOR THREAD] found %lu new video procs: %@", (unsigned long)videoProcesses.count, videoProcesses]);
+            #endif
              
              //generate a notification for each process
              // ->double check video is still active though...
@@ -1538,7 +1656,9 @@ bail:
     xpcConnection = nil;
     
     //dbg msg
+    #ifdef DEBUG
     logMsg(LOG_DEBUG, @"[MONITOR THREAD] exiting polling/monitor thread since camera is off");
+    #endif
     
     return;
 }

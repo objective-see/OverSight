@@ -12,6 +12,8 @@
 #import "Utilities.h"
 #import "ConfigureWindowController.h"
 
+#import <Quartz/Quartz.h>
+
 @implementation ConfigureWindowController
 
 @synthesize statusMsg;
@@ -110,20 +112,87 @@
     NSUInteger action = 0;
     
     //dbg msg
+    #ifdef DEBUG
     logMsg(LOG_DEBUG, [NSString stringWithFormat:@"handling action click: %@", buttonTitle]);
+    #endif
     
-    //close?
+    //close/no?
     // ->just exit
-    if(YES == [buttonTitle isEqualToString:ACTION_CLOSE])
+    if( (YES == [buttonTitle isEqualToString:ACTION_CLOSE]) ||
+        (YES == [buttonTitle isEqualToString:ACTION_NO]) )
     {
         //close
         [self.window close];
+        
+        //bail
+        goto bail;
+    }
+    
+    //next >>?
+    // ->show 'support' us view
+    if(YES == [buttonTitle isEqualToString:ACTION_NEXT])
+    {
+        //frame
+        NSRect frame = {0};
+        
+        //unset window title
+        self.window.title = @"";
+    
+        //get main window's frame
+        frame = self.window.contentView.frame;
+        
+        //set origin to 0/0
+        frame.origin = CGPointZero;
+        
+        //increase y offset
+        frame.origin.y += 5;
+        
+        //reduce height
+        frame.size.height -= 5;
+        
+        //pre-req
+        [self.supportView setWantsLayer:YES];
+        
+        //update overlay to take up entire window
+        self.supportView.frame = frame;
+        
+        //set overlay's view color to white
+        self.supportView.layer.backgroundColor = [NSColor whiteColor].CGColor;
+    
+        //nap for UI purposes
+        [NSThread sleepForTimeInterval:0.10f];
+        
+        //add to main window
+        [self.window.contentView addSubview:self.supportView];
+        
+        //show
+        self.supportView.hidden = NO;
+        
+        //make 'yes!' button active
+        [self.window makeFirstResponder:self.supportButton];
+        
+        //bail
+        goto bail;
+    }
+    
+    //'yes' for support
+    // ->load supprt in URL
+    if(YES == [buttonTitle isEqualToString:ACTION_YES])
+    {
+        //open URL
+        // ->invokes user's default browser
+        [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:PATREON_URL]];
+        
+        //close
+        [self.window close];
+        
+        //bail
+        goto bail;
     }
     
     //install/uninstall logic handlers
     else
     {
-        
         //hide 'get more info' button
         self.moreInfoButton.hidden = YES;
         
@@ -159,9 +228,11 @@
         ^{
             //install/uninstall
             [self lifeCycleEvent:action];
-        
         });
     }
+    
+//bail
+bail:
 
     return;
 }
@@ -192,9 +263,6 @@
     
     //configure object
     Configure* configureObj = nil;
-    
-    //dbg msg
-    //logMsg(LOG_DEBUG, [NSString stringWithFormat:@"handling life cycle event, %lu", (unsigned long)event]);
     
     //alloc control object
     configureObj = [[Configure alloc] init];
@@ -351,11 +419,11 @@
     [self.statusMsg setStringValue:resultMsg];
     
     //update button
-    // ->after install change butter to 'close'
+    // ->after install change butter to 'next'
     if(ACTION_INSTALL_FLAG == event)
     {
         //set button title to 'close'
-        self.installButton.title = ACTION_CLOSE;
+        self.installButton.title = ACTION_NEXT;
         
         //enable
         self.installButton.enabled = YES;

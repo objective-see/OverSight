@@ -109,7 +109,9 @@
     __block NSXPCConnection* xpcConnection = nil;
     
     //dbg msg
+    #ifdef DEBUG
     logMsg(LOG_DEBUG, [NSString stringWithFormat:@"handling user response for 'allow' popup: %ld", (long)((NSButton*)sender).tag]);
+    #endif
     
     //handle 'always allow' (whitelist) button
     if(BUTTON_ALWAYS_ALLOW == ((NSButton*)sender).tag)
@@ -124,33 +126,37 @@
         [xpcConnection resume];
         
         //dbg msg
+        #ifdef DEBUG
         logMsg(LOG_DEBUG, @"sending XPC message to whitelist");
+        #endif
         
         //invoke XPC method 'whitelistProcess' to add process to white list
         [[xpcConnection remoteObjectProxy] whitelistProcess:self.processPath reply:^(BOOL wasWhitelisted)
          {
-             //dbg msg
-             logMsg(LOG_DEBUG, [NSString stringWithFormat:@"got XPC response: %d", wasWhitelisted]);
+            //dbg msg
+            #ifdef DEBUG
+            logMsg(LOG_DEBUG, [NSString stringWithFormat:@"got XPC response: %d", wasWhitelisted]);
+            #endif
              
-             //reload whitelist on success
-             if(YES == wasWhitelisted)
-             {
-                 //reload AVMonitor's whitelist
-                 [self.avMonitor loadWhitelist];
-             }
-             //err
-             // ->log msg
-             else
-             {
-                 //err msg
-                 logMsg(LOG_ERR, [NSString stringWithFormat:@"failed to whitelist: %@", self.processPath]);
-             }
-    
-             //close connection
-             [xpcConnection invalidate];
-             
-             //nil out
-             xpcConnection = nil;
+            //reload whitelist on success
+            if(YES == wasWhitelisted)
+            {
+                //reload AVMonitor's whitelist
+                [self.avMonitor loadWhitelist];
+            }
+            //err
+            // ->log msg
+            else
+            {
+                //err msg
+                logMsg(LOG_ERR, [NSString stringWithFormat:@"failed to whitelist: %@", self.processPath]);
+            }
+
+            //close connection
+            [xpcConnection invalidate];
+
+            //nil out
+            xpcConnection = nil;
              
          }];
     }

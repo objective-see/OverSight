@@ -113,7 +113,9 @@
     if(YES != [[NSFileManager defaultManager] fileExistsAtPath:[APP_SUPPORT_DIRECTORY stringByExpandingTildeInPath]])
     {
         //dbg msg
+        #ifdef DEBUG
         logMsg(LOG_DEBUG, [NSString stringWithFormat:@"XPC: creating app support directory: %@", [APP_SUPPORT_DIRECTORY stringByExpandingTildeInPath]]);
+        #endif
         
         //create
         if(YES != [[NSFileManager defaultManager] createDirectoryAtPath: [APP_SUPPORT_DIRECTORY stringByExpandingTildeInPath] withIntermediateDirectories:YES attributes:nil error:&error])

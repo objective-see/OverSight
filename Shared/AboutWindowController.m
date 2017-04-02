@@ -48,14 +48,26 @@
     return;
 }
 
-//automatically invoked when user clicks 'more info'
-// ->load products webpage view their default browser
--(IBAction)moreInfo:(id)sender
+//automatically invoked when user clicks any of the buttons
+// ->load patreon or products webpage in user's default browser
+-(IBAction)buttonHandler:(id)sender
 {
-    //open URL
-    // ->invokes user's default browser
-    [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:PRODUCT_URL]];
-        
+    //support us button
+    if(((NSButton*)sender).tag == BUTTON_SUPPORT_US)
+    {
+        //open URL
+        // ->invokes user's default browser
+        [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:PATREON_URL]];
+    }
+    
+    //more info button
+    else if(((NSButton*)sender).tag == BUTTON_MORE_INFO)
+    {
+        //open URL
+        // ->invokes user's default browser
+        [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:PRODUCT_URL]];
+    }
+
     return;
 }
 @end

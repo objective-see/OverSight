@@ -27,6 +27,9 @@
 //product version url
 #define PRODUCT_VERSION_URL @"https://objective-see.com/products.json"
 
+//patreon url
+#define PATREON_URL @"https://www.patreon.com/objective_see"
+
 //OS version x
 #define OS_MAJOR_VERSION_X 10
 
@@ -52,7 +55,19 @@
 
 //button title
 // ->Close
-#define ACTION_CLOSE @"Close"
+#define ACTION_CLOSE @"close"
+
+//button title
+// ->next
+#define ACTION_NEXT @"next »"
+
+//button title
+// ->no
+#define ACTION_NO @"no"
+
+//button title
+// ->yes
+#define ACTION_YES @"yes!"
 
 //flag to uninstall
 #define ACTION_UNINSTALL_FLAG 0
@@ -128,11 +143,18 @@
 #define EVENT_TIMESTAMP @"timeStamp"
 #define EVENT_DEVICE_STATUS @"status"
 #define EVENT_PROCESS_ID @"processID"
+#define EVENT_ALERT_TYPE @"alertType"
 #define EVENT_PROCESS_NAME @"processName"
 #define EVENT_PROCESS_PATH @"processPath"
 
 //unknown process
 #define PROCESS_UNKNOWN @"<unknown>"
+
+//went inactive
+#define ALERT_INACTIVE @0x0
+
+//went active
+#define ALERT_ACTIVATE @0x1
 
 //source audio
 #define SOURCE_AUDIO @0x1
@@ -148,6 +170,12 @@
 
 //id (tag) for detailed text in rules table
 #define TABLE_ROW_SUB_TEXT_TAG 101
+
+//support us button tag
+#define BUTTON_SUPPORT_US 100
+
+//more info button tag
+#define BUTTON_MORE_INFO 101
 
 
 #endif

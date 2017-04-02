@@ -20,8 +20,5 @@
 
 /* METHODS */
 
-//invoked when user clicks 'more info' button
-// ->open OverSights webpage
-- (IBAction)moreInfo:(id)sender;
 
 @end

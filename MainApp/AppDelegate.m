@@ -49,7 +49,9 @@
 -(void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
     //dbg msg
+    #ifdef DEBUG
     logMsg(LOG_DEBUG, @"OverSight Preferences App Launched");
+    #endif
     
     //register for hotkey presses
     // ->for now, just cmd+q to quit app
@@ -60,7 +62,9 @@
     if(YES != [[NSFileManager defaultManager] fileExistsAtPath:[APP_PREFERENCES stringByExpandingTildeInPath]])
     {
         //dbg msg
+        #ifdef DEBUG
         logMsg(LOG_DEBUG, @"preference file not found; manually creating");
+        #endif
         
         //write em out
         // ->note; set 'start at login' to false, since no prefs here, mean installer wasn't run (user can later toggle)
@@ -314,14 +318,18 @@ bail:
     versionString = [NSMutableString string];
     
     //dbg msg
+    #ifdef DEBUG
     logMsg(LOG_DEBUG, @"checking for new version");
+    #endif
     
     //check if available version is newer
     // ->show update popup/window
     if(YES == isNewVersion(versionString))
     {
         //dbg msg
+        #ifdef DEBUG
         logMsg(LOG_DEBUG, [NSString stringWithFormat:@"a new version (%@) is available", versionString]);
+        #endif
         
         //hide version message
         self.versionLabel.hidden = YES;
@@ -358,7 +366,9 @@ bail:
     else
     {
         //dbg msg
+        #ifdef DEBUG
         logMsg(LOG_DEBUG, @"no updates available");
+        #endif
         
         //stop/hide spinner
         [self.spinner stopAnimation:self];
@@ -404,7 +414,9 @@ bail:
         (YES != shouldRestart) )
     {
         //dbg msg
+        #ifdef DEBUG
         logMsg(LOG_DEBUG, @"login item already running and 'shouldRestart' not set, so no need to start it!");
+        #endif
         
         //bail
         goto bail;
@@ -425,7 +437,9 @@ bail:
     }
     
     //dbg msg
+    #ifdef DEBUG
     logMsg(LOG_DEBUG, @"starting login item");
+    #endif
     
     //add overlay
     [self addOverlay:shouldRestart];
@@ -478,10 +492,16 @@ bail:
         [self.overlay setWantsLayer:YES];
         
         //get main window's frame
-        frame = self.window.frame;
+        frame = self.window.contentView.frame;
        
         //set origin to 0/0
         frame.origin = CGPointZero;
+        
+        //tweak since window is rounded
+        // ->and adding this view doesn't get rounded?
+        frame.origin.y += 1;
+        frame.origin.x += 1;
+        frame.size.width -= 2;
         
         //update overlay to take up entire window
         self.overlay.frame = frame;

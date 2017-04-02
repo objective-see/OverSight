@@ -221,7 +221,9 @@
 -(void)quit:(id)sender
 {
     //dbg msg
+    #ifdef DEBUG
     logMsg(LOG_DEBUG, @"user clicked 'exit', so goodbye!");
+    #endif
     
     //exit
     [[NSApplication sharedApplication] terminate:nil];
@@ -234,7 +236,9 @@
 -(void)preferences:(id)sender
 {
     //dbg msg
+    #ifdef DEBUG
     logMsg(LOG_DEBUG, @"launching main app (from /Applications)");
+    #endif
     
     //launch main app
     [[NSWorkspace sharedWorkspace] launchApplication:[APPS_FOLDER stringByAppendingPathComponent:APP_NAME]];

@@ -7,6 +7,7 @@
 //
 
 #import "Consts.h"
+#import "Logging.h"
 #import "ErrorWindowController.h"
 
 @interface ErrorWindowController ()
@@ -138,7 +139,9 @@
     if(YES == self.shouldExit)
     {
         //dbg msg
-        //logMsg(LOG_DEBUG, @"exiting application");
+        #ifdef DEBUG
+        logMsg(LOG_DEBUG, @"exiting application");
+        #endif
         
         //exit
         [NSApp terminate:self];

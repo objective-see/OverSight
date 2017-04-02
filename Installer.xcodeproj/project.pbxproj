@@ -23,6 +23,7 @@
 		7D17C5011D658DB90066232A /* ErrorWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7D17C4F81D658DB90066232A /* ErrorWindowController.xib */; };
 		7D17C5041D658DEC0066232A /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7D17C5021D658DEC0066232A /* MainMenu.xib */; };
 		7D6245831D87C3D700870565 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7D6245821D87C3D700870565 /* Images.xcassets */; };
+		7DEABC481E907DF10024C6AB /* objectiveSee.png in Resources */ = {isa = PBXBuildFile; fileRef = 7DEABC471E907DF10024C6AB /* objectiveSee.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -54,6 +55,7 @@
 		7D24C8651D2CDEA7009932EE /* OverSight_Installer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OverSight_Installer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7D6245821D87C3D700870565 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Images/Images.xcassets; sourceTree = "<group>"; };
 		7D9A7DE91D8A8BDA0091C1AF /* main.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = main.h; path = Installer/main.h; sourceTree = SOURCE_ROOT; };
+		7DEABC471E907DF10024C6AB /* objectiveSee.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = objectiveSee.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -90,6 +92,7 @@
 			isa = PBXGroup;
 			children = (
 				7D17C4DF1D658D9F0066232A /* icon.png */,
+				7DEABC471E907DF10024C6AB /* objectiveSee.png */,
 				7D17C4E01D658D9F0066232A /* overSight.png */,
 			);
 			path = Images;
@@ -118,11 +121,11 @@
 				7D17C5021D658DEC0066232A /* MainMenu.xib */,
 				7D17C4F61D658DB90066232A /* AppDelegate.h */,
 				7D17C4ED1D658DB90066232A /* AppDelegate.m */,
+				7D17C4F11D658DB90066232A /* ConfigureWindowController.h */,
 				7D17C4EE1D658DB90066232A /* ConfigureWindowController.m */,
 				7D17C4EF1D658DB90066232A /* ConfigureWindowController.xib */,
 				7D17C4F01D658DB90066232A /* Configure.h */,
 				7D17C4EC1D658DB90066232A /* Configure.m */,
-				7D17C4F11D658DB90066232A /* ConfigureWindowController.h */,
 				7D17C4F21D658DB90066232A /* ErrorWindowController.h */,
 				7D17C4F31D658DB90066232A /* ErrorWindowController.m */,
 				7D17C4F81D658DB90066232A /* ErrorWindowController.xib */,
@@ -204,6 +207,7 @@
 				7D6245831D87C3D700870565 /* Images.xcassets in Resources */,
 				7D17C4E91D658D9F0066232A /* overSight.png in Resources */,
 				7D17C5011D658DB90066232A /* ErrorWindowController.xib in Resources */,
+				7DEABC481E907DF10024C6AB /* objectiveSee.png in Resources */,
 				7D17C4E81D658D9F0066232A /* icon.png in Resources */,
 				7D17C4FC1D658DB90066232A /* ConfigureWindowController.xib in Resources */,
 				7D17C4E51D658D9F0066232A /* AboutWindow.xib in Resources */,

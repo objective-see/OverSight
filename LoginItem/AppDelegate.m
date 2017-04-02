@@ -1,6 +1,6 @@
 //
 //  AppDelegate.m
-//  Test Application Helper
+//  Login Item, (app helper)
 //
 //  Created by Patrick Wardle on 9/10/16.
 //  Copyright (c) 2016 Objective-See. All rights reserved.
@@ -10,8 +10,6 @@
 #import "Logging.h"
 #import "Utilities.h"
 #import "AppDelegate.h"
-
-//TODO: "I have a dual monitor setup and just noticed that the alert came up on the other monitor, not the one that Skype was launched on."
 
 
 @interface AppDelegate ()
@@ -33,7 +31,9 @@
     NSDictionary* preferences = nil;
     
     //dbg msg
+    #ifdef DEBUG
     logMsg(LOG_DEBUG, @"starting login item app logic");
+    #endif
     
     //drop group privs
     setgid(getgid());
@@ -52,14 +52,18 @@
         [self loadStatusBar];
         
         //dbg msg
+        #ifdef DEBUG
         logMsg(LOG_DEBUG, @"initialized/loaded status bar (icon/menu)");
+        #endif
     }
+    #ifdef DEBUG
     //dbg msg
     else
     {
         //dbg msg
         logMsg(LOG_DEBUG, @"running in headless mode");
     }
+    #endif
     
     //check for updates
     // ->but only when user has not disabled that feature
@@ -69,12 +73,13 @@
         //->check for updates in background
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 60 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^
         {
-           //dbg msg
-           logMsg(LOG_DEBUG, @"checking for update");
+            //dbg msg
+            #ifdef DEBUG
+            logMsg(LOG_DEBUG, @"checking for update");
+            #endif
            
-           //check
-           [self isThereAnUpdate];
-            
+            //check
+            [self isThereAnUpdate];
         });
     }
     
@@ -82,14 +87,18 @@
     avMonitor = [[AVMonitor alloc] init];
     
     //dbg msg
+    #ifdef DEBUG
     logMsg(LOG_DEBUG, @"alloc/init'd AV monitor");
+    #endif
     
     //start monitoring
     // ->sets up audio/video callbacks
     [avMonitor monitor];
     
     //dbg msg
+    #ifdef DEBUG
     logMsg(LOG_DEBUG, @"AV monitor off and running");
+    #endif
     
 //bail
 bail:
@@ -127,7 +136,9 @@ bail:
         dispatch_sync(dispatch_get_main_queue(), ^{
         
         //dbg msg
+        #ifdef DEBUG
         logMsg(LOG_DEBUG, [NSString stringWithFormat:@"a new version (%@) is available", versionString]);
+        #endif
         
         //alloc/init about window
         infoWindowController = [[InfoWindowController alloc] initWithWindowNibName:@"InfoWindow"];
@@ -154,11 +165,13 @@ bail:
     
     //no new version
     // ->just (debug) log msg
+    #ifdef DEBUG
     else
     {
         //dbg msg
         logMsg(LOG_DEBUG, @"no updates available");
     }
+    #endif
     
     return;
 }

@@ -43,12 +43,6 @@
 //flag indicating video (camera) is active
 @property BOOL videoActive;
 
-//flag indicating an audio active alert was shown
-@property BOOL showAudioDeactivation;
-
-//flag indicating a video active alert was shown
-@property BOOL showVideoDeactivation;
-
 //monitor thread
 @property(nonatomic, retain)NSThread* videoMonitorThread;
 
@@ -63,6 +57,9 @@
 
 //whitelisted procs
 @property(nonatomic, retain)NSMutableArray* whiteList;
+
+//activation alerts that were displayed
+@property(nonatomic, retain)NSMutableDictionary* activationAlerts;
 
 
 

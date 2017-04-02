@@ -153,7 +153,9 @@ BOOL setFileOwner(NSString* path, NSNumber* groupID, NSNumber* ownerID, BOOL rec
     }
     
     //dbg msg
+    #ifdef DEBUG
     logMsg(LOG_DEBUG, [NSString stringWithFormat:@"set ownership for %@ (%@)", path, fileOwner]);
+    #endif
     
     //do it recursively
     if(YES == recursive)
@@ -269,35 +271,28 @@ NSData* execTask(NSString* binaryPath, NSArray* arguments)
     //output pipe
     NSPipe *outPipe = nil;
     
-    //read handle
-    NSFileHandle* readHandle = nil;
-    
     //output
-    NSMutableData *output = nil;
+    NSData *output = nil;
     
     //init task
     task = [NSTask new];
     
-    //init output pipe
+    //init pipe
     outPipe = [NSPipe pipe];
     
-    //init read handle
-    readHandle = [outPipe fileHandleForReading];
-    
-    //init output buffer
-    output = [NSMutableData data];
-    
     //set task's path
-    [task setLaunchPath:binaryPath];
+    task.launchPath = binaryPath;
     
     //set task's args
-    [task setArguments:arguments];
+    task.arguments = arguments;
     
-    //set task's output
-    [task setStandardOutput:outPipe];
+    //set task's output to pipe
+    task.standardOutput = outPipe;
     
     //dbg msg
+    #ifdef DEBUG
     logMsg(LOG_DEBUG, [NSString stringWithFormat:@"@exec'ing %@ (args: %@)", binaryPath, arguments]);
+    #endif
     
     //wrap task launch
     @try
@@ -307,19 +302,33 @@ NSData* execTask(NSString* binaryPath, NSArray* arguments)
     }
     @catch(NSException* exception)
     {
+        //err msg
+        logMsg(LOG_ERR, [NSString stringWithFormat:@"task failed with %@", exception]);
+        
         //bail
         goto bail;
     }
     
-    //read in output
-    while(YES == [task isRunning])
-    {
-        //accumulate output
-        [output appendData:[readHandle readDataToEndOfFile]];
-    }
+    //dbg msg
+    #ifdef DEBUG
+    logMsg(LOG_DEBUG, @"invoking 'readDataToEndOfFile' to get all data");
+    #endif
     
-    //grab any left over data
-    [output appendData:[readHandle readDataToEndOfFile]];
+    //read until file is closed
+    output = [outPipe.fileHandleForReading readDataToEndOfFile];
+    
+    //dbg msg
+    #ifdef DEBUG
+    logMsg(LOG_DEBUG, @"now waiting for task to exit");
+    #endif
+    
+    //wait till exit
+    [task waitUntilExit];
+    
+    //dbg msg
+    #ifdef DEBUG
+    logMsg(LOG_DEBUG, @"task to exited");
+    #endif
     
 //bail
 bail:
@@ -845,7 +854,9 @@ BOOL toggleLoginItem(NSURL* loginItem, int toggleFlag)
     if(ACTION_INSTALL_FLAG == toggleFlag)
     {
         //dbg msg
+        #ifdef DEBUG
         logMsg(LOG_DEBUG, @"adding login item");
+        #endif
         
         //add
         LSSharedFileListItemRef itemRef = LSSharedFileListInsertItemURL(loginItemsRef, kLSSharedFileListItemLast, NULL, NULL, (__bridge CFURLRef)(loginItem), NULL, NULL);
@@ -854,7 +865,9 @@ BOOL toggleLoginItem(NSURL* loginItem, int toggleFlag)
         if(NULL != itemRef)
         {
             //dbg msg
+            #ifdef DEBUG
             logMsg(LOG_DEBUG, [NSString stringWithFormat:@"added %@/%@", loginItem, itemRef]);
+            #endif
             
             //release
             CFRelease(itemRef);
@@ -879,7 +892,9 @@ BOOL toggleLoginItem(NSURL* loginItem, int toggleFlag)
     else
     {
         //dbg msg
+        #ifdef DEBUG
         logMsg(LOG_DEBUG, @"removing login item");
+        #endif
         
         //grab existing login items
         loginItems = LSSharedFileListCopySnapshot(loginItemsRef, nil);

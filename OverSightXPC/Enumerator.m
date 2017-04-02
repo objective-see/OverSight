@@ -16,7 +16,6 @@
 #import <sys/sysctl.h>
 
 //ignored mach sender procs
-// TODO: maybe just ignore apple signed daemons/bg procs!?
 static NSArray* ignoredProcs = nil;
 
 @implementation Enumerator
@@ -93,7 +92,9 @@ static NSArray* ignoredProcs = nil;
             if(YES != self.videoActive)
             {
                 //dbg msg
+                #ifdef DEBUG
                 logMsg(LOG_DEBUG, @"baselining mach senders for video...");
+                #endif
                 
                 //find camera assistant
                 // ->first look for 'VDCAssistant'
@@ -118,29 +119,37 @@ static NSArray* ignoredProcs = nil;
                 self.machSendersVideo = [self enumMachSenders:cameraAssistant];
                 
                 //dbg msg
+                #ifdef DEBUG
                 logMsg(LOG_DEBUG, [NSString stringWithFormat:@"found %lu baselined mach senders: %@", (unsigned long)self.machSendersVideo.count, self.machSendersVideo]);
+                #endif
             }
             
-            //only baseline if video isn't active
+            //only baseline if audio isn't active
             if(YES != self.audioActive)
             {
                 //dbg msg
+                #ifdef DEBUG
                 logMsg(LOG_DEBUG, @"baselining mach senders for audio...");
+                #endif
                 
                 //enumerate procs that have send mach messages
                 self.machSendersAudio = [self enumMachSenders:findProcess(CORE_AUDIO)];
                 
                 //dbg msg
+                #ifdef DEBUG
                 logMsg(LOG_DEBUG, [NSString stringWithFormat:@"found %lu baselined mach senders: %@", (unsigned long)self.machSendersAudio.count, self.machSendersVideo]);
                 
                 //dbg msg
                 logMsg(LOG_DEBUG, @"baselining i/o registry entries for audio...");
+                #endif
                 
                 //enumerate procs that have i/o registry entries
                 self.userClients = [self enumDomainUserClients];
                 
                 //dbg msg
+                #ifdef DEBUG
                 logMsg(LOG_DEBUG, [NSString stringWithFormat:@"found %lu baselined i/or registry senders: %@", (unsigned long)self.userClients.count, self.userClients]);
+                #endif
             }
         }
         
@@ -198,7 +207,9 @@ static NSArray* ignoredProcs = nil;
     currentSenders = [self enumMachSenders:cameraAssistant];
         
     //dbg msg
+    #ifdef DEBUG
     logMsg(LOG_DEBUG, [NSString stringWithFormat:@"found %lu current mach senders: %@", (unsigned long)currentSenders.count, currentSenders]);
+    #endif
     
     //remove any known/existing senders
     for(NSNumber* processID in currentSenders.allKeys)
@@ -220,7 +231,9 @@ static NSArray* ignoredProcs = nil;
     }
         
     //dbg msg
+    #ifdef DEBUG
     logMsg(LOG_DEBUG, [NSString stringWithFormat:@"found %lu candidate video procs: %@", (unsigned long)candidateVideoProcs.count, candidateVideoProcs]);
+    #endif
     
     //update
     self.machSendersVideo = currentSenders;
@@ -294,7 +307,9 @@ bail:
         currentSenders = [self enumMachSenders:coreAudio];
         
         //dbg msg
+        #ifdef DEBUG
         logMsg(LOG_DEBUG, [NSString stringWithFormat:@"found %lu current mach senders: %@", (unsigned long)currentSenders.count, currentSenders]);
+        #endif
         
         //add new senders or those w/ new mach msgs
         for(NSNumber* processID in currentSenders.allKeys)
@@ -319,7 +334,9 @@ bail:
         }
         
         //dbg msg
+        #ifdef DEBUG
         logMsg(LOG_DEBUG, [NSString stringWithFormat:@"new mach senders: %@", newSenders]);
+        #endif
         
         //update iVar
         self.machSendersAudio = currentSenders;
@@ -328,7 +345,9 @@ bail:
         currentUserClients = [self enumDomainUserClients];
         
         //dbg msg
+        #ifdef DEBUG
         logMsg(LOG_DEBUG, [NSString stringWithFormat:@"found %lu current i/o registry user clients: %@", (unsigned long)currentUserClients.count, currentUserClients]);
+        #endif
         
         //add new user clients
         for(NSNumber* processID in currentUserClients.allKeys)
@@ -353,28 +372,12 @@ bail:
         }
         
         //dbg msg
+        #ifdef DEBUG
         logMsg(LOG_DEBUG, [NSString stringWithFormat:@"new user clients: %@", newUserClients]);
+        #endif
 
         //update iVar
         self.userClients = currentUserClients;
-        
-        
-        
-        /*
-        //parse/check
-        // ->starts at end to find most recent IOUserClientCreator
-        for(NSNumber* domainUserClient in [domainUserClients reverseObjectEnumerator])
-        {
-            //no match?
-            // ->remove from candidate
-            if(YES != [candidateAudioProcs containsObject:domainUserClient])
-            {
-                //remove
-                
-                
-            }
-        }
-        */
         
         //init set for intersection
         intersection = [NSMutableSet setWithArray:newSenders];
@@ -395,14 +398,24 @@ bail:
         }
         
         //dbg msg
+        #ifdef DEBUG
         logMsg(LOG_DEBUG, [NSString stringWithFormat:@"found %lu candidate audio procs: %@", (unsigned long)candidateAudioProcs.count, candidateAudioProcs]);
+        #endif
         
-        //TODO: sample?
-        //invoke 'sample' to confirm that candidates are using CMIO/video inputs
-        // ->note, will skip FaceTime.app on macOS Sierra, as it doesn't do CMIO stuff directly
-        //audioProcs = [self sampleCandidates:candidateAudioProcs];
-        
-        audioProcs = candidateAudioProcs;
+        //only once candidate?
+        // ->all set, so assign, then bail here
+        if(candidateAudioProcs.count <= 1)
+        {
+            //assign
+            audioProcs = candidateAudioProcs;
+            
+            //bail
+            goto bail;
+        }
+    
+        // ->invoke 'sample' to determine which candidate is using CMIO/video inputs
+        //   note: will skip FaceTime.app on macOS Sierra, as it doesn't do CMIO stuff directly
+        audioProcs = [self sampleCandidates:candidateAudioProcs];
         
     }//sync
     
@@ -615,11 +628,12 @@ bail:
 
 }
 
-//invoke 'sample' to confirm candidates are using CMIO/video inputs
+//invoke 'sample' to confirm candidates are using CMIO/video/av inputs
+// note: path audio/vide invoke 'CMIOGraph::DoWork'
 -(NSMutableArray*)sampleCandidates:(NSArray*)currentSenders
 {
-    //current procs
-    NSMutableArray* videoProcs = nil;
+    //av procs
+    NSMutableArray* avProcs = nil;
     
     //results from 'sample' cmd
     NSString* results = nil;
@@ -628,14 +642,16 @@ bail:
     NSString* processPath = nil;
     
     //alloc
-    videoProcs = [NSMutableArray array];
+    avProcs = [NSMutableArray array];
     
     //invoke 'sample' on each
     // ->skips FaceTime.app though on macOS Sierra
     for(NSNumber* processID in currentSenders)
     {
         //dbg msg
+        #ifdef DEBUG
         logMsg(LOG_DEBUG, [NSString stringWithFormat:@"processing %d for sampling", processID.intValue]);
+        #endif
         
         //get process path
         // ->skip ones that fail
@@ -653,10 +669,12 @@ bail:
             ([getOSVersion() [@"minorVersion"] intValue] >= 12) )
         {
             //dbg msg
+            #ifdef DEBUG
             logMsg(LOG_DEBUG, @"not sampling as candidate app is FaceTime on macOS Sierra");
+            #endif
             
             //add
-            [videoProcs addObject:processID];
+            [avProcs addObject:processID];
             
             //next
             continue;
@@ -664,7 +682,9 @@ bail:
         }
         
         //dbg msg
+        #ifdef DEBUG
         logMsg(LOG_DEBUG, [NSString stringWithFormat:@"sampling %d", processID.intValue]);
+        #endif
         
         //exec 'sample' to get threads/dylibs
         // ->uses 1.0 seconds for sampling time
@@ -681,18 +701,23 @@ bail:
         [self deleteSampleFile:processPath];
         
         //for now, just check for 'CMIOGraph::DoWork'
-        // ->TODO: could look for dylibs, other calls, etc
+        // ->note: both audio/video invoke this, so this method works for both!
         if(YES != [results containsString:@"CMIOGraph::DoWork"])
         {
             //skip
             continue;
         }
         
-        //looks like a video proc!
-        [videoProcs addObject:processID];
+        //dbg msg
+        #ifdef DEBUG
+        logMsg(LOG_DEBUG, [NSString stringWithFormat:@"processing %d for has 'CMIOGraph::DoWork', as adding to list of candidates", processID.intValue]);
+        #endif
+        
+        //looks like a av proc!
+        [avProcs addObject:processID];
     }
     
-    return videoProcs;
+    return avProcs;
 }
 
 //'sample' binary creates a file
@@ -734,7 +759,9 @@ bail:
         }
         
         //dbg msg
+        #ifdef DEBUG
         logMsg(LOG_DEBUG, [NSString stringWithFormat:@"deleting sample file: %@", file]);
+        #endif
         
         //delete
         if(YES != [[NSFileManager defaultManager] removeItemAtPath:[@"/tmp" stringByAppendingPathComponent:file] error:&error])

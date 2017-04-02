@@ -27,14 +27,18 @@
     if(ACTION_INSTALL_FLAG == parameter)
     {
         //dbg msg
+        #ifdef DEBUG
         logMsg(LOG_DEBUG, @"installing...");
+        #endif
         
         //if already installed though
         // ->uninstall everything first
         if(YES == [self isInstalled])
         {
             //dbg msg
+            #ifdef DEBUG
             logMsg(LOG_DEBUG, @"already installed, so stopping/uninstalling...");
+            #endif
             
             //stop
             // ->kill login item/XPC service
@@ -49,7 +53,9 @@
             }
             
             //dbg msg
+            #ifdef DEBUG
             logMsg(LOG_DEBUG, @"uninstalled");
+            #endif
         }
         
         //install
@@ -63,8 +69,10 @@
         }
         
         //dbg msg
+        #ifdef DEBUG
         logMsg(LOG_DEBUG, @"installed, now will start");
-    
+        #endif
+        
         //start login item
         if(YES != [self start])
         {
@@ -80,14 +88,18 @@
     else if(ACTION_UNINSTALL_FLAG == parameter)
     {
         //dbg msg
+        #ifdef DEBUG
         logMsg(LOG_DEBUG, @"stopping login item");
+        #endif
         
         //stop
         // ->kill login item/XPC service
         [self stop];
          
         //dbg msg
+        #ifdef DEBUG
         logMsg(LOG_DEBUG, @"uninstalling...");
+        #endif
         
         //uninstall
         if(YES != [self uninstall:UNINSTALL_FULL])
@@ -97,7 +109,9 @@
         }
         
         //dbg msg
+        #ifdef DEBUG
         logMsg(LOG_DEBUG, @"uninstalled!");
+        #endif
     }
 
     //no errors
@@ -161,14 +175,18 @@ bail:
     }
 
     //dbg msg
+    #ifdef DEBUG
     logMsg(LOG_DEBUG, [NSString stringWithFormat:@"copied %@ -> %@", appPathSrc, appPathDest]);
+    #endif
     
     //remove xattrs
     // ->otherwise app translocation causes issues
     execTask(XATTR, @[@"-cr", appPathDest]);
     
     //dbg msg
-    logMsg(LOG_DEBUG, @"removed xattrz");
+    #ifdef DEBUG
+    logMsg(LOG_DEBUG, @"removed xattr");
+    #endif
     
     //init path to login item
     loginItem = [appPathDest stringByAppendingPathComponent:@"Contents/Library/LoginItems/OverSight Helper.app/Contents/MacOS/OverSight Helper"];
@@ -189,7 +207,9 @@ bail:
     execTask(SUDO, @[@"-u", user, loginItem, [NSString stringWithUTF8String:CMD_INSTALL]]);
     
     //dbg msg
+    #ifdef DEBUG
     logMsg(LOG_DEBUG, [NSString stringWithFormat:@"persisted %@", loginItem]);
+    #endif
     
     //init path to XPC service
     xpcServicePath = [appPathDest stringByAppendingPathComponent:@"Contents/Library/LoginItems/OverSight Helper.app/Contents/XPCServices/OverSightXPC.xpc"];
@@ -306,7 +326,9 @@ bail:
     installedAppPath = [APPS_FOLDER stringByAppendingPathComponent:APP_NAME];
     
     //dbg msg
+    #ifdef DEBUG
     logMsg(LOG_DEBUG, @"uninstalling login item");
+    #endif
     
     //get user
     user = loggedinUser();
@@ -325,18 +347,24 @@ bail:
     else
     {
         //dbg msg
+        #ifdef DEBUG
         logMsg(LOG_DEBUG, [NSString stringWithFormat:@"telling login item %@, to uninstall itself", loginItem]);
+        #endif
         
         //call into login item to uninstall itself
         // ->runs as logged in user, so can access user's login items, etc
         execTask(SUDO, @[@"-u", user, loginItem, [NSString stringWithUTF8String:CMD_UNINSTALL]]);
         
         //dbg msg
+        #ifdef DEBUG
         logMsg(LOG_DEBUG, [NSString stringWithFormat:@"unpersisted %@", loginItem]);
+        #endif
     }
     
     //dbg msg
+    #ifdef DEBUG
     logMsg(LOG_DEBUG, @"deleting app");
+    #endif
 
     //delete folder
     if(YES != [[NSFileManager defaultManager] removeItemAtPath:installedAppPath error:&error])
@@ -355,7 +383,9 @@ bail:
     if(UNINSTALL_FULL == type)
     {
         //dbg msg
-        logMsg(LOG_DEBUG, @"full, so also deleting app support directory");
+        #ifdef DEBUG
+        logMsg(LOG_DEBUG, @"full uninstall, so also deleting app support directory");
+        #endif
         
         //delete app support folder
         if(YES == [[NSFileManager defaultManager] fileExistsAtPath:[APP_SUPPORT_DIRECTORY stringByExpandingTildeInPath]])
