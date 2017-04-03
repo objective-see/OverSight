@@ -11,8 +11,7 @@
 #import "Configure.h"
 #import <Cocoa/Cocoa.h>
 
-//TODO: wrap debug msgs!
-
+//main interface
 int main(int argc, const char * argv[])
 {
     //return var

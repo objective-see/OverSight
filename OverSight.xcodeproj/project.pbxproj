@@ -683,6 +683,7 @@
 				COPY_PHASE_STRIP = NO;
 				INFOPLIST_FILE = MainApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.objective-see.OverSight";
 				PRODUCT_NAME = OverSight;
 				PROVISIONING_PROFILE = "";
@@ -699,6 +700,7 @@
 				COPY_PHASE_STRIP = NO;
 				INFOPLIST_FILE = MainApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.objective-see.OverSight";
 				PRODUCT_NAME = OverSight;
 				PROVISIONING_PROFILE = "";
@@ -718,6 +720,7 @@
 				);
 				INFOPLIST_FILE = LoginItem/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.objective-see.OverSightHelper";
 				PRODUCT_NAME = "OverSight Helper";
 				PROVISIONING_PROFILE = "";
@@ -734,6 +737,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = LoginItem/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.objective-see.OverSightHelper";
 				PRODUCT_NAME = "OverSight Helper";
 				PROVISIONING_PROFILE = "";
