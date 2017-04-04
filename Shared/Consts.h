@@ -54,20 +54,20 @@
 #define ACTION_UNINSTALL @"Uninstall"
 
 //button title
-// ->Close
-#define ACTION_CLOSE @"close"
+// ->close
+#define ACTION_CLOSE @"Close"
 
 //button title
 // ->next
-#define ACTION_NEXT @"next »"
+#define ACTION_NEXT @"Next »"
 
 //button title
 // ->no
-#define ACTION_NO @"no"
+#define ACTION_NO @"No"
 
 //button title
 // ->yes
-#define ACTION_YES @"yes!"
+#define ACTION_YES @"Yes!"
 
 //flag to uninstall
 #define ACTION_UNINSTALL_FLAG 0

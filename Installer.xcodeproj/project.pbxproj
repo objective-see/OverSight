@@ -365,7 +365,7 @@
 				INFOPLIST_FILE = Installer/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.objective-see.OverSightInstaller";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.objectiveSee.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = OverSight_Installer;
 				USER_HEADER_SEARCH_PATHS = ../Shared;
 			};
@@ -383,7 +383,7 @@
 				INFOPLIST_FILE = Installer/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.objective-see.OverSightInstaller";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.objectiveSee.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = OverSight_Installer;
 				USER_HEADER_SEARCH_PATHS = ../Shared;
 			};

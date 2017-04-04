@@ -116,7 +116,7 @@
     logMsg(LOG_DEBUG, [NSString stringWithFormat:@"handling action click: %@", buttonTitle]);
     #endif
     
-    //close/no?
+    //Close/No?
     // ->just exit
     if( (YES == [buttonTitle isEqualToString:ACTION_CLOSE]) ||
         (YES == [buttonTitle isEqualToString:ACTION_NO]) )
@@ -128,8 +128,8 @@
         goto bail;
     }
     
-    //next >>?
-    // ->show 'support' us view
+    //Next >>?
+    // ->show 'support us' view
     if(YES == [buttonTitle isEqualToString:ACTION_NEXT])
     {
         //frame
@@ -175,7 +175,7 @@
         goto bail;
     }
     
-    //'yes' for support
+    //'Yes' for support
     // ->load supprt in URL
     if(YES == [buttonTitle isEqualToString:ACTION_YES])
     {
@@ -419,7 +419,7 @@ bail:
     [self.statusMsg setStringValue:resultMsg];
     
     //update button
-    // ->after install change butter to 'next'
+    // ->after install change butter to 'Next'
     if(ACTION_INSTALL_FLAG == event)
     {
         //set button title to 'close'
@@ -444,7 +444,6 @@ bail:
         //make it active
         [self.window makeFirstResponder:self.uninstallButton];
     }
-
 
     //ok to re-enable 'x' button
     [[self.window standardWindowButton:NSWindowCloseButton] setEnabled:YES];
