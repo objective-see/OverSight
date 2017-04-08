@@ -77,7 +77,7 @@
 }
 
 //whitelist a process
--(void)whitelistProcess:(NSString*)processPath reply:(void (^)(BOOL))reply
+-(void)whitelistProcess:(NSString*)processPath device:(NSNumber*)device reply:(void (^)(BOOL))reply
 {
     //flag
     BOOL wasAdded = NO;
@@ -106,7 +106,7 @@
     }
     
     //add
-    [whiteList addObject:processPath];
+    [whiteList addObject:@{EVENT_PROCESS_PATH:processPath, EVENT_DEVICE:device}];
     
     //check if intermediate dirs exist
     // ->create them if they aren't there yet
@@ -151,7 +151,7 @@ bail:
 }
 
 //remove a process from the whitelist file
--(void)unWhitelistProcess:(NSString*)processPath reply:(void (^)(BOOL))reply
+-(void)unWhitelistProcess:(NSString*)processPath device:(NSNumber*)device reply:(void (^)(BOOL))reply
 {
     //flag
     BOOL wasRemoved = NO;
@@ -161,6 +161,11 @@ bail:
     
     //whitelist
     NSMutableArray* whiteList = nil;
+    
+    //dbg msg
+    #ifdef DEBUG
+    logMsg(LOG_DEBUG, [NSString stringWithFormat:@"got request to unwhitelist %@/%@", processPath, device]);
+    #endif
     
     //init path to whitelist
     path = [[APP_SUPPORT_DIRECTORY stringByExpandingTildeInPath] stringByAppendingPathComponent:FILE_WHITELIST];
@@ -176,21 +181,39 @@ bail:
         goto bail;
     }
     
-    //remove item
-    [whiteList removeObject:processPath];
-    
-    //save to disk
-    if(YES != [whiteList writeToFile:path atomically:YES])
+    //find/remove item from whitelist
+    for(NSDictionary* item in whiteList)
     {
-        //err msg
-        logMsg(LOG_ERR, [NSString stringWithFormat:@"XPC: failed to save updated whitelist to %@", path]);
-        
-        //bail
-        goto bail;
+        //match path and device?
+        if( (YES == [item[EVENT_PROCESS_PATH] isEqualToString:processPath]) &&
+            ([item[EVENT_DEVICE] intValue] == device.intValue) )
+        {
+            //dbg msg
+            #ifdef DEBUG
+            logMsg(LOG_DEBUG, @"found match in whitelist, will remove!");
+            #endif
+            
+            //remove
+            // ->ok, since we aren't going to iterate any more
+            [whiteList removeObject:item];
+            
+            //save to disk
+            if(YES != [whiteList writeToFile:path atomically:YES])
+            {
+                //err msg
+                logMsg(LOG_ERR, [NSString stringWithFormat:@"XPC: failed to save updated whitelist to %@", path]);
+                
+                //bail
+                goto bail;
+            }
+            
+            //happy
+            wasRemoved = YES;
+            
+            //done
+            goto bail;
+        }
     }
-    
-    //happy
-    wasRemoved = YES;
     
 //bail
 bail:

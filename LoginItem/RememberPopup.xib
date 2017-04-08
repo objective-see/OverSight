@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11762" systemVersion="16D32" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11762" systemVersion="16E195" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11762"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -14,47 +14,45 @@
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <window allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" animationBehavior="default" id="F0z-JX-Cv5">
-            <windowStyleMask key="styleMask" titled="YES" closable="YES" texturedBackground="YES" unifiedTitleAndToolbar="YES"/>
+            <windowStyleMask key="styleMask" titled="YES" closable="YES" resizable="YES" texturedBackground="YES" unifiedTitleAndToolbar="YES"/>
             <rect key="contentRect" x="196" y="240" width="422" height="123"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1058"/>
+            <value key="minSize" type="size" width="422" height="123"/>
+            <value key="maxSize" type="size" width="800" height="123"/>
             <view key="contentView" id="se5-gp-TjO">
                 <rect key="frame" x="0.0" y="0.0" width="422" height="123"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lEv-Wj-6S5">
+                    <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="lEv-Wj-6S5">
                         <rect key="frame" x="10" y="36" width="104" height="82"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="82" id="hbh-Sm-Zhs"/>
+                            <constraint firstAttribute="width" constant="104" id="wAG-N8-wcA"/>
+                        </constraints>
                         <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="icon" id="xKf-GK-m0k"/>
                     </imageView>
-                    <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Eaf-yA-bbe">
+                    <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Eaf-yA-bbe">
                         <rect key="frame" x="20" y="6" width="94" height="22"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="94" id="PdH-hs-jAq"/>
+                            <constraint firstAttribute="height" constant="22" id="hIM-Jw-VTR"/>
+                        </constraints>
                         <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="overSight" id="Ws8-bD-j2R"/>
                     </imageView>
-                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="OSm-xS-Dmd">
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" setsMaxLayoutWidthAtFirstLayout="YES" translatesAutoresizingMaskIntoConstraints="NO" id="OSm-xS-Dmd">
                         <rect key="frame" x="120" y="47" width="290" height="56"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="56" id="W2y-ds-fJG"/>
+                        </constraints>
                         <textFieldCell key="cell" truncatesLastVisibleLine="YES" sendsActionOnEndEditing="YES" id="bBK-v0-ypq">
                             <font key="font" size="13" name="Menlo-Regular"/>
                             <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                     </textField>
-                    <button verticalHuggingPriority="750" fixedFrame="YES" tag="100" translatesAutoresizingMaskIntoConstraints="NO" id="RKg-ba-EQ4">
-                        <rect key="frame" x="177" y="11" width="127" height="32"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <buttonCell key="cell" type="push" title="yes, always" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="0OU-M1-ErX">
-                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" size="13" name="Menlo-Regular"/>
-                        </buttonCell>
-                        <connections>
-                            <action selector="buttonHandler:" target="-2" id="LNd-1i-TBg"/>
-                        </connections>
-                    </button>
-                    <button verticalHuggingPriority="750" fixedFrame="YES" tag="101" translatesAutoresizingMaskIntoConstraints="NO" id="HZZ-Es-mpy">
-                        <rect key="frame" x="310" y="11" width="98" height="32"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <buttonCell key="cell" type="push" title="just once" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="J9x-sM-h9S">
+                    <button verticalHuggingPriority="750" tag="101" translatesAutoresizingMaskIntoConstraints="NO" id="HZZ-Es-mpy">
+                        <rect key="frame" x="303" y="11" width="111" height="32"/>
+                        <buttonCell key="cell" type="push" title="Just Once" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="J9x-sM-h9S">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" size="13" name="Menlo-Regular"/>
                         </buttonCell>
@@ -62,7 +60,30 @@
                             <action selector="buttonHandler:" target="-2" id="yBL-R5-DDG"/>
                         </connections>
                     </button>
+                    <button verticalHuggingPriority="750" tag="100" translatesAutoresizingMaskIntoConstraints="NO" id="RKg-ba-EQ4">
+                        <rect key="frame" x="161" y="11" width="127" height="32"/>
+                        <buttonCell key="cell" type="push" title="Yes, Always" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="0OU-M1-ErX">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" size="13" name="Menlo-Regular"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="buttonHandler:" target="-2" id="LNd-1i-TBg"/>
+                        </connections>
+                    </button>
                 </subviews>
+                <constraints>
+                    <constraint firstAttribute="bottom" secondItem="HZZ-Es-mpy" secondAttribute="bottom" constant="18" id="Dl1-Xj-w6N"/>
+                    <constraint firstAttribute="bottom" secondItem="OSm-xS-Dmd" secondAttribute="bottom" constant="47" id="Igd-JW-wvo"/>
+                    <constraint firstAttribute="bottom" secondItem="RKg-ba-EQ4" secondAttribute="bottom" constant="18" id="KUJ-j6-Bjl"/>
+                    <constraint firstAttribute="trailing" secondItem="RKg-ba-EQ4" secondAttribute="trailing" constant="140" id="Klc-7g-EQu"/>
+                    <constraint firstAttribute="trailing" secondItem="OSm-xS-Dmd" secondAttribute="trailing" constant="14" id="QcB-Yv-9vm"/>
+                    <constraint firstItem="OSm-xS-Dmd" firstAttribute="leading" secondItem="lEv-Wj-6S5" secondAttribute="trailing" constant="8" id="So9-MA-q9b"/>
+                    <constraint firstItem="lEv-Wj-6S5" firstAttribute="leading" secondItem="se5-gp-TjO" secondAttribute="leading" constant="10" id="WhZ-G2-Urs"/>
+                    <constraint firstItem="Eaf-yA-bbe" firstAttribute="leading" secondItem="se5-gp-TjO" secondAttribute="leading" constant="20" id="iJQ-GM-l7f"/>
+                    <constraint firstItem="lEv-Wj-6S5" firstAttribute="top" secondItem="se5-gp-TjO" secondAttribute="top" constant="5" id="pnZ-ff-hBv"/>
+                    <constraint firstAttribute="bottom" secondItem="Eaf-yA-bbe" secondAttribute="bottom" constant="6" id="tae-Ir-cHI"/>
+                    <constraint firstAttribute="trailing" secondItem="HZZ-Es-mpy" secondAttribute="trailing" constant="14" id="yfU-kv-QZb"/>
+                </constraints>
             </view>
             <connections>
                 <outlet property="delegate" destination="-2" id="0bl-1N-AYu"/>

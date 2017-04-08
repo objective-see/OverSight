@@ -455,6 +455,11 @@ bail:
         configuration = @{NSWorkspaceLaunchConfigurationArguments:args};
     }
     
+    //dbg msg
+    #ifdef DEBUG
+    logMsg(LOG_DEBUG, [NSString stringWithFormat:@"starting login item with: %@/%@", configuration, args]);
+    #endif
+    
     //launch it
     [[NSWorkspace sharedWorkspace] launchApplicationAtURL:[NSURL fileURLWithPath:loginItem] options:NSWorkspaceLaunchWithoutActivation configuration:configuration error:&error];
     

@@ -29,10 +29,10 @@
 -(void)updateAudioStatus:(unsigned int)status reply:(void (^)(void))reply;
 
 //whitelist a process
--(void)whitelistProcess:(NSString*)processPath reply:(void (^)(BOOL))reply;
+-(void)whitelistProcess:(NSString*)processPath device:(NSNumber*)device reply:(void (^)(BOOL))reply;
 
 //remove a process from the whitelist file
--(void)unWhitelistProcess:(NSString*)processPath reply:(void (^)(BOOL))reply;
+-(void)unWhitelistProcess:(NSString*)processPath device:(NSNumber*)device reply:(void (^)(BOOL))reply;
 
 //kill a process
 -(void)killProcess:(NSNumber*)processID reply:(void (^)(BOOL))reply;

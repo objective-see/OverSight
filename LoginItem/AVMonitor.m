@@ -56,9 +56,9 @@
     #ifdef DEBUG
     logMsg(LOG_DEBUG, [NSString stringWithFormat:@"loading whitelist %@", path]);
     #endif
-    
+   
     //since file is created by priv'd XPC, it shouldn't be writeable
-    // ...unless somebody maliciously creates it, so we check if that here
+    // ...unless somebody maliciously creates it, so we check that here
     if(YES == [[NSFileManager defaultManager] isWritableFileAtPath:path])
     {
         //err msg
@@ -67,7 +67,7 @@
         //bail
         goto bail;
     }
-    
+   
     //load
     self.whiteList = [NSMutableArray arrayWithContentsOfFile:path];
     
@@ -834,7 +834,7 @@ bail:
              //dbg msg
              #ifdef DEBUG
              logMsg(LOG_DEBUG, [NSString stringWithFormat:@"audio procs from XPC: %@", audioProcesses]);
-            #endif
+             #endif
              
              //generate notification for each process
              for(NSNumber* processID in audioProcesses)
@@ -1018,16 +1018,25 @@ bail:
     
     //ignore whitelisted processes
     // ->for activation events, can check process path
-    if( (YES == [DEVICE_ACTIVE isEqual:event[EVENT_DEVICE_STATUS]]) &&
-        (YES == [self.whiteList containsObject:processPath]) )
+    if(YES == [DEVICE_ACTIVE isEqual:event[EVENT_DEVICE_STATUS]])
     {
-        //dbg msg
-        #ifdef DEBUG
-        logMsg(LOG_DEBUG, [NSString stringWithFormat:@"activation alert for process %@ is whitelisted, so ignoring", processPath]);
-        #endif
-        
-        //bail
-        goto bail;
+        //check each
+        // ->need match on path and device (camera || mic)
+        for(NSDictionary* item in self.whiteList)
+        {
+            //check path & device
+            if( (YES == [item[EVENT_PROCESS_PATH] isEqualToString:processPath]) &&
+                ([item[EVENT_DEVICE] intValue] == deviceType.intValue) )
+            {
+                //dbg msg
+                #ifdef DEBUG
+                logMsg(LOG_DEBUG, [NSString stringWithFormat:@"activation alert for process %@ is whitelisted, so ignoring", item]);
+                #endif
+                
+                //bail
+                goto bail;
+            }
+        }
     }
     //ignore whitelisted processes
     // ->for deactivation, ignore when no activation alert was shown (cuz process will have likely died, so no pid/path, etc)

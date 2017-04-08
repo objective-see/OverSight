@@ -21,6 +21,10 @@
 // ->used for whitelisting
 @property (nonatomic, retain)NSString* processPath;
 
+//device
+// ->used for whitelisting
+@property (nonatomic, retain)NSNumber* device;
+
 //instance of av monitor
 @property (nonatomic, retain)AVMonitor* avMonitor;
 

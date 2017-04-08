@@ -16,6 +16,6 @@
 /* FUNCTION DEFINITIONS */
 
 //send XPC message to remove process from whitelist file
-void unWhiteList(NSString* process);
+void unWhiteList(NSString* process, NSNumber* deviceType);
 
 #endif /* main_h */

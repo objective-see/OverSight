@@ -86,21 +86,21 @@ int main(int argc, const char * argv[])
             //bail
             goto bail;
         }
+    }
+    
+    //unwhitelist path/device
+    else if(3 == argc)
+    {
+        //dbg msg
+        #ifdef DEBUG
+        logMsg(LOG_DEBUG, @"running 'un-whitelist me' logic");
+        #endif
+
+        //remove from whitelist file
+        unWhiteList([NSString stringWithUTF8String:argv[1]], [NSNumber numberWithInt:atoi(argv[2])]);
         
-        //assume its a path to a process to remove from whitelist
-        else
-        {
-            //dbg msg
-            #ifdef DEBUG
-            logMsg(LOG_DEBUG, @"running 'un-whitelist me' logic");
-            #endif
-            
-            //remove from whitelist file
-            unWhiteList([NSString stringWithUTF8String:argv[1]]);
-            
-            //don't bail
-            // ->let it start (as it was killed)
-        }
+        //don't bail
+        // ->let it start (as it was killed)
     }
     
     //launch app normally
@@ -113,7 +113,7 @@ bail:
 }
 
 //send XPC message to remove process from whitelist file
-void unWhiteList(NSString* process)
+void unWhiteList(NSString* process, NSNumber* device)
 {
     //xpc connection
     __block NSXPCConnection* xpcConnection = nil;
@@ -129,11 +129,11 @@ void unWhiteList(NSString* process)
     
     //dbg msg
     #ifdef DEBUG
-    logMsg(LOG_DEBUG, [NSString stringWithFormat:@"sending XPC message to remove %@ from whitelist file", process]);
+    logMsg(LOG_DEBUG, [NSString stringWithFormat:@"sending XPC message to remove %@/%@ from whitelist file", process, device]);
     #endif
     
     //invoke XPC method 'whitelistProcess' to add process to white list
-    [[xpcConnection remoteObjectProxy] unWhitelistProcess:process reply:^(BOOL wasRemoved)
+    [[xpcConnection remoteObjectProxy] unWhitelistProcess:process device:device reply:^(BOOL wasRemoved)
      {
         //dbg msg
         #ifdef DEBUG

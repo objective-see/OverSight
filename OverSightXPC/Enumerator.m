@@ -388,13 +388,50 @@ bail:
         //assign
         candidateAudioProcs = [[intersection allObjects] mutableCopy];
         
-        //if there aren't any new i/o registy clients and only one new mach sender
-        // ->use that! (e.g. Siri, reactivated)
-        if( (0 == candidateAudioProcs.count) &&
-            (1 == newSenders.count) )
+        //if there aren't any new i/o registy clients might just be siri
+        if(0 == candidateAudioProcs.count)
         {
-            //assign as candidate
-            [candidateAudioProcs addObject:newSenders.firstObject];
+            //dbg msg
+            #ifdef DEBUG
+            logMsg(LOG_DEBUG, @"no new user clients");
+            #endif
+            
+            //1 new mach msg sender
+            // just use that as candidate
+            if(1 == newSenders.count)
+            {
+                //dbg msg
+                #ifdef DEBUG
+                logMsg(LOG_DEBUG, @"but only found one new mach sender, so using that!");
+                #endif
+                
+                //assign as candidate
+                [candidateAudioProcs addObject:newSenders.firstObject];
+            }
+            
+            //more than
+            // ->check if any are siri ('assisantd')?
+            else
+            {
+                //check each new ones
+                for(NSNumber* newSender in newSenders)
+                {
+                    //check each
+                    if(YES == [SIRI isEqualToString:getProcessPath([newSender intValue])])
+                    {
+                         //dbg msg
+                         #ifdef DEBUG
+                         logMsg(LOG_DEBUG, @"found a mach sender that's 'siri' so using that!");
+                         #endif
+                         
+                         //assign as candidate
+                         [candidateAudioProcs addObject:newSenders.firstObject];
+                         
+                         //all set
+                         break;
+                    }
+                }
+            }
         }
         
         //dbg msg
@@ -413,6 +450,7 @@ bail:
             goto bail;
         }
     
+        //got more than one candidate
         // ->invoke 'sample' to determine which candidate is using CMIO/video inputs
         //   note: will skip FaceTime.app on macOS Sierra, as it doesn't do CMIO stuff directly
         audioProcs = [self sampleCandidates:candidateAudioProcs];

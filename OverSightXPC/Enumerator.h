@@ -27,6 +27,9 @@
 //sample binary
 #define SAMPLE @"/usr/bin/sample"
 
+//path to siri
+#define SIRI @"/System/Library/PrivateFrameworks/AssistantServices.framework/assistantd"
+
 
 /* PROPERTIES */
 

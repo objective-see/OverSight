@@ -16,6 +16,7 @@
 
 @implementation RememberWindowController
 
+@synthesize device;
 @synthesize avMonitor;
 @synthesize processPath;
 
@@ -45,18 +46,6 @@
     return;
 }
 
-/*
-//automatically invoked when window is closing
-// ->make ourselves unmodal
--(void)windowWillClose:(NSNotification *)notification
-{
-    //make un-modal
-    [[NSApplication sharedApplication] stopModal];
-    
-    return;
-}
-*/
-
 //save stuff into iVars
 // ->configure window w/ dynamic text
 -(void)configure:(NSUserNotification*)notification avMonitor:(AVMonitor*)monitor;
@@ -83,14 +72,18 @@
     // ->saved into iVar for whitelisting
     self.processPath = notification.userInfo[EVENT_PROCESS_PATH];
     
+    //grab device
+    // ->saved into iVar for whitelisting
+    self.device = notification.userInfo[EVENT_DEVICE];
+    
     //set device type for audio
-    if(SOURCE_AUDIO.intValue == [notification.userInfo[EVENT_DEVICE] intValue])
+    if(SOURCE_AUDIO.intValue == [self.device intValue])
     {
         //set
         deviceType = @"mic";
     }
     //set device type for mic
-    else if(SOURCE_VIDEO.intValue == [notification.userInfo[EVENT_DEVICE] intValue])
+    else if(SOURCE_VIDEO.intValue == [self.device intValue])
     {
         //set
         deviceType = @"camera";
@@ -131,7 +124,7 @@
         #endif
         
         //invoke XPC method 'whitelistProcess' to add process to white list
-        [[xpcConnection remoteObjectProxy] whitelistProcess:self.processPath reply:^(BOOL wasWhitelisted)
+        [[xpcConnection remoteObjectProxy] whitelistProcess:self.processPath device:self.device reply:^(BOOL wasWhitelisted)
          {
             //dbg msg
             #ifdef DEBUG
