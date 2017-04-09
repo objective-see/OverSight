@@ -486,7 +486,7 @@ bail:
     senders = [NSMutableDictionary dictionary];
     
     //exec 'lsmp' w/ pid of camera asssistant to get mach ports
-    results = [[NSString alloc] initWithData:execTask(LSMP, @[@"-p", @(targetProcess).stringValue]) encoding:NSUTF8StringEncoding];
+    results = [[NSString alloc] initWithData:execTask(LSMP, @[@"-p", @(targetProcess).stringValue], YES) encoding:NSUTF8StringEncoding];
     if( (nil == results) ||
         (0 == results.length) )
     {
@@ -716,7 +716,6 @@ bail:
             
             //next
             continue;
-        
         }
         
         //dbg msg
@@ -726,7 +725,7 @@ bail:
         
         //exec 'sample' to get threads/dylibs
         // ->uses 1.0 seconds for sampling time
-        results = [[NSString alloc] initWithData:execTask(SAMPLE, @[processID.stringValue, @"1"]) encoding:NSUTF8StringEncoding];
+        results = [[NSString alloc] initWithData:execTask(SAMPLE, @[processID.stringValue, @"1"], YES) encoding:NSUTF8StringEncoding];
         if( (nil == results) ||
             (0 == results.length) )
         {

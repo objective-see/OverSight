@@ -12,6 +12,7 @@
 
 @implementation AboutWindowController
 
+@synthesize patrons;
 @synthesize versionLabel;
 
 //automatically called when nib is loaded
@@ -33,7 +34,10 @@
     [self.window setBackgroundColor: NSColor.whiteColor];
     
     //set version sting
-    [self.versionLabel setStringValue:[NSString stringWithFormat:@"version: %@", getAppVersion()]];
+    self.versionLabel.stringValue =  [NSString stringWithFormat:@"Version: %@", getAppVersion()];
+    
+    //load patrons
+    self.patrons.string = [NSString stringWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"patrons" ofType:@"txt"] encoding:NSUTF8StringEncoding error:NULL];
 
     return;
 }

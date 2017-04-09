@@ -18,6 +18,10 @@
 //version label/string
 @property (weak) IBOutlet NSTextField *versionLabel;
 
+//patrons
+@property (unsafe_unretained) IBOutlet NSTextView *patrons;
+
+
 /* METHODS */
 
 

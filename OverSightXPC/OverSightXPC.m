@@ -250,7 +250,13 @@ bail:
     reply(wasKilled);
     
     return;
+}
 
+//exit
+-(void)exit
+{
+    //bye
+    exit(0);
 }
 
 

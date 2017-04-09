@@ -37,4 +37,7 @@
 //kill a process
 -(void)killProcess:(NSNumber*)processID reply:(void (^)(BOOL))reply;
 
+//exit
+-(void)exit;
+
 @end

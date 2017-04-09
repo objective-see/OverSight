@@ -9,7 +9,9 @@
 #import "Consts.h"
 #import "Logging.h"
 #import "AppDelegate.h"
+#import "XPCProtocol.h"
 #import "StatusBarMenu.h"
+
 
 #import <CoreMediaIO/CMIOHardware.h>
 #import <AVFoundation/AVFoundation.h>
@@ -220,12 +222,32 @@
 // ->just exit the application
 -(void)quit:(id)sender
 {
+    //xpc connection
+    __block NSXPCConnection* xpcConnection = nil;
+    
     //dbg msg
     #ifdef DEBUG
-    logMsg(LOG_DEBUG, @"user clicked 'exit', so goodbye!");
+    logMsg(LOG_DEBUG, @"user clicked 'quit', so goodbye!");
     #endif
     
-    //exit
+    //alloc XPC connection
+    xpcConnection = [[NSXPCConnection alloc] initWithServiceName:@"com.objective-see.OverSightXPC"];
+    
+    //set remote object interface
+    xpcConnection.remoteObjectInterface = [NSXPCInterface interfaceWithProtocol:@protocol(XPCProtocol)];
+    
+    //resume
+    [xpcConnection resume];
+    
+    //tell XPC about audio status
+    // ->for example, when audio is active, will stop baselining
+    [[xpcConnection remoteObjectProxy] exit];
+    
+    //give it a sec for XPC msg to go thru
+    // ->can't wait on XPC since its killing itself!
+    [NSThread sleepForTimeInterval:0.10f];
+    
+    //bye!
     [[NSApplication sharedApplication] terminate:nil];
     
     return;
@@ -245,29 +267,6 @@
 
 //bail
 bail:
-    
-    return;
-}
-
-//menu handler that's automatically invoked when user clicks 'about'
-// ->load objective-see's documentation for BlockBlock
--(void)about:(id)sender
-{
-    /*
-    
-    //alloc/init about window
-    infoWindowController = [[InfoWindowController alloc] initWithWindowNibName:@"InfoWindow"];
-    
-    //configure label and button
-    [self.infoWindowController configure:[NSString stringWithFormat:@"version: %@", getAppVersion()] buttonTitle:@"more info"];
-    
-    //center window
-    [[self.infoWindowController window] center];
-    
-    //show it
-    [self.infoWindowController showWindow:self];
-     
-    */
     
     return;
 }

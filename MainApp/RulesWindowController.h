@@ -11,14 +11,25 @@
 @interface RulesWindowController : NSWindowController <NSWindowDelegate, NSTableViewDataSource, NSTableViewDelegate>
 
 /* PROPERTIES */
+
+//table items
 @property(nonatomic, retain)NSMutableArray* items;
+
+//top level view
+@property (weak) IBOutlet NSView *view;
 
 //table view
 @property (weak) IBOutlet NSTableView *tableView;
 
+//overlay
+@property (strong) IBOutlet NSView *overlay;
+
+//activity indicator
+@property (weak) IBOutlet NSProgressIndicator *spinner;
+
 /* METHODS */
 
 //delete a rule
-- (IBAction)deleteRule:(id)sender;
+-(IBAction)deleteRule:(id)sender;
 
 @end

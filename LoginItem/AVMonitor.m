@@ -570,7 +570,7 @@ bail:
              //dbg msg
              #ifdef DEBUG
              logMsg(LOG_DEBUG, [NSString stringWithFormat:@"video procs from XPC: %@", videoProcesses]);
-            #endif
+             #endif
              
              //generate notification for each process
              for(NSNumber* processID in videoProcesses)
@@ -969,7 +969,12 @@ bail:
     NSDictionary* preferences = nil;
     
     //flag
+    // ->was an activation alert shown
     BOOL matchingActivationAlert = NO;
+    
+    //flag
+    // ->is the activation alert still visible
+    BOOL activationAlertVisible = NO;
     
     //alloc notificaiton
     notification = [[NSUserNotification alloc] init];
@@ -1162,7 +1167,7 @@ bail:
     //ALERT 2:
     // ->activate alert, with no process info
     else if( (YES == [DEVICE_ACTIVE isEqual:event[EVENT_DEVICE_STATUS]]) &&
-         (0 == [event[EVENT_PROCESS_ID] intValue]) )
+             (0 == [event[EVENT_PROCESS_ID] intValue]) )
     {
         //set other button title
         notification.otherButtonTitle = @"ok";
@@ -1242,23 +1247,23 @@ bail:
     if(YES == [DEVICE_INACTIVE isEqual:event[EVENT_DEVICE_STATUS]])
     {
         //any active alerts still visible?
-        // ->note: we make to check if the type matches
+        // ->note: we make to check if the type matches and still visible
         for(NSUUID* key in self.activationAlerts.allKeys)
         {
-            //same type?
-            if(event[EVENT_DEVICE] == self.activationAlerts[key][EVENT_DEVICE])
+            //same type
+            if( (event[EVENT_DEVICE] == self.activationAlerts[key][EVENT_DEVICE]) &&
+                (YES != [self.activationAlerts[key][EVENT_ALERT_CLOSED] boolValue]) )
             {
-                //got match
-                matchingActivationAlert = YES;
+                //set flag
+                activationAlertVisible = YES;
                 
                 //no need to check more
                 break;
             }
         }
         
-        //go match
-        // ->close if not still visible
-        if(YES != matchingActivationAlert)
+        //auto close if activation alert isn't still visible
+        if(YES != activationAlertVisible)
         {
             //dbg msg
             #ifdef DEBUG
@@ -1337,7 +1342,7 @@ bail:
     if(ALERT_INACTIVE.intValue == [notification.userInfo[EVENT_ALERT_TYPE] intValue])
     {
         //remove any active alerts
-        // ->note: we make to check if the type matches
+        // ->note: we make sure to check if the type matches
         for(NSUUID* key in self.activationAlerts.allKeys)
         {
             //check stored activation alert type
@@ -1356,7 +1361,7 @@ bail:
             }
             
             //same type?
-            if( [notification.userInfo[EVENT_DEVICE] intValue] == deviceType.intValue)
+            if([notification.userInfo[EVENT_DEVICE] intValue] == deviceType.intValue)
             {
                 //remove
                 [self.activationAlerts removeObjectForKey:key];
@@ -1364,6 +1369,14 @@ bail:
         }
     }
 
+    //activation alert that user has interacted with
+    // ->this means it's going to close, to we indicate that
+    else
+    {
+        //set flag
+        self.activationAlerts[notification.identifier][EVENT_ALERT_CLOSED] = @YES;
+    }
+    
     //update
     self.lastNotification = notification.identifier;
     

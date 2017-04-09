@@ -181,7 +181,7 @@ bail:
     
     //remove xattrs
     // ->otherwise app translocation causes issues
-    execTask(XATTR, @[@"-cr", appPathDest]);
+    execTask(XATTR, @[@"-cr", appPathDest], YES);
     
     //dbg msg
     #ifdef DEBUG
@@ -204,7 +204,7 @@ bail:
 
     //call into login item to install itself
     // ->runs as logged in user, so can access user's login items, etc
-    execTask(SUDO, @[@"-u", user, loginItem, [NSString stringWithUTF8String:CMD_INSTALL]]);
+    execTask(SUDO, @[@"-u", user, loginItem, [NSString stringWithUTF8String:CMD_INSTALL]], YES);
     
     //dbg msg
     #ifdef DEBUG
@@ -243,40 +243,37 @@ bail:
     return wasInstalled;
 }
 
-//start
-// ->just the login item
+//start login item
+// ->exec as logged in user, since might be called via 'sudo' (cmdline install)
 -(BOOL)start
 {
     //flag
     BOOL bStarted = NO;
     
+    //logged in user
+    NSString* user = nil;
+    
     //path to login item
     NSString* loginItem = nil;
     
-    //task
-    NSTask* task = nil;
+    //get user
+    user = loggedinUser();
+    if(nil == user)
+    {
+        //err msg
+        logMsg(LOG_ERR, @"failed to determine logged-in user");
+        
+        //bail
+        goto bail;
+    }
     
     //init path
     loginItem = [[APPS_FOLDER stringByAppendingPathComponent:APP_NAME] stringByAppendingPathComponent:@"Contents/Library/LoginItems/OverSight Helper.app/Contents/MacOS/OverSight Helper"];
     
-    //alloc task
-    task = [[NSTask alloc] init];
+    //start it!
+    // ->don't wait, as it won't exit
+    execTask(SUDO, @[@"-u", user, loginItem], NO);
     
-    //set path
-    [task setLaunchPath:loginItem];
-    
-    //wrap task launch
-    @try
-    {
-        //launch
-        [task launch];
-    }
-    @catch(NSException* exception)
-    {
-        //bail
-        goto bail;
-    }
-
     //happy
     bStarted = YES;
     
@@ -289,9 +286,11 @@ bail:
 //stop
 -(void)stop
 {
-    //kill it
-    // pkill doesn't provide error info, so...
-    execTask(PKILL, @[APP_HELPER_NAME]);
+    //kill helper app
+    execTask(PKILL, @[APP_HELPER], YES);
+    
+    //kill xpc
+    execTask(PKILL, @[APP_HELPER_XPC], YES);
 
     return;
 }
@@ -353,7 +352,7 @@ bail:
         
         //call into login item to uninstall itself
         // ->runs as logged in user, so can access user's login items, etc
-        execTask(SUDO, @[@"-u", user, loginItem, [NSString stringWithUTF8String:CMD_UNINSTALL]]);
+        execTask(SUDO, @[@"-u", user, loginItem, [NSString stringWithUTF8String:CMD_UNINSTALL]], YES);
         
         //dbg msg
         #ifdef DEBUG

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7D0EE28D1E99A90F003D910C /* patrons.txt in Resources */ = {isa = PBXBuildFile; fileRef = 7D0EE28C1E99A90F003D910C /* patrons.txt */; };
 		7D17C5271D6592FE0066232A /* statusIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 7D17C5141D658FEB0066232A /* statusIcon.png */; };
 		7D17C5281D6592FE0066232A /* statusIcon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 7D17C5151D658FEB0066232A /* statusIcon@2x.png */; };
 		7D17C5391D659E580066232A /* AboutWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7D17C52C1D659E580066232A /* AboutWindow.xib */; };
@@ -96,6 +97,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		7D0EE28C1E99A90F003D910C /* patrons.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = patrons.txt; path = ../../patrons.txt; sourceTree = "<group>"; };
 		7D17C5141D658FEB0066232A /* statusIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = statusIcon.png; path = Images/statusIcon.png; sourceTree = "<group>"; };
 		7D17C5151D658FEB0066232A /* statusIcon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "statusIcon@2x.png"; path = "Images/statusIcon@2x.png"; sourceTree = "<group>"; };
 		7D17C52C1D659E580066232A /* AboutWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AboutWindow.xib; sourceTree = "<group>"; };
@@ -291,6 +293,7 @@
 		8B57559E19DA3E9500799E6B /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				7D0EE28C1E99A90F003D910C /* patrons.txt */,
 				8B57559F19DA3E9500799E6B /* Info.plist */,
 				8B5755A019DA3E9500799E6B /* main.m */,
 			);
@@ -448,6 +451,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7D0EE28D1E99A90F003D910C /* patrons.txt in Resources */,
 				7D9A7DF21D8F2C900091C1AF /* Images.xcassets in Resources */,
 				7DC038031E87025100349474 /* Rules.xib in Resources */,
 				7D6245921D87D46800870565 /* InfoWindow.xib in Resources */,

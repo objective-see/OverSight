@@ -19,7 +19,10 @@
 #define APP_NAME @"OverSight.app"
 
 //app helper name
-#define APP_HELPER_NAME @"OverSight Helper"
+#define APP_HELPER @"OverSight Helper"
+
+//app helper XPC
+#define APP_HELPER_XPC @"OverSight XPC"
 
 //product url
 #define PRODUCT_URL @"https://objective-see.com/products/oversight.html"
@@ -144,6 +147,7 @@
 #define EVENT_DEVICE_STATUS @"status"
 #define EVENT_PROCESS_ID @"processID"
 #define EVENT_ALERT_TYPE @"alertType"
+#define EVENT_ALERT_CLOSED @"eventClose"
 #define EVENT_PROCESS_NAME @"processName"
 #define EVENT_PROCESS_PATH @"processPath"
 

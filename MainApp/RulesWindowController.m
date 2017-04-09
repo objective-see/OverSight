@@ -193,8 +193,8 @@ bail:
     //remove from items
     [self.items removeObject:item];
     
-    //reload table
-    [self.tableView reloadData];
+    //add/show overlay
+    [self addOverlay];
     
     //restart login item in background
     // ->pass in process path/device so it can un-whitelist via XPC
@@ -202,6 +202,67 @@ bail:
     ^{
        //restart
        [((AppDelegate*)[[NSApplication sharedApplication] delegate]) startLoginItem:YES args:@[processPath, [device stringValue]]];
+        
+       //remove overlay
+       // ->also refreshes window
+       [self removeOverlay];
+        
+    });
+    
+    return;
+}
+
+//add overlay to main window
+-(void)addOverlay
+{
+    //frame
+    NSRect frame = {0};
+    
+    //pre-req
+    [self.overlay setWantsLayer:YES];
+    
+    //get main window's frame
+    frame = self.window.contentView.frame;//view.frame;
+    
+    //set origin to 0/0
+    frame.origin = CGPointZero;
+    
+    //update overlay to take up entire window
+    self.overlay.frame = frame;
+    
+    //set overlay's view color to white
+    self.overlay.layer.backgroundColor = [NSColor whiteColor].CGColor;
+    
+    //make it semi-transparent
+    self.overlay.alphaValue = 0.85;
+    
+    //animate it
+    [self.spinner startAnimation:nil];
+    
+    //add to main window
+    [self.window.contentView addSubview:self.overlay];
+    
+    //show
+    self.overlay.hidden = NO;
+
+    return;
+}
+
+//remove overlay from main window & reload table
+-(void)removeOverlay
+{
+    //remove overlay view on main thread & reload
+    dispatch_async(dispatch_get_main_queue(), ^{
+        
+        //hide view
+        self.overlay.hidden = YES;
+        
+        //remove
+        [self.overlay removeFromSuperview];
+        
+        //reload table
+        [self.tableView reloadData];
+        
     });
     
     return;

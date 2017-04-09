@@ -28,7 +28,7 @@ BOOL setFileOwner(NSString* path, NSNumber* groupID, NSNumber* ownerID, BOOL rec
 BOOL setFilePermissions(NSString* file, int permissions, BOOL recursive);
 
 //exec a process and grab it's output
-NSData* execTask(NSString* binaryPath, NSArray* arguments);
+NSData* execTask(NSString* binaryPath, NSArray* arguments, BOOL shouldWait);
 
 //get OS's major or minor version
 SInt32 getVersion(OSType selector);

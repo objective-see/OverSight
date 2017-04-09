@@ -263,7 +263,7 @@ bail:
 }
 
 //exec a process and grab it's output
-NSData* execTask(NSString* binaryPath, NSArray* arguments)
+NSData* execTask(NSString* binaryPath, NSArray* arguments, BOOL shouldWait)
 {
     //task
     NSTask *task = nil;
@@ -287,7 +287,12 @@ NSData* execTask(NSString* binaryPath, NSArray* arguments)
     task.arguments = arguments;
     
     //set task's output to pipe
-    task.standardOutput = outPipe;
+    // ->but only if we're waiting for exit
+    if(YES == shouldWait)
+    {
+        //redirect
+        task.standardOutput = outPipe;
+    }
     
     //dbg msg
     #ifdef DEBUG
@@ -309,6 +314,11 @@ NSData* execTask(NSString* binaryPath, NSArray* arguments)
         goto bail;
     }
     
+    //when waiting
+    // ->grab data
+    if(YES == shouldWait)
+    {
+    
     //dbg msg
     #ifdef DEBUG
     logMsg(LOG_DEBUG, @"invoking 'readDataToEndOfFile' to get all data");
@@ -324,11 +334,13 @@ NSData* execTask(NSString* binaryPath, NSArray* arguments)
     
     //wait till exit
     [task waitUntilExit];
-    
+        
     //dbg msg
     #ifdef DEBUG
-    logMsg(LOG_DEBUG, @"task to exited");
+    logMsg(LOG_DEBUG, @"task exited");
     #endif
+    
+    }//wait
     
 //bail
 bail:

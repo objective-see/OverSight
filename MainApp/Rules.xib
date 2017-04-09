@@ -7,7 +7,10 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="RulesWindowController">
             <connections>
+                <outlet property="overlay" destination="QQF-7i-jAB" id="IN5-0M-F2x"/>
+                <outlet property="spinner" destination="OSA-Md-quD" id="hbq-E1-1pa"/>
                 <outlet property="tableView" destination="rpa-sZ-jQp" id="SvF-Yi-OKB"/>
+                <outlet property="view" destination="se5-gp-TjO" id="wqw-Gz-fhe"/>
                 <outlet property="window" destination="F0z-JX-Cv5" id="gIp-Ho-8D9"/>
             </connections>
         </customObject>
@@ -160,6 +163,31 @@
             </textFieldCell>
             <point key="canvasLocation" x="145" y="385.5"/>
         </textField>
+        <customView id="QQF-7i-jAB" userLabel="Overlay">
+            <rect key="frame" x="0.0" y="0.0" width="538" height="306"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+            <subviews>
+                <progressIndicator wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" maxValue="100" bezeled="NO" indeterminate="YES" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="OSA-Md-quD">
+                    <rect key="frame" x="253" y="137" width="32" height="32"/>
+                </progressIndicator>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="UMM-Qt-ZkS">
+                    <rect key="frame" x="-2" y="97" width="542" height="25"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="deleting..." id="wtv-3g-ec4">
+                        <font key="font" size="17" name="Menlo-Bold"/>
+                        <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+            </subviews>
+            <constraints>
+                <constraint firstAttribute="trailing" secondItem="UMM-Qt-ZkS" secondAttribute="trailing" id="8uj-Eo-fDa"/>
+                <constraint firstItem="UMM-Qt-ZkS" firstAttribute="top" secondItem="OSA-Md-quD" secondAttribute="bottom" constant="15" id="Zkf-vS-6fO"/>
+                <constraint firstItem="OSA-Md-quD" firstAttribute="centerY" secondItem="QQF-7i-jAB" secondAttribute="centerY" id="lLe-cy-0nh"/>
+                <constraint firstItem="OSA-Md-quD" firstAttribute="centerX" secondItem="QQF-7i-jAB" secondAttribute="centerX" id="uii-h8-GRA"/>
+                <constraint firstItem="UMM-Qt-ZkS" firstAttribute="leading" secondItem="QQF-7i-jAB" secondAttribute="leading" id="z8k-FS-d5W"/>
+            </constraints>
+            <point key="canvasLocation" x="908" y="151"/>
+        </customView>
     </objects>
     <resources>
         <image name="NSColorPanel" width="32" height="32"/>
