@@ -28,7 +28,21 @@
 -(void)awakeFromNib
 {
     //load whitelisted items
-    self.items = [NSMutableArray arrayWithContentsOfFile:[[APP_SUPPORT_DIRECTORY stringByExpandingTildeInPath] stringByAppendingPathComponent:FILE_WHITELIST]];
+    self.items = [NSMutableArray arrayWithContentsOfFile:[[[@"~" stringByAppendingPathComponent:APP_SUPPORT_DIRECTORY] stringByExpandingTildeInPath] stringByAppendingPathComponent:FILE_WHITELIST]];
+    
+    //no white-listed items?
+    // ->show overlay with msg
+    if(0 == self.items.count)
+    {
+        //add
+        [self addOverlay];
+        
+        //set message
+        self.message.stringValue = @"currently no applications have been 'whitelisted'";
+        
+        //hide spinner
+        self.spinner.hidden = YES;
+    }
     
     return;
 }
@@ -222,7 +236,7 @@ bail:
     [self.overlay setWantsLayer:YES];
     
     //get main window's frame
-    frame = self.window.contentView.frame;//view.frame;
+    frame = self.window.contentView.frame;
     
     //set origin to 0/0
     frame.origin = CGPointZero;
@@ -244,7 +258,13 @@ bail:
     
     //show
     self.overlay.hidden = NO;
-
+    
+    //disable resize button
+    [[self.window standardWindowButton:NSWindowZoomButton] setEnabled:NO];
+    
+    //disable resizing
+    [self.window setStyleMask:self.window.styleMask^NSResizableWindowMask];
+    
     return;
 }
 
@@ -262,6 +282,12 @@ bail:
         
         //reload table
         [self.tableView reloadData];
+        
+        //disable resize button
+        [[self.window standardWindowButton:NSWindowZoomButton] setEnabled:NO];
+        
+        //disable resizing
+        [self.window setStyleMask:self.window.styleMask^NSResizableWindowMask];
         
     });
     

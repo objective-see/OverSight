@@ -34,14 +34,6 @@
 //init a menu item
 -(NSMenuItem*)initializeMenuItem:(NSString*)title action:(SEL)action;
 
-//menu handler for 'enable'/'disable'
-// ->toggle blockblock & update menu
-//-(void)toggle:(id)sender;
-
-//menu handler for 'uninstall'
-// ->kick off uninstall
-//-(void)uninstall:(id)sender;
-
 //menu handler for 'perferences'
 // ->show preferences window
 -(void)preferences:(id)sender;

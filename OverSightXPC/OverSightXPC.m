@@ -92,7 +92,7 @@
     NSError* error = nil;
     
     //init path to whitelist
-    path = [[APP_SUPPORT_DIRECTORY stringByExpandingTildeInPath] stringByAppendingPathComponent:FILE_WHITELIST];
+    path = [[[@"~" stringByAppendingPathComponent:APP_SUPPORT_DIRECTORY] stringByExpandingTildeInPath] stringByAppendingPathComponent:FILE_WHITELIST];
     
     //load whitelist
     whiteList = [NSMutableArray arrayWithContentsOfFile:path];
@@ -107,26 +107,6 @@
     
     //add
     [whiteList addObject:@{EVENT_PROCESS_PATH:processPath, EVENT_DEVICE:device}];
-    
-    //check if intermediate dirs exist
-    // ->create them if they aren't there yet
-    if(YES != [[NSFileManager defaultManager] fileExistsAtPath:[APP_SUPPORT_DIRECTORY stringByExpandingTildeInPath]])
-    {
-        //dbg msg
-        #ifdef DEBUG
-        logMsg(LOG_DEBUG, [NSString stringWithFormat:@"XPC: creating app support directory: %@", [APP_SUPPORT_DIRECTORY stringByExpandingTildeInPath]]);
-        #endif
-        
-        //create
-        if(YES != [[NSFileManager defaultManager] createDirectoryAtPath: [APP_SUPPORT_DIRECTORY stringByExpandingTildeInPath] withIntermediateDirectories:YES attributes:nil error:&error])
-        {
-            //err msg
-            logMsg(LOG_ERR, [NSString stringWithFormat:@"XPC: failed to create directory: %@", error]);
-            
-            //bail
-            goto bail;
-        }
-    }
     
     //save to disk
     if(YES != [whiteList writeToFile:path atomically:YES])
@@ -168,7 +148,7 @@ bail:
     #endif
     
     //init path to whitelist
-    path = [[APP_SUPPORT_DIRECTORY stringByExpandingTildeInPath] stringByAppendingPathComponent:FILE_WHITELIST];
+    path = [[[@"~" stringByAppendingPathComponent:APP_SUPPORT_DIRECTORY] stringByExpandingTildeInPath] stringByAppendingPathComponent:FILE_WHITELIST];
     
     //load whitelist
     whiteList = [NSMutableArray arrayWithContentsOfFile:path];

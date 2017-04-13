@@ -77,4 +77,7 @@ NSString* loggedinUser();
 //find a process by name
 pid_t findProcess(NSString* processName);
 
+//convert a textview to a clickable hyperlink
+void makeTextViewHyperlink(NSTextField* textField, NSURL* url);
+
 #endif

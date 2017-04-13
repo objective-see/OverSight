@@ -18,6 +18,7 @@
 
 @implementation AppDelegate
 
+@synthesize viewLogLabel;
 @synthesize infoWindowController;
 @synthesize aboutWindowController;
 @synthesize rulesWindowController;
@@ -41,6 +42,9 @@
     //set title
     self.window.title = [NSString stringWithFormat:@"OverSight Preferences (v. %@)", getAppVersion()];
     
+    //make log link clickable
+    makeTextViewHyperlink(self.viewLogLabel, [NSURL fileURLWithPath:logFilePath()]);
+    
     return;
 }
 
@@ -48,6 +52,9 @@
 // ->init user interface
 -(void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
+    //preferences
+    NSDictionary* preferences = nil;
+    
     //dbg msg
     #ifdef DEBUG
     logMsg(LOG_DEBUG, @"OverSight Preferences App Launched");
@@ -69,6 +76,21 @@
         //write em out
         // ->note; set 'start at login' to false, since no prefs here, mean installer wasn't run (user can later toggle)
         [@{PREF_LOG_ACTIVITY:@YES, PREF_START_AT_LOGIN:@NO, PREF_RUN_HEADLESS:@NO, PREF_DISABLE_INACTIVE:@NO, PREF_CHECK_4_UPDATES:@YES} writeToFile:[APP_PREFERENCES stringByExpandingTildeInPath] atomically:NO];
+    }
+    
+    //load preferences
+    preferences = [NSMutableDictionary dictionaryWithContentsOfFile:[APP_PREFERENCES stringByExpandingTildeInPath]];
+    
+    //when logging is enabled
+    // ->open/create log file
+    if(YES == [preferences[PREF_LOG_ACTIVITY] boolValue])
+    {
+        //init
+        if(YES != initLogging())
+        {
+            //err msg
+            logMsg(LOG_ERR, @"failed to init logging");
+        }
     }
     
     //start login item in background
@@ -201,10 +223,40 @@ bail:
     preferences = [NSMutableDictionary dictionaryWithContentsOfFile:[APP_PREFERENCES stringByExpandingTildeInPath]];
     
     //set 'log activity' button
+    // ->also start/stop logging based on button state
     if(sender == self.logActivity)
     {
         //set
         preferences[PREF_LOG_ACTIVITY] = [NSNumber numberWithBool:[sender state]];
+        
+        //when logging is enabled
+        // ->open/create log file
+        if(YES == [preferences[PREF_LOG_ACTIVITY] boolValue])
+        {
+            //init
+            if(YES != initLogging())
+            {
+                //err msg
+                logMsg(LOG_ERR, @"failed to init logging");
+            }
+            //happy
+            // ->log msg
+            else
+            {
+                //log msg
+                logMsg(LOG_DEBUG|LOG_TO_FILE, @"logging initialized");
+            }
+        }
+        //when logging is disabled
+        // ->close out the log file
+        else
+        {
+            //log msg
+            logMsg(LOG_DEBUG|LOG_TO_FILE, @"logging deinitialized");
+            
+            //close
+            deinitLogging();
+        }
     }
     
     //set 'automatically check for updates'
@@ -224,7 +276,7 @@ bail:
         //init path to login item
         loginItem = [NSURL fileURLWithPath:[[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent:@"/Contents/Library/LoginItems/OverSight Helper.app"]];
         
-        //install
+        //toggle
         toggleLoginItem(loginItem, (int)[sender state]);
     }
     
@@ -576,6 +628,12 @@ bail:
     return;
 }
 
+-(IBAction)showLog:(id)sender
+{
+    return;
+}
+
+
 //button handle when user clicks 'Manage Rules'
 // ->just shwo the rules window
 -(IBAction)manageRules:(id)sender
@@ -590,6 +648,15 @@ bail:
     [self.rulesWindowController showWindow:self];
     
     return;
+}
+
+-(NSAttributedString *)stringFromHTML:(NSString *)html withFont:(NSFont *)font
+{
+    if (!font) font = [NSFont systemFontOfSize:0.0];  // Default font
+    html = [NSString stringWithFormat:@"<span style=\"font-family:'%@'; font-size:%dpx;\">%@</span>", [font fontName], (int)[font pointSize], html];
+    NSData *data = [html dataUsingEncoding:NSUTF8StringEncoding];
+    NSAttributedString* string = [[NSAttributedString alloc] initWithHTML:data documentAttributes:nil];
+    return string;
 }
 
 

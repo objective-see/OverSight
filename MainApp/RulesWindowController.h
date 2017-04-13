@@ -27,6 +27,9 @@
 //activity indicator
 @property (weak) IBOutlet NSProgressIndicator *spinner;
 
+//status message
+@property (weak) IBOutlet NSTextField *message;
+
 /* METHODS */
 
 //delete a rule

@@ -13,7 +13,6 @@
 #import "Logging.h"
 #import "Configure.h"
 
-#import <syslog.h>
 #import <Cocoa/Cocoa.h>
 
 /* FUNCTION DECLARATIONS */

@@ -67,8 +67,18 @@ int main(int argc, const char * argv[])
             //drop user privs
             setuid(getuid());
             
-            //unistall
-            toggleLoginItem([NSURL fileURLWithPath:[[NSBundle mainBundle] bundlePath]], ACTION_UNINSTALL_FLAG);
+            //uninstall
+            if(YES == toggleLoginItem([NSURL fileURLWithPath:[[NSBundle mainBundle] bundlePath]], ACTION_UNINSTALL_FLAG))
+            {
+                //err msg
+                logMsg(LOG_ERR, @"failed to remove login item");
+                
+                //set error
+                iReturn = -1;
+                
+                //bail
+                goto bail;
+            }
             
             //dbg msg
             #ifdef DEBUG

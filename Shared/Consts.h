@@ -136,7 +136,7 @@
 #define FACE_TIME @"/Applications/FaceTime.app/Contents/MacOS/FaceTime"
 
 //app support directory
-#define APP_SUPPORT_DIRECTORY @"~/Library/Application Support/Objective-See/OverSight"
+#define APP_SUPPORT_DIRECTORY @"Library/Application Support/Objective-See/OverSight"
 
 //whitelist
 #define FILE_WHITELIST @"whitelist.plist"
@@ -180,6 +180,12 @@
 
 //more info button tag
 #define BUTTON_MORE_INFO 101
+
+//log file name
+#define LOG_FILE_NAME @"OverSight.log"
+
+//log to file flag
+#define LOG_TO_FILE 0x10
 
 
 #endif

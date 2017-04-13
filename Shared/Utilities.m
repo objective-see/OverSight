@@ -566,9 +566,6 @@ pid_t getProcessID(NSString* processName, uid_t userID)
     status = proc_listpids(PROC_ALL_PIDS, 0, pids, numberOfProcesses * sizeof(pid_t));
     if(status < 0)
     {
-        //err
-        //syslog(LOG_ERR, "OBJECTIVE-SEE ERROR: proc_listpids() failed with %d", status);
-        
         //bail
         goto bail;
     }
@@ -867,7 +864,7 @@ BOOL toggleLoginItem(NSURL* loginItem, int toggleFlag)
     {
         //dbg msg
         #ifdef DEBUG
-        logMsg(LOG_DEBUG, @"adding login item");
+        logMsg(LOG_DEBUG, [NSString stringWithFormat:@"adding login item %@", loginItem]);
         #endif
         
         //add
@@ -905,7 +902,7 @@ BOOL toggleLoginItem(NSURL* loginItem, int toggleFlag)
     {
         //dbg msg
         #ifdef DEBUG
-        logMsg(LOG_DEBUG, @"removing login item");
+        logMsg(LOG_DEBUG, [NSString stringWithFormat:@"removing login item %@", loginItem]);
         #endif
         
         //grab existing login items
@@ -924,10 +921,20 @@ BOOL toggleLoginItem(NSURL* loginItem, int toggleFlag)
             }
             
             //current login item match self?
-            if ([(__bridge NSURL *)currentLoginItem isEqual:loginItem])
+            if(YES == [(__bridge NSURL *)currentLoginItem isEqual:loginItem])
             {
                 //remove
-                LSSharedFileListItemRemove(loginItemsRef, (__bridge LSSharedFileListItemRef)item);
+                if(noErr != LSSharedFileListItemRemove(loginItemsRef, (__bridge LSSharedFileListItemRef)item))
+                {
+                    //err msg
+                    logMsg(LOG_ERR, @"failed to remove login item");
+                    
+                    //bail
+                    goto bail;
+                }
+                
+                //dbg msg
+                logMsg(LOG_DEBUG, [NSString stringWithFormat:@"removed loginItem: %@", loginItem]);
                 
                 //happy
                 wasToggled = YES;
@@ -1082,3 +1089,41 @@ bail:
     
     return processID;
 }
+
+//convert a textview to a clickable hyperlink
+void makeTextViewHyperlink(NSTextField* textField, NSURL* url)
+{
+    //hyperlink
+    NSMutableAttributedString *hyperlinkString = nil;
+    
+    //range
+    NSRange range = {0};
+    
+    //init hyper link
+    hyperlinkString = [[NSMutableAttributedString alloc] initWithString:textField.stringValue];
+    
+    //init range
+    range = NSMakeRange(0, [hyperlinkString length]);
+    
+    //start editing
+    [hyperlinkString beginEditing];
+    
+    //add url
+    [hyperlinkString addAttribute:NSLinkAttributeName value:url range:range];
+    
+    //make it blue
+    [hyperlinkString addAttribute:NSForegroundColorAttributeName value:[NSColor blueColor] range:NSMakeRange(0, [hyperlinkString length])];
+    
+    //underline
+    [hyperlinkString addAttribute:
+     NSUnderlineStyleAttributeName value:[NSNumber numberWithInt:NSSingleUnderlineStyle] range:NSMakeRange(0, [hyperlinkString length])];
+    
+    //done editing
+    [hyperlinkString endEditing];
+    
+    //set text
+    [textField setAttributedStringValue:hyperlinkString];
+    
+    return;
+}
+

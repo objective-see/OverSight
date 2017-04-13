@@ -11,7 +11,6 @@
 #import "Utilities.h"
 #import "AppDelegate.h"
 
-
 @interface AppDelegate ()
 
 @property (weak) IBOutlet NSWindow *window;
@@ -80,9 +79,30 @@
            
             //check
             [self isThereAnUpdate];
+            
         });
     }
     
+    //when logging is enabled
+    // ->open/create log file
+    if(YES == [preferences[PREF_LOG_ACTIVITY] boolValue])
+    {
+        //init
+        if(YES != initLogging())
+        {
+            //err msg
+            logMsg(LOG_ERR, @"failed to init logging");
+            
+            //bail
+            goto bail;
+        }
+        
+        //dbg msg
+        // ->and to file
+        logMsg(LOG_DEBUG|LOG_TO_FILE, @"logging intialized");
+        
+    }
+
     //create/init av event monitor
     avMonitor = [[AVMonitor alloc] init];
     
@@ -95,10 +115,8 @@
     // ->sets up audio/video callbacks
     [avMonitor monitor];
     
-    //dbg msg
-    #ifdef DEBUG
-    logMsg(LOG_DEBUG, @"AV monitor off and running");
-    #endif
+    //log msg
+    logMsg(LOG_DEBUG|LOG_TO_FILE, @"OverSight starting");
     
 //bail
 bail:
@@ -172,6 +190,22 @@ bail:
         logMsg(LOG_DEBUG, @"no updates available");
     }
     #endif
+    
+    return;
+}
+
+//going bye-bye
+// ->close logging
+-(void)applicationWillTerminate:(NSNotification *)notification
+{
+    //log msg
+    logMsg(LOG_DEBUG|LOG_TO_FILE, @"OverSight ending");
+    
+    //log msg
+    logMsg(LOG_DEBUG|LOG_TO_FILE, @"logging deinitialized");
+    
+    //stop logz
+    deinitLogging();
     
     return;
 }

@@ -50,7 +50,7 @@
     NSString* path = nil;
     
     //init path
-    path = [[APP_SUPPORT_DIRECTORY stringByExpandingTildeInPath] stringByAppendingPathComponent:FILE_WHITELIST];
+    path = [[[@"~" stringByAppendingPathComponent:APP_SUPPORT_DIRECTORY] stringByExpandingTildeInPath] stringByAppendingPathComponent:FILE_WHITELIST];
     
     //dbg msg
     #ifdef DEBUG
@@ -963,7 +963,7 @@ bail:
     NSString* processPath = nil;
     
     //log msg
-    NSMutableString* sysLogMsg = nil;
+    NSMutableString* logMessage = nil;
     
     //preferences
     NSDictionary* preferences = nil;
@@ -983,7 +983,7 @@ bail:
     title = [NSMutableString string];
     
     //alloc log msg
-    sysLogMsg = [NSMutableString string];
+    logMessage = [NSMutableString string];
     
     //dbg msg
     #ifdef DEBUG
@@ -1009,7 +1009,6 @@ bail:
         
         //set device
         deviceType = SOURCE_AUDIO;
-        
     }
     //set device and title for video
     else
@@ -1196,16 +1195,13 @@ bail:
     //log event?
     if(YES == [preferences[PREF_LOG_ACTIVITY] boolValue])
     {
-        //init msg
-        [sysLogMsg appendString:@"OVERSIGHT: "];
-        
         //no process?
         // ->just add title / details
         if( (nil == processName) ||
             (YES == [processName isEqualToString:PROCESS_UNKNOWN]) )
         {
             //add
-            [sysLogMsg appendFormat:@"%@ (%@)", title, details];
+            [logMessage appendFormat:@"%@ (%@)", title, details];
         }
         
         //process
@@ -1213,11 +1209,11 @@ bail:
         else
         {
             //add
-            [sysLogMsg appendFormat:@"%@ (%@, process: %@/%@)", title, details, processName, processPath];
+            [logMessage appendFormat:@"%@ (%@, process: %@, %@)", title, details, processName, processPath];
         }
         
-        //write it out to syslog
-        syslog(LOG_ERR, "%s\n", sysLogMsg.UTF8String);
+        //log msg
+        logMsg(LOG_DEBUG|LOG_TO_FILE, logMessage);
     }
     
     //set title
@@ -1309,13 +1305,13 @@ bail:
     NSDictionary* preferences = nil;
     
     //log msg
-    NSMutableString* sysLogMsg = nil;
+    NSMutableString* logMessage = nil;
     
     //always (manually) load preferences
     preferences = [NSDictionary dictionaryWithContentsOfFile:[APP_PREFERENCES stringByExpandingTildeInPath]];
     
     //alloc log msg
-    sysLogMsg = [NSMutableString string];
+    logMessage = [NSMutableString string];
     
     //dbg msg
     #ifdef DEBUG
@@ -1396,24 +1392,21 @@ bail:
     //log user's response?
     if(YES == [preferences[PREF_LOG_ACTIVITY] boolValue])
     {
-        //init msg
-        [sysLogMsg appendString:@"OVERSIGHT: "];
-        
         //user clicked 'block'
         if(notification.activationType == NSUserNotificationActivationTypeActionButtonClicked)
         {
             //add
-            [sysLogMsg appendFormat:@"user clicked 'block' for %@", notification.userInfo];
+            [logMessage appendFormat:@"user clicked 'block' for %@", notification.userInfo];
         }
         //user clicked 'allow'
         else
         {
             //add
-            [sysLogMsg appendFormat:@"user clicked 'allow' for %@", notification.userInfo];
+            [logMessage appendFormat:@"user clicked 'allow' for %@", notification.userInfo];
         }
         
-        //write it out to syslog
-        syslog(LOG_ERR, "%s\n", sysLogMsg.UTF8String);
+        //log
+        logMsg(LOG_DEBUG|LOG_TO_FILE, logMessage);
     }
     
     //check if user clicked 'allow' via user info (since OS doesn't directly deliver this)

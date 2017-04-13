@@ -201,6 +201,22 @@ bail:
         //bail
         goto bail;
     }
+    
+    //create app support directory
+    if(YES != [self createAppSupport:user])
+    {
+        //err msg
+        logMsg(LOG_ERR, @"failed to create app support directory for current user");
+        
+        //bail
+        goto bail;
+    }
+    
+    //dbg msg
+    #ifdef DEBUG
+    logMsg(LOG_DEBUG, @"created app support directory");
+    #endif
+    
 
     //call into login item to install itself
     // ->runs as logged in user, so can access user's login items, etc
@@ -296,7 +312,7 @@ bail:
 }
 
 //uninstall
-// ->delete app
+// ->delete app, remove login item, etc
 -(BOOL)uninstall:(NSUInteger)type
 {
     //return/status var
@@ -319,7 +335,7 @@ bail:
     NSString* user = nil;
     
     //init path to login item
-    loginItem = [[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:APP_NAME] stringByAppendingPathComponent:@"Contents/Library/LoginItems/OverSight Helper.app/Contents/MacOS/OverSight Helper"];
+    loginItem = [[APPS_FOLDER stringByAppendingPathComponent:APP_NAME] stringByAppendingPathComponent:@"Contents/Library/LoginItems/OverSight Helper.app/Contents/MacOS/OverSight Helper"];
     
     //init path to installed app
     installedAppPath = [APPS_FOLDER stringByAppendingPathComponent:APP_NAME];
@@ -390,7 +406,7 @@ bail:
         if(YES == [[NSFileManager defaultManager] fileExistsAtPath:[APP_SUPPORT_DIRECTORY stringByExpandingTildeInPath]])
         {
             //delete
-            if(YES != [self removeAppSupport])
+            if(YES != [self removeAppSupport:user])
             {
                 //err msg
                 logMsg(LOG_ERR, [NSString stringWithFormat:@"failed to delete app support directory %@", APP_SUPPORT_DIRECTORY]);
@@ -413,21 +429,81 @@ bail:
     return wasUninstalled;
 }
 
+//create directory app support
+// ->store whitelist file, log file, etc
+-(BOOL)createAppSupport:(NSString*)user
+{
+    //flag
+    BOOL createdDirectory = NO;
+    
+    //directory
+    NSString* appSupportDirectory = nil;
+    
+    //user's directory permissions
+    // ->used to match any created directories
+    NSDictionary* userDirAttributes = nil;
+    
+    //build path
+    appSupportDirectory = [NSString pathWithComponents:@[@"/Users/", user, APP_SUPPORT_DIRECTORY]];
+    
+    //create if not present
+    if(YES != [[NSFileManager defaultManager] fileExistsAtPath:appSupportDirectory])
+    {
+        //create it
+        if(YES != [[NSFileManager defaultManager] createDirectoryAtPath:appSupportDirectory withIntermediateDirectories:YES attributes:nil error:NULL])
+        {
+            //err msg
+            logMsg(LOG_ERR, [NSString stringWithFormat:@"failed to create app support directory (%@)", appSupportDirectory]);
+            
+            //bail
+            goto bail;
+        }
+    }
+    
+    //get permissions of one directory up
+    // -> ~/Library
+    userDirAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[@"/Users/" stringByAppendingPathComponent:user] error:nil];
+    
+    //assuming required attributes were found
+    // ->make sure ~/Library/Application Support/Objective-See is owned by user
+    if( (nil != userDirAttributes) &&
+        (nil != userDirAttributes[@"NSFileGroupOwnerAccountID"]) &&
+        (nil != userDirAttributes[@"NSFileOwnerAccountID"]) )
+    {
+        //match newly created directory w/ user
+        setFileOwner([appSupportDirectory stringByDeletingLastPathComponent], userDirAttributes[@"NSFileGroupOwnerAccountID"], userDirAttributes[@"NSFileOwnerAccountID"], YES);
+    }
+
+    //happy
+    createdDirectory = YES;
+    
+//bail
+bail:
+    
+    return createdDirectory;
+}
+
 //remove ~/Library/Application Support/Objective-See/OverSight
 // and also  ~/Library/Application Support/Objective-See/ if nothing else is in there (no other products)
--(BOOL)removeAppSupport
+-(BOOL)removeAppSupport:(NSString*)user
 {
     //flag
     BOOL removedDirectory = NO;
     
+    //directory
+    NSString* appSupportDirectory = nil;
+    
     //error
     NSError* error = nil;
     
-    //delete OverSight directory
-    if(YES != [[NSFileManager defaultManager] removeItemAtPath:[APP_SUPPORT_DIRECTORY stringByExpandingTildeInPath] error:&error])
+    //build path
+    appSupportDirectory = [NSString pathWithComponents:@[@"/Users/", user, APP_SUPPORT_DIRECTORY]];
+    
+    //delete OverSight's app support directory
+    if(YES != [[NSFileManager defaultManager] removeItemAtPath:appSupportDirectory error:&error])
     {
         //err msg
-        logMsg(LOG_ERR, [NSString stringWithFormat:@"failed to delete OverSight's app support directory %@ (%@)", APP_SUPPORT_DIRECTORY, error]);
+        logMsg(LOG_ERR, [NSString stringWithFormat:@"failed to delete OverSight's app support directory %@ (%@)", appSupportDirectory, error]);
         
         //bail
         goto bail;
@@ -435,12 +511,12 @@ bail:
     
     //anything left in ~/Library/Application Support/Objective-See/?
     // ->nope: delete it
-    if(0 == [[[NSFileManager defaultManager] contentsOfDirectoryAtPath:[[APP_SUPPORT_DIRECTORY stringByExpandingTildeInPath] stringByDeletingLastPathComponent] error:nil] count])
+    if(0 == [[[NSFileManager defaultManager] contentsOfDirectoryAtPath:[appSupportDirectory stringByDeletingLastPathComponent] error:nil] count])
     {
-        if(YES != [[NSFileManager defaultManager] removeItemAtPath:[[APP_SUPPORT_DIRECTORY stringByExpandingTildeInPath] stringByDeletingLastPathComponent] error:&error])
+        if(YES != [[NSFileManager defaultManager] removeItemAtPath:[appSupportDirectory stringByDeletingLastPathComponent] error:&error])
         {
             //err msg
-            logMsg(LOG_ERR, [NSString stringWithFormat:@"failed to delete Objective-See's app support directory %@ (%@)", [APP_SUPPORT_DIRECTORY stringByDeletingLastPathComponent], error]);
+            logMsg(LOG_ERR, [NSString stringWithFormat:@"failed to delete Objective-See's app support directory %@ (%@)", [appSupportDirectory stringByDeletingLastPathComponent], error]);
             
             //bail
             goto bail;

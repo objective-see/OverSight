@@ -47,12 +47,9 @@
 }
 
 //save stuff into iVars
-// ->configure window w/ dynamic text
+// ->also configure window w/ dynamic text
 -(void)configure:(NSUserNotification*)notification avMonitor:(AVMonitor*)monitor;
 {
-    //process ID
-    NSNumber* processID = nil;
-    
     //process name
     NSString* processName = nil;
     
@@ -61,9 +58,6 @@
     
     //save monitor into iVar
     self.avMonitor = monitor;
-    
-    //grab process id
-    processID = notification.userInfo[EVENT_PROCESS_ID];
     
     //grab process name
     processName = notification.userInfo[EVENT_PROCESS_NAME];
@@ -90,7 +84,7 @@
     }
     
     //set text
-    [self.windowText setStringValue:[NSString stringWithFormat:@"always allow %@ (%@) to use the %@?", processName, processID, deviceType]];
+    [self.windowText setStringValue:[NSString stringWithFormat:@"always allow %@ to use the %@?", processName, deviceType]];
     
     return;
 }

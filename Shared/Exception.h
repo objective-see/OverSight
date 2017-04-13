@@ -1,10 +1,11 @@
 //
 //  Exception.h
-//  WhatsYourSign
+//  OverSight
 //
 //  Created by Patrick Wardle on 7/7/16.
 //  Copyright (c) 2016 Objective-See. All rights reserved.
 //
+
 #import <signal.h>
 
 //install exception/signal handlers

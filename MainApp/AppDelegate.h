@@ -10,6 +10,7 @@
 #import "InfoWindowController.h"
 #import "AboutWindowController.h"
 #import "RulesWindowController.h"
+#import "3rdParty/HyperlinkTextField.h"
 
 
 @interface AppDelegate : NSObject <NSApplicationDelegate>
@@ -21,6 +22,9 @@
 
 //log activity button
 @property (weak) IBOutlet NSButton *logActivity;
+
+//label to show button
+@property (weak) IBOutlet HyperlinkTextField *viewLogLabel;
 
 //check for updates automatically button
 @property (weak) IBOutlet NSButton *check4Updates;

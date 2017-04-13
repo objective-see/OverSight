@@ -18,7 +18,8 @@
 		7D17CFE41D811B4E0017B475 /* Utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D17C5381D659E580066232A /* Utilities.m */; };
 		7D17CFE51D8133840017B475 /* AVMonitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D17CFE11D81121E0017B475 /* AVMonitor.m */; };
 		7D17D0101D8136C60017B475 /* OverSightXPC.xpc in Embed XPC Services */ = {isa = PBXBuildFile; fileRef = 7DC9C8121D641A350017D143 /* OverSightXPC.xpc */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		7D3B524C1D9B3A74006568D9 /* libbsm.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D9A7DED1D8CACE30091C1AF /* libbsm.tbd */; };
+		7D5735581E9DE4BC0086F474 /* HyperlinkTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D5735571E9DE4BC0086F474 /* HyperlinkTextField.m */; };
+		7D57355B1E9E46BD0086F474 /* libbsm.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D57355A1E9E46BD0086F474 /* libbsm.tbd */; };
 		7D6216731E078D65002C1774 /* RemeberWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D6216701E078C09002C1774 /* RemeberWindowController.m */; };
 		7D6216741E07BB27002C1774 /* RememberPopup.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7D62166E1E078BDD002C1774 /* RememberPopup.xib */; };
 		7D62457C1D84FB8900870565 /* Enumerator.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D62457B1D84FB8900870565 /* Enumerator.m */; };
@@ -116,6 +117,9 @@
 		7D17CFE11D81121E0017B475 /* AVMonitor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AVMonitor.m; sourceTree = "<group>"; };
 		7D17CFE21D81121E0017B475 /* AVMonitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AVMonitor.h; sourceTree = "<group>"; };
 		7D32457A1DA59A3700AE0711 /* main.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = main.h; sourceTree = "<group>"; };
+		7D5735561E9DE4BC0086F474 /* HyperlinkTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HyperlinkTextField.h; path = 3rdParty/HyperlinkTextField.h; sourceTree = "<group>"; };
+		7D5735571E9DE4BC0086F474 /* HyperlinkTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HyperlinkTextField.m; path = 3rdParty/HyperlinkTextField.m; sourceTree = "<group>"; };
+		7D57355A1E9E46BD0086F474 /* libbsm.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libbsm.tbd; path = usr/lib/libbsm.tbd; sourceTree = SDKROOT; };
 		7D62166E1E078BDD002C1774 /* RememberPopup.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = RememberPopup.xib; sourceTree = "<group>"; };
 		7D6216701E078C09002C1774 /* RemeberWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RemeberWindowController.m; sourceTree = "<group>"; };
 		7D6216721E078C13002C1774 /* RemeberWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RemeberWindowController.h; sourceTree = "<group>"; };
@@ -127,7 +131,6 @@
 		7D62458C1D87D38400870565 /* InfoWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = InfoWindow.xib; sourceTree = "<group>"; };
 		7D62458D1D87D38400870565 /* InfoWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfoWindowController.m; sourceTree = "<group>"; };
 		7D62458E1D87D38400870565 /* InfoWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfoWindowController.h; sourceTree = "<group>"; };
-		7D9A7DED1D8CACE30091C1AF /* libbsm.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libbsm.tbd; path = usr/lib/libbsm.tbd; sourceTree = SDKROOT; };
 		7D9A7DEF1D8CADD10091C1AF /* main.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = main.h; path = OverSightXPC/main.h; sourceTree = "<group>"; };
 		7DAF4B7C1D656FD3000DA31A /* StatusBarMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StatusBarMenu.h; sourceTree = "<group>"; };
 		7DAF4B7D1D656FD3000DA31A /* StatusBarMenu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StatusBarMenu.m; sourceTree = "<group>"; };
@@ -162,7 +165,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7D3B524C1D9B3A74006568D9 /* libbsm.tbd in Frameworks */,
+				7D57355B1E9E46BD0086F474 /* libbsm.tbd in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -226,6 +229,23 @@
 			path = Images;
 			sourceTree = "<group>";
 		};
+		7D5735551E9DE4B00086F474 /* 3rdParty */ = {
+			isa = PBXGroup;
+			children = (
+				7D5735561E9DE4BC0086F474 /* HyperlinkTextField.h */,
+				7D5735571E9DE4BC0086F474 /* HyperlinkTextField.m */,
+			);
+			name = 3rdParty;
+			sourceTree = "<group>";
+		};
+		7D5735591E9E46BD0086F474 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				7D57355A1E9E46BD0086F474 /* libbsm.tbd */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		7D6245861D87C53500870565 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
@@ -253,12 +273,12 @@
 			isa = PBXGroup;
 			children = (
 				7D9A7DEF1D8CADD10091C1AF /* main.h */,
-				7D9A7DED1D8CACE30091C1AF /* libbsm.tbd */,
 				7D17C52B1D659E580066232A /* Shared */,
 				8B57559D19DA3E9500799E6B /* MainApp */,
 				8B5755C319DA3F9300799E6B /* LoginItem */,
 				7DC9C8131D641A350017D143 /* XPCService */,
 				8B57559C19DA3E9500799E6B /* Products */,
+				7D5735591E9E46BD0086F474 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -275,6 +295,7 @@
 		8B57559D19DA3E9500799E6B /* MainApp */ = {
 			isa = PBXGroup;
 			children = (
+				7D5735551E9DE4B00086F474 /* 3rdParty */,
 				7DC038071E8717B200349474 /* RuleRow.h */,
 				7DC038081E8717B200349474 /* RuleRow.m */,
 				7DC038041E8716F700349474 /* RuleRowCell.h */,
@@ -500,6 +521,7 @@
 				7DC038061E8716F700349474 /* RuleRowCell.m in Sources */,
 				7DC038021E87025100349474 /* RulesWindowController.m in Sources */,
 				7D6245911D87D39E00870565 /* InfoWindowController.m in Sources */,
+				7D5735581E9DE4BC0086F474 /* HyperlinkTextField.m in Sources */,
 				7D62458B1D87CE0900870565 /* AboutWindowController.m in Sources */,
 				7D6245891D87C58400870565 /* Logging.m in Sources */,
 				8B5755A419DA3E9500799E6B /* AppDelegate.m in Sources */,
