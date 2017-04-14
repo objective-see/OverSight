@@ -38,7 +38,17 @@ int main(int argc, const char * argv[])
             setuid(getuid());
 
             //install
-            toggleLoginItem([NSURL fileURLWithPath:[[NSBundle mainBundle] bundlePath]], ACTION_INSTALL_FLAG);
+            if(YES != toggleLoginItem([NSURL fileURLWithPath:[[NSBundle mainBundle] bundlePath]], ACTION_INSTALL_FLAG))
+            {
+                //err msg
+                logMsg(LOG_ERR, @"failed to add login item");
+                
+                //set error
+                iReturn = -1;
+                
+                //bail
+                goto bail;
+            }
             
             //dbg msg
             #ifdef DEBUG
@@ -68,7 +78,7 @@ int main(int argc, const char * argv[])
             setuid(getuid());
             
             //uninstall
-            if(YES == toggleLoginItem([NSURL fileURLWithPath:[[NSBundle mainBundle] bundlePath]], ACTION_UNINSTALL_FLAG))
+            if(YES != toggleLoginItem([NSURL fileURLWithPath:[[NSBundle mainBundle] bundlePath]], ACTION_UNINSTALL_FLAG))
             {
                 //err msg
                 logMsg(LOG_ERR, @"failed to remove login item");
@@ -76,13 +86,17 @@ int main(int argc, const char * argv[])
                 //set error
                 iReturn = -1;
                 
-                //bail
-                goto bail;
+                //don't bail
+                // ->keep trying to uninstall
             }
-            
+    
             //dbg msg
             #ifdef DEBUG
-            logMsg(LOG_DEBUG, @"removed login item");
+            else
+            {
+                //dbg msg
+                logMsg(LOG_DEBUG, @"removed login item");
+            }
             #endif
             
             //delete prefs

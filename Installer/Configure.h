@@ -31,6 +31,9 @@
 //uninstall
 -(BOOL)uninstall:(NSUInteger)type;
 
+//build path to logged in user's app support directory + '/Objective-See'
+-(NSString*)appSupportPath:(NSString*)user;
+
 @end
 
 #endif

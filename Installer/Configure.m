@@ -157,6 +157,9 @@ bail:
     //logged in user
     NSString* user = nil;
     
+    //white list
+    NSString* whiteList = nil;
+    
     //set src path
     // ->orginally stored in installer app's /Resource bundle
     appPathSrc = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:APP_NAME];
@@ -217,6 +220,16 @@ bail:
     logMsg(LOG_DEBUG, @"created app support directory");
     #endif
     
+    //init path to whitelist
+    whiteList = [[NSString pathWithComponents:@[@"/Users/", user, APP_SUPPORT_DIRECTORY]] stringByAppendingPathComponent:FILE_WHITELIST];
+    
+    //if whitelist exists
+    // ->make sure it's owned by root
+    if(YES == [[NSFileManager defaultManager] fileExistsAtPath:whiteList])
+    {
+        //set owner, root
+        setFileOwner(whiteList, @0, @0, NO);
+    }
 
     //call into login item to install itself
     // ->runs as logged in user, so can access user's login items, etc
@@ -355,26 +368,23 @@ bail:
         //set flag
         bAnyErrors = YES;
         
-        //keep uninstalling...
+        //bail since lots else depends on this
+        goto bail;
     }
     
-    //unistall login item
-    else
-    {
-        //dbg msg
-        #ifdef DEBUG
-        logMsg(LOG_DEBUG, [NSString stringWithFormat:@"telling login item %@, to uninstall itself", loginItem]);
-        #endif
+    //dbg msg
+    #ifdef DEBUG
+    logMsg(LOG_DEBUG, [NSString stringWithFormat:@"telling login item %@, to uninstall itself", loginItem]);
+    #endif
         
-        //call into login item to uninstall itself
-        // ->runs as logged in user, so can access user's login items, etc
-        execTask(SUDO, @[@"-u", user, loginItem, [NSString stringWithUTF8String:CMD_UNINSTALL]], YES);
-        
-        //dbg msg
-        #ifdef DEBUG
-        logMsg(LOG_DEBUG, [NSString stringWithFormat:@"unpersisted %@", loginItem]);
-        #endif
-    }
+    //call into login item to uninstall itself
+    // ->runs as logged in user, so can access user's login items, etc
+    execTask(SUDO, @[@"-u", user, loginItem, [NSString stringWithUTF8String:CMD_UNINSTALL]], YES);
+    
+    //dbg msg
+    #ifdef DEBUG
+    logMsg(LOG_DEBUG, [NSString stringWithFormat:@"unpersisted %@", loginItem]);
+    #endif
     
     //dbg msg
     #ifdef DEBUG
@@ -402,20 +412,30 @@ bail:
         logMsg(LOG_DEBUG, @"full uninstall, so also deleting app support directory");
         #endif
         
-        //delete app support folder
-        if(YES == [[NSFileManager defaultManager] fileExistsAtPath:[APP_SUPPORT_DIRECTORY stringByExpandingTildeInPath]])
+        //delete app's app support folder
+        if(YES == [[NSFileManager defaultManager] fileExistsAtPath:[self appSupportPath:user]])
         {
             //delete
             if(YES != [self removeAppSupport:user])
             {
                 //err msg
-                logMsg(LOG_ERR, [NSString stringWithFormat:@"failed to delete app support directory %@", APP_SUPPORT_DIRECTORY]);
+                logMsg(LOG_ERR, [NSString stringWithFormat:@"failed to delete app support directory %@", [self appSupportPath:user]]);
                 
                 //set flag
                 bAnyErrors = YES;
                 
                 //keep uninstalling...
             }
+            
+            //dbg msg
+            #ifdef DEBUG
+            else
+            {
+                //dbg msg
+                logMsg(LOG_DEBUG, [NSString stringWithFormat:@"removed app support directory %@", [self appSupportPath:user]]);
+            }
+            #endif
+
         }
     }
     
@@ -425,8 +445,19 @@ bail:
         //happy
         wasUninstalled = YES;
     }
+    
+//bail
+bail:
 
     return wasUninstalled;
+}
+
+//build path to logged in user's app support directory + '/Objective-See/OverSight'
+// ->do this manually, since installer might be run via sudo, etc, so can just expand '~'
+-(NSString*)appSupportPath:(NSString*)user
+{
+    //build path
+    return [NSString pathWithComponents:@[@"/Users/", user, APP_SUPPORT_DIRECTORY]];
 }
 
 //create directory app support
@@ -444,7 +475,7 @@ bail:
     NSDictionary* userDirAttributes = nil;
     
     //build path
-    appSupportDirectory = [NSString pathWithComponents:@[@"/Users/", user, APP_SUPPORT_DIRECTORY]];
+    appSupportDirectory = [self appSupportPath:user];
     
     //create if not present
     if(YES != [[NSFileManager defaultManager] fileExistsAtPath:appSupportDirectory])
@@ -497,7 +528,7 @@ bail:
     NSError* error = nil;
     
     //build path
-    appSupportDirectory = [NSString pathWithComponents:@[@"/Users/", user, APP_SUPPORT_DIRECTORY]];
+    appSupportDirectory = [self appSupportPath:user];
     
     //delete OverSight's app support directory
     if(YES != [[NSFileManager defaultManager] removeItemAtPath:appSupportDirectory error:&error])

@@ -277,7 +277,14 @@ bail:
         loginItem = [NSURL fileURLWithPath:[[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent:@"/Contents/Library/LoginItems/OverSight Helper.app"]];
         
         //toggle
-        toggleLoginItem(loginItem, (int)[sender state]);
+        if(YES != toggleLoginItem(loginItem, (int)[sender state]))
+        {
+            //err msg
+            logMsg(LOG_ERR, [NSString stringWithFormat:@"failed to toggle login item: %@", loginItem]);
+            
+            //bail
+            goto bail;
+        }
     }
     
     //set 'run in headless mode'
@@ -308,6 +315,9 @@ bail:
     
     //save em
     [preferences writeToFile:[APP_PREFERENCES stringByExpandingTildeInPath] atomically:YES];
+    
+//bail
+bail:
     
     return;
 }

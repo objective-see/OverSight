@@ -54,9 +54,21 @@
     
     //dbg msg
     #ifdef DEBUG
-    logMsg(LOG_DEBUG, [NSString stringWithFormat:@"loading whitelist %@", path]);
+    logMsg(LOG_DEBUG, [NSString stringWithFormat:@"whitelist path %@", path]);
     #endif
-   
+
+    //check if it exists
+    if(YES != [[NSFileManager defaultManager] fileExistsAtPath:path])
+    {
+        //dbg msg
+        #ifdef DEBUG
+        logMsg(LOG_DEBUG, @"nothing whitelisted yet, so won't load (file not found)");
+        #endif
+        
+        //bail
+        goto bail;
+    }
+    
     //since file is created by priv'd XPC, it shouldn't be writeable
     // ...unless somebody maliciously creates it, so we check that here
     if(YES == [[NSFileManager defaultManager] isWritableFileAtPath:path])
@@ -67,7 +79,7 @@
         //bail
         goto bail;
     }
-   
+    
     //load
     self.whiteList = [NSMutableArray arrayWithContentsOfFile:path];
     
