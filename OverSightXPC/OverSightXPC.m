@@ -88,9 +88,6 @@
     //whitelist
     NSMutableArray* whiteList = nil;
     
-    //error
-    NSError* error = nil;
-    
     //init path to whitelist
     path = [[[@"~" stringByAppendingPathComponent:APP_SUPPORT_DIRECTORY] stringByExpandingTildeInPath] stringByAppendingPathComponent:FILE_WHITELIST];
     

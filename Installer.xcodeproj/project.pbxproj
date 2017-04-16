@@ -229,7 +229,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "#for normal builds\n# ->just copy in app\ncp -R -f $BUILT_PRODUCTS_DIR/OverSight.app $BUILT_PRODUCTS_DIR/$CONTENTS_FOLDER_PATH/Resources/\n\n#for achiving\n# ->first build finder sync in release mode (don't archive it)\n#   then archive (this) installer app\n#cp -R -f ~/objective-see/OverSight/DerivedData/OverSight/Build/Products/Release/OverSight.app ~/objective-see/OverSight/DerivedData/OverSight/Build/Intermediates/ArchiveIntermediates/Installer/BuildProductsPath/Release/OverSight_Installer.app/Contents/Resources/\n";
+			shellScript = "#for normal builds\n# ->just copy in app\n#cp -R -f $BUILT_PRODUCTS_DIR/OverSight.app $BUILT_PRODUCTS_DIR/$CONTENTS_FOLDER_PATH/Resources/\n\n#for achieving\n# ->first build OverSight in release mode (don't archive it)\n#   then archive (this) installer app\ncp -R -f ~/objective-see/OverSight/DerivedData/OverSight/Build/Products/Release/OverSight.app ~/objective-see/OverSight/DerivedData/OverSight/Build/Intermediates/ArchiveIntermediates/Installer/BuildProductsPath/Release/OverSight_Installer.app/Contents/Resources/\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

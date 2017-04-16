@@ -332,11 +332,14 @@ bail:
     BOOL wasUninstalled = NO;
     
     //status var
-    // ->since want to try all uninstall steps, but record if any fail
+    // ->since want to try (most) uninstall steps, but record if any fail
     BOOL bAnyErrors = NO;
     
     //path to login item
     NSString* loginItem = nil;
+    
+    //installed version
+    NSString* installedVersion = nil;
     
     //path to installed app
     NSString* installedAppPath = nil;
@@ -347,15 +350,35 @@ bail:
     //logged in user
     NSString* user = nil;
     
+    //uninstall command
+    // ->changed between v1.0 and 1.1+
+    NSString* uninstallCmd = nil;
+    
     //init path to login item
     loginItem = [[APPS_FOLDER stringByAppendingPathComponent:APP_NAME] stringByAppendingPathComponent:@"Contents/Library/LoginItems/OverSight Helper.app/Contents/MacOS/OverSight Helper"];
     
     //init path to installed app
     installedAppPath = [APPS_FOLDER stringByAppendingPathComponent:APP_NAME];
     
+    //get installed app version
+    installedVersion = [[NSBundle bundleWithPath:installedAppPath] objectForInfoDictionaryKey: (NSString *)kCFBundleVersionKey];
+    
+    //set uninstall command for version 1.0.0
+    if(YES == [installedVersion isEqualToString:@"1.0.0"])
+    {
+        //set command
+        uninstallCmd = ACTION_UNINSTALL;
+    }
+    //set uninstall command for version 1.1.+
+    else
+    {
+        //set command
+        uninstallCmd = [NSString stringWithUTF8String:CMD_UNINSTALL];
+    }
+    
     //dbg msg
     #ifdef DEBUG
-    logMsg(LOG_DEBUG, @"uninstalling login item");
+    logMsg(LOG_DEBUG, [NSString stringWithFormat:@"uninstalling login item, with command: '%@'", uninstallCmd]);
     #endif
     
     //get user
@@ -364,9 +387,6 @@ bail:
     {
         //err msg
         logMsg(LOG_ERR, @"failed to determine logged-in user");
-        
-        //set flag
-        bAnyErrors = YES;
         
         //bail since lots else depends on this
         goto bail;
@@ -379,7 +399,7 @@ bail:
         
     //call into login item to uninstall itself
     // ->runs as logged in user, so can access user's login items, etc
-    execTask(SUDO, @[@"-u", user, loginItem, [NSString stringWithUTF8String:CMD_UNINSTALL]], YES);
+    execTask(SUDO, @[@"-u", user, loginItem, uninstallCmd], YES);
     
     //dbg msg
     #ifdef DEBUG
