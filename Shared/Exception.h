@@ -9,7 +9,7 @@
 #import <signal.h>
 
 //install exception/signal handlers
-void installExceptionHandlers();
+void installExceptionHandlers(void);
 
 //exception handler for Obj-C exceptions
 void exceptionHandler(NSException *exception);
@@ -19,6 +19,3 @@ void signalHandler(int signal, siginfo_t *info, void *context);
 
 //display error window
 void displayErrorWindow(NSDictionary* errorInfo);
-
-
-

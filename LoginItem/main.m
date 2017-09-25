@@ -18,14 +18,44 @@ int main(int argc, const char * argv[])
     //return var
     int iReturn = 0;
     
+    //logged in user info
+    NSMutableDictionary* userInfo = nil;
+    
+    //pool
+    @autoreleasepool
+    {
+    
     //dbg msg
     #ifdef DEBUG
-    logMsg(LOG_DEBUG, [NSString stringWithFormat:@"starting login item (args: %@/user: %@)", [[NSProcessInfo processInfo] arguments], NSUserName()]);
+    logMsg(LOG_DEBUG, [NSString stringWithFormat:@"starting login item (args: %@/user: %@/%@)", [[NSProcessInfo processInfo] arguments], NSUserName(), loggedinUser()]);
     #endif
     
     //check for uninstall/install flags, and process to remove from whitelist
     if(2 == argc)
     {
+        //drops privs when installing/uninstalling
+        // do here, only for these as they then bail
+        if( (0 == strcmp(argv[1], CMD_INSTALL)) ||
+            (0 == strcmp(argv[1], CMD_UNINSTALL)) )
+        {
+            //get user
+            userInfo = loggedinUser();
+            if(nil == userInfo[@"user"])
+            {
+                //err msg
+                logMsg(LOG_ERR, @"failed to determine logged-in user");
+                
+                //bail
+                goto bail;
+            }
+            
+            //drop group privs
+            setgid([userInfo[@"gid"] intValue]);
+            
+            //drop user privs
+            setuid([userInfo[@"uid"] intValue]);
+        }
+        
         //install
         if(0 == strcmp(argv[1], CMD_INSTALL))
         {
@@ -34,9 +64,6 @@ int main(int argc, const char * argv[])
             logMsg(LOG_DEBUG, @"running install logic");
             #endif
             
-            //drop user privs
-            setuid(getuid());
-
             //install
             if(YES != toggleLoginItem([NSURL fileURLWithPath:[[NSBundle mainBundle] bundlePath]], ACTION_INSTALL_FLAG))
             {
@@ -73,9 +100,6 @@ int main(int argc, const char * argv[])
             #ifdef DEBUG
             logMsg(LOG_DEBUG, @"running uninstall logic");
             #endif
-            
-            //drop user privs
-            setuid(getuid());
             
             //uninstall
             if(YES != toggleLoginItem([NSURL fileURLWithPath:[[NSBundle mainBundle] bundlePath]], ACTION_UNINSTALL_FLAG))
@@ -130,7 +154,8 @@ int main(int argc, const char * argv[])
     //launch app normally
     iReturn = NSApplicationMain(argc, argv);
     
-//bail
+    }//pool
+    
 bail:
     
     return iReturn;
@@ -173,9 +198,6 @@ void unWhiteList(NSString* process, NSNumber* device)
 
         //close connection
         [xpcConnection invalidate];
-
-        //nil out
-        xpcConnection = nil;
          
      }];
     

@@ -51,6 +51,4 @@ OSStatus SecTaskValidateForRequirement(SecTaskRef task, CFStringRef requirement)
 @end
 
 
-
-
 #endif /* main_h */

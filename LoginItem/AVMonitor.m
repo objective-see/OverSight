@@ -239,7 +239,7 @@ bail:
      {
          //signal sema
          dispatch_semaphore_signal(waitSema);
-         
+
      }];
     
     //wait until XPC is done
@@ -414,9 +414,7 @@ bail:
     {
         //close connection
         [xpcConnection invalidate];
-        
-        //nil out
-        xpcConnection = nil;
+
     }
     
     return bRet;
@@ -474,7 +472,7 @@ bail:
 }
 
 //helper function
-// ->determines if video went active/inactive then invokes notification generator method
+// determines if video went active/inactive then invokes notification generator method
 -(void)handleVideoNotification:(CMIOObjectID)deviceID addresses:(const CMIOObjectPropertyAddress[]) addresses
 {
     //event dictionary
@@ -517,9 +515,14 @@ bail:
         [devices addObject:@{EVENT_DEVICE:self.mic, EVENT_DEVICE_STATUS:@(self.audioActive)}];
     }
 
-    //send msg to status menu
-    // ->update menu to show (all) devices & their status
-    [((AppDelegate*)[[NSApplication sharedApplication] delegate]).statusBarMenuController updateStatusItemMenu:devices];
+    //update status menu
+    // run on main thread, since its a UI update
+    dispatch_async(dispatch_get_main_queue(), ^{
+        
+        //update status menu
+        [((AppDelegate*)[[NSApplication sharedApplication] delegate]).statusBarMenuController updateStatusItemMenu:devices];
+        
+    });
 
     //add timestamp
     event[EVENT_TIMESTAMP] = [NSDate date];
@@ -579,9 +582,6 @@ bail:
              //close connection
              [xpcConnection invalidate];
              
-             //nil out
-             xpcConnection = nil;
-             
              //dbg msg
              #ifdef DEBUG
              logMsg(LOG_DEBUG, [NSString stringWithFormat:@"video procs from XPC: %@", videoProcesses]);
@@ -594,7 +594,14 @@ bail:
                  event[EVENT_PROCESS_ID] = processID;
                  
                  //generate notification
-                 [self generateNotification:event];
+                 // do on main thread since its a UI event
+                 dispatch_async(dispatch_get_main_queue(), ^{
+                     
+                     //generate notification
+                     [self generateNotification:event];
+                     
+                 });
+
              }
              
              //if no consumer process was found
@@ -605,7 +612,13 @@ bail:
                  event[EVENT_PROCESS_ID] = @0;
                  
                  //generate notification
-                 [self generateNotification:event];
+                 // do on main thread since its a UI event
+                 dispatch_async(dispatch_get_main_queue(), ^{
+                     
+                     //generate notification
+                     [self generateNotification:event];
+                     
+                 });
              }
              
              //signal sema
@@ -625,11 +638,15 @@ bail:
         //close connection
         [xpcConnection invalidate];
         
-        //nil out
-        xpcConnection = nil;
-        
         //generate notification
-        [self generateNotification:event];
+        // do on main thread since its a UI event
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            //generate notification
+            [self generateNotification:event];
+            
+        });
+        
     }
     
     //poll for new video procs
@@ -694,8 +711,27 @@ bail:
     // ->invoked when video changes & just calls helper function
     CMIOObjectPropertyListenerBlock listenerBlock = ^(UInt32 inNumberAddresses, const CMIOObjectPropertyAddress addresses[])
     {
-        //invoke helper function
-        [self handleVideoNotification:deviceID addresses:addresses];
+        //on main thread?
+        // handle on background thread
+        if(YES == [NSThread isMainThread])
+        {
+            //invoke in background
+            // XPC stuff might be slow!
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+            ^{
+               
+                //handle notification
+                [self handleVideoNotification:deviceID addresses:addresses];
+               
+            });
+        }
+        //on background thread
+        // just can invoke as it
+        else
+        {
+            //handle notification
+            [self handleVideoNotification:deviceID addresses:addresses];
+        }
     };
     
     //register (add) property block listener
@@ -764,6 +800,9 @@ bail:
     //event dictionary
     NSMutableDictionary* event = nil;
     
+    //devices
+    NSMutableArray* devices = nil;
+    
     //xpc connection
     __block NSXPCConnection* xpcConnection = nil;
     
@@ -772,6 +811,9 @@ bail:
     
     //init dictionary
     event = [NSMutableDictionary dictionary];
+
+    //init array for devices
+    devices = [NSMutableArray array];
     
     //sync
     @synchronized (self)
@@ -781,10 +823,29 @@ bail:
     // ->updates 'audioActive' iVar
     [self setAudioDevStatus:deviceID];
         
-    //send msg to status menu
-    // ->update menu to show (all) devices & their status
-    [((AppDelegate*)[[NSApplication sharedApplication] delegate]).statusBarMenuController updateStatusItemMenu:@[@{EVENT_DEVICE:self.mic, EVENT_DEVICE_STATUS:@(self.audioActive)},@{EVENT_DEVICE:self.camera, EVENT_DEVICE_STATUS:@(self.videoActive)}]];
-
+    //add camera
+    if(nil != self.camera)
+    {
+        //add
+        [devices addObject:@{EVENT_DEVICE:self.camera, EVENT_DEVICE_STATUS:@(self.videoActive)}];
+    }
+    
+    //add mic
+    if(nil != self.mic)
+    {
+        //add
+        [devices addObject:@{EVENT_DEVICE:self.mic, EVENT_DEVICE_STATUS:@(self.audioActive)}];
+    }
+    
+    //update status menu
+    // run on main thread, since its a UI update
+    dispatch_async(dispatch_get_main_queue(), ^{
+        
+        //update status menu
+        [((AppDelegate*)[[NSApplication sharedApplication] delegate]).statusBarMenuController updateStatusItemMenu:devices];
+        
+    });
+        
     //add timestamp
     event[EVENT_TIMESTAMP] = [NSDate date];
         
@@ -804,28 +865,28 @@ bail:
     
     //set remote object interface
     xpcConnection.remoteObjectInterface = [NSXPCInterface interfaceWithProtocol:@protocol(XPCProtocol)];
-    
+        
     //resume
     [xpcConnection resume];
-    
+        
     //init wait semaphore
     waitSema = dispatch_semaphore_create(0);
     
     //tell XPC about audio status
     // ->for example, when audio is active, will stop baselining
     [[xpcConnection remoteObjectProxy] updateAudioStatus:self.audioActive reply:^{
-        
+
         //signal sema
         dispatch_semaphore_signal(waitSema);
         
     }];
-    
+        
     //wait until XPC is done
     // ->XPC reply block will signal semaphore
     dispatch_semaphore_wait(waitSema, DISPATCH_TIME_FOREVER);
-    
-    //if video just started
-    // ->ask for video procs from XPC
+        
+    //if audio just started
+    // ->ask for audio procs from XPC
     if(YES == self.audioActive)
     {
         //dbg msg
@@ -843,9 +904,6 @@ bail:
              //close connection
              [xpcConnection invalidate];
              
-             //nil out
-             xpcConnection = nil;
-             
              //dbg msg
              #ifdef DEBUG
              logMsg(LOG_DEBUG, [NSString stringWithFormat:@"audio procs from XPC: %@", audioProcesses]);
@@ -858,7 +916,13 @@ bail:
                  event[EVENT_PROCESS_ID] = processID;
                  
                  //generate notification
-                 [self generateNotification:event];
+                 // do on main thread since its a UI event
+                 dispatch_async(dispatch_get_main_queue(), ^{
+                 
+                     //generate notification
+                     [self generateNotification:event];
+                     
+                 });
              }
              
              //if no consumer process was found
@@ -869,7 +933,13 @@ bail:
                  event[EVENT_PROCESS_ID] = @0;
                  
                  //generate notification
-                 [self generateNotification:event];
+                 // do on main thread since its a UI event
+                 dispatch_async(dispatch_get_main_queue(), ^{
+                     
+                     //generate notification
+                     [self generateNotification:event];
+                     
+                 });
              }
              
              //signal sema
@@ -889,11 +959,14 @@ bail:
         //close connection
         [xpcConnection invalidate];
         
-        //nil out
-        xpcConnection = nil;
-        
         //generate notification
-        [self generateNotification:event];
+        // do on main thread since its a UI event
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            //generate notification
+            [self generateNotification:event];
+            
+        });
     }
 
     }//sync
@@ -930,7 +1003,27 @@ bail:
     // ->invoked when audio changes & just calls helper function
     AudioObjectPropertyListenerBlock listenerBlock = ^(UInt32 inNumberAddresses, const AudioObjectPropertyAddress *inAddresses)
     {
-        [self handleAudioNotification:deviceID];
+        //on main thread?
+        // handle on background thread
+        if(YES == [NSThread isMainThread])
+        {
+            //invoke in background
+            // XPC stuff might be slow!
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+            ^{
+               
+               //handle notification
+               [self handleAudioNotification:deviceID];
+               
+            });
+        }
+        //on background thread
+        // just can invoke as it
+        else
+        {
+            //handle notification
+            [self handleAudioNotification:deviceID];
+        }
     };
     
     //add property listener for audio changes
@@ -957,6 +1050,9 @@ bail:
 // ->handles extra logic like ignore whitelisted apps, disable alerts (if user has turned that off), etc
 -(void)generateNotification:(NSMutableDictionary*)event
 {
+    //pool
+    @autoreleasepool {
+        
     //notification
     NSUserNotification* notification = nil;
     
@@ -1291,6 +1387,8 @@ bail:
         }
     }
     
+    }//pool
+        
 //bail
 bail:
     
@@ -1307,6 +1405,9 @@ bail:
 // ->handle rule creation, blocking/killing proc, etc
 -(void)userNotificationCenter:(NSUserNotificationCenter *)center didActivateNotification:(NSUserNotification *)notification
 {
+    //pool
+    @autoreleasepool {
+        
     //xpc connection
     __block NSXPCConnection* xpcConnection = nil;
     
@@ -1524,11 +1625,11 @@ bail:
              //close connection
              [xpcConnection invalidate];
              
-             //nil out
-             xpcConnection = nil;
          }];
 
     }//user clicked 'block'
+        
+    }//pool
     
 //bail
 bail:
@@ -1607,9 +1708,13 @@ bail:
 }
 
 //monitor for new procs (video only at the moment)
-// ->runs until video is no longer in use (set elsewhere)
+// runs until video is no longer in use (set elsewhere)
 -(void)monitor4Procs
 {
+
+    //pool
+    @autoreleasepool {
+        
     //xpc connection
     NSXPCConnection* xpcConnection = nil;
     
@@ -1621,22 +1726,12 @@ bail:
     logMsg(LOG_DEBUG, @"[MONITOR THREAD] video is active, so polling for new procs");
     #endif
     
-    //alloc XPC connection
-    xpcConnection = [[NSXPCConnection alloc] initWithServiceName:@"com.objective-see.OverSightXPC"];
-    
-    //set remote object interface
-    xpcConnection.remoteObjectInterface = [NSXPCInterface interfaceWithProtocol:@protocol(XPCProtocol)];
-    
-    //set classes
-    // ->arrays/numbers ok to vend
-    [xpcConnection.remoteObjectInterface setClasses: [NSSet setWithObjects: [NSMutableArray class], [NSNumber class], nil]
-                                        forSelector: @selector(getVideoProcs:reply:) argumentIndex: 0 ofReply: YES];
-    //resume
-    [xpcConnection resume];
-    
     //poll while video is active
     while(YES == self.videoActive)
     {
+        //pool
+        @autoreleasepool {
+
         //init wait semaphore
         waitSema = dispatch_semaphore_create(0);
         
@@ -1644,6 +1739,20 @@ bail:
         #ifdef DEBUG
         logMsg(LOG_DEBUG, @"[MONITOR THREAD] (re)Asking XPC for (new) video procs");
         #endif
+            
+        //alloc XPC connection
+        xpcConnection = [[NSXPCConnection alloc] initWithServiceName:@"com.objective-see.OverSightXPC"];
+        
+        //set remote object interface
+        xpcConnection.remoteObjectInterface = [NSXPCInterface interfaceWithProtocol:@protocol(XPCProtocol)];
+        
+        //set classes
+        // ->arrays/numbers ok to vend
+        [xpcConnection.remoteObjectInterface setClasses: [NSSet setWithObjects: [NSMutableArray class], [NSNumber class], nil]
+                                            forSelector: @selector(getVideoProcs:reply:) argumentIndex: 0 ofReply: YES];
+        //resume
+        [xpcConnection resume];
+
         
         //invoke XPC service to get (new) video procs
         // ->will generate user notifications for any new processes
@@ -1652,7 +1761,7 @@ bail:
              //dbg msg
              #ifdef DEBUG
              logMsg(LOG_DEBUG, [NSString stringWithFormat:@"[MONITOR THREAD] found %lu new video procs: %@", (unsigned long)videoProcesses.count, videoProcesses]);
-            #endif
+             #endif
              
              //generate a notification for each process
              // ->double check video is still active though...
@@ -1672,26 +1781,27 @@ bail:
              //signal sema
              dispatch_semaphore_signal(waitSema);
              
+             //invalidate
+             [xpcConnection invalidate];
+             
          }];
     
         //wait until XPC is done
         // ->XPC reply block will signal semaphore
         dispatch_semaphore_wait(waitSema, DISPATCH_TIME_FOREVER);
+        
+        }//pool
 
         //nap
         [NSThread sleepForTimeInterval:5.0f];
         
     }//run until video (camera) is off
     
-//bail
+    //pool
+    }
+    
 bail:
 
-    //close connection
-    [xpcConnection invalidate];
-    
-    //nil out
-    xpcConnection = nil;
-    
     //dbg msg
     #ifdef DEBUG
     logMsg(LOG_DEBUG, @"[MONITOR THREAD] exiting polling/monitor thread since camera is off");

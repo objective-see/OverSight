@@ -31,7 +31,6 @@
 //version label/string
 @property (weak) IBOutlet NSTextField *windowText;
 
-
 /* METHODS */
 
 //save stuff into iVars

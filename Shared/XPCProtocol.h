@@ -14,6 +14,10 @@
 //start enumerator
 -(void)initialize:(void (^)(void))reply;
 
+//heartbeat
+// need as otherwise kernel might kill XPC
+-(void)heartBeat:(void (^)(BOOL))reply;
+
 //get (new) audio procs
 -(void)getAudioProcs:(void (^)(NSMutableArray *))reply;
 

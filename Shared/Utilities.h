@@ -15,11 +15,11 @@
 /* FUNCTIONS */
 
 //get OS version
-NSDictionary* getOSVersion();
+NSDictionary* getOSVersion(void);
 
 //get app's version
 // ->extracted from Info.plist
-NSString* getAppVersion();
+NSString* getAppVersion(void);
 
 //set dir's|file's group/owner
 BOOL setFileOwner(NSString* path, NSNumber* groupID, NSNumber* ownerID, BOOL recursive);
@@ -39,10 +39,10 @@ NSBundle* findAppBundle(NSString* binaryPath);
 
 //get app's version
 // ->extracted from Info.plist
-NSString* getAppVersion();
+NSString* getAppVersion(void);
 
 //query interwebz to get latest version
-NSString* getLatestVersion();
+NSString* getLatestVersion(void);
 
 //determine if there is a new version
 // -1, YES or NO
@@ -72,7 +72,8 @@ void makeModal(NSWindowController* windowController);
 BOOL toggleLoginItem(NSURL* loginItem, int toggleFlag);
 
 //get logged in user
-NSString* loggedinUser();
+// name, uid, and gid
+NSMutableDictionary* loggedinUser(void);
 
 //find a process by name
 pid_t findProcess(NSString* processName);
@@ -81,6 +82,9 @@ pid_t findProcess(NSString* processName);
 void makeTextViewHyperlink(NSTextField* textField, NSURL* url);
 
 //get active application
-pid_t frontmostApplication();
+pid_t frontmostApplication(void);
+
+//check if process is alive
+BOOL isProcessAlive(pid_t processID);
 
 #endif

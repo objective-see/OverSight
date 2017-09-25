@@ -12,7 +12,6 @@
 #import "Enumerator.h"
 #import "OverSightXPC.h"
 
-
 @implementation OverSightXPC
 
 @synthesize machSenders;
@@ -23,11 +22,28 @@
 -(void)initialize:(void (^)(void))reply
 {
     //start enumerating
-    // ->will forever baseline current mach msg procs
+    // will forever baseline current mach msg procs
     [NSThread detachNewThreadSelector:@selector(start) toTarget:[Enumerator sharedManager] withObject:nil];
     
     //reply
     reply();
+    
+    return;
+}
+
+//heartbeat
+// need as otherwise kernel might kill XPC
+-(void)heartBeat:(void (^)(BOOL))reply
+{
+    //dbg msg
+    #ifdef DEBUG
+    logMsg(LOG_DEBUG, @"heartbeat request");
+    #endif
+    
+    //nap
+    [NSThread sleepForTimeInterval:3.0f];
+    
+    reply(YES);
     
     return;
 }
@@ -69,7 +85,7 @@
 {
     //set status
     [[Enumerator sharedManager] updateAudioStatus:status];
-    
+
     //reply
     reply();
     
@@ -118,7 +134,6 @@
     //happy
     wasAdded = YES;
     
-//bail
 bail:
     
     //reply
@@ -192,7 +207,6 @@ bail:
         }
     }
     
-//bail
 bail:
     
     //reply
@@ -220,7 +234,6 @@ bail:
     //happy
     wasKilled = YES;
     
-//bail
 bail:
     
     //reply
@@ -236,7 +249,4 @@ bail:
     exit(0);
 }
 
-
 @end
-
-

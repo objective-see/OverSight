@@ -244,7 +244,7 @@ bail:
             else
             {
                 //log msg
-                logMsg(LOG_DEBUG|LOG_TO_FILE, @"logging initialized");
+                logMsg(LOG_DEBUG|LOG_TO_FILE, @"logging initialized (main app)");
             }
         }
         //when logging is disabled
@@ -252,7 +252,7 @@ bail:
         else
         {
             //log msg
-            logMsg(LOG_DEBUG|LOG_TO_FILE, @"logging deinitialized");
+            logMsg(LOG_DEBUG|LOG_TO_FILE, @"logging deinitialized (main app)");
             
             //close
             deinitLogging();
@@ -538,7 +538,6 @@ bail:
         //bail
         goto bail;
     }
-    
     
 //bail
 bail:

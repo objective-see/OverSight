@@ -66,6 +66,10 @@
 //create/update status item menu
 -(void)updateStatusItemMenu:(NSArray*)devices
 {
+    //pool
+    @autoreleasepool
+    {
+        
     //menu
     NSMenu* menu = nil;
     
@@ -193,6 +197,8 @@
     
     //tie menu to status item
     self.statusItem.menu = menu;
+    
+    }//pool
     
     return;
 }

@@ -117,7 +117,6 @@
     //no errors
     wasConfigured = YES;
     
-//bail
 bail:
     
     return wasConfigured;
@@ -154,8 +153,8 @@ bail:
     //path to login item
     NSString* loginItem = nil;
     
-    //logged in user
-    NSString* user = nil;
+    //logged in user info
+    NSMutableDictionary* userInfo = nil;
     
     //white list
     NSString* whiteList = nil;
@@ -184,7 +183,7 @@ bail:
     
     //remove xattrs
     // ->otherwise app translocation causes issues
-    execTask(XATTR, @[@"-cr", appPathDest], YES);
+    execTask(XATTR, @[@"-cr", appPathDest], NO);
     
     //dbg msg
     #ifdef DEBUG
@@ -194,9 +193,9 @@ bail:
     //init path to login item
     loginItem = [appPathDest stringByAppendingPathComponent:@"Contents/Library/LoginItems/OverSight Helper.app/Contents/MacOS/OverSight Helper"];
     
-    //get user
-    user = loggedinUser();
-    if(nil == user)
+    //get user info
+    userInfo = loggedinUser();
+    if(nil == userInfo[@"user"])
     {
         //err msg
         logMsg(LOG_ERR, @"failed to determine logged-in user");
@@ -206,7 +205,7 @@ bail:
     }
     
     //create app support directory
-    if(YES != [self createAppSupport:user])
+    if(YES != [self createAppSupport:userInfo[@"user"]])
     {
         //err msg
         logMsg(LOG_ERR, @"failed to create app support directory for current user");
@@ -221,7 +220,7 @@ bail:
     #endif
     
     //init path to whitelist
-    whiteList = [[NSString pathWithComponents:@[@"/Users/", user, APP_SUPPORT_DIRECTORY]] stringByAppendingPathComponent:FILE_WHITELIST];
+    whiteList = [[NSString pathWithComponents:@[@"/Users/", userInfo[@"user"], APP_SUPPORT_DIRECTORY]] stringByAppendingPathComponent:FILE_WHITELIST];
     
     //if whitelist exists
     // ->make sure it's owned by root
@@ -232,8 +231,7 @@ bail:
     }
 
     //call into login item to install itself
-    // ->runs as logged in user, so can access user's login items, etc
-    execTask(SUDO, @[@"-u", user, loginItem, [NSString stringWithUTF8String:CMD_INSTALL]], YES);
+    execTask(loginItem, @[[NSString stringWithUTF8String:CMD_INSTALL]], NO);
     
     //dbg msg
     #ifdef DEBUG
@@ -266,7 +264,6 @@ bail:
     //no error
     wasInstalled = YES;
     
-//bail
 bail:
     
     return wasInstalled;
@@ -278,35 +275,20 @@ bail:
 {
     //flag
     BOOL bStarted = NO;
-    
-    //logged in user
-    NSString* user = nil;
-    
+
     //path to login item
     NSString* loginItem = nil;
-    
-    //get user
-    user = loggedinUser();
-    if(nil == user)
-    {
-        //err msg
-        logMsg(LOG_ERR, @"failed to determine logged-in user");
-        
-        //bail
-        goto bail;
-    }
     
     //init path
     loginItem = [[APPS_FOLDER stringByAppendingPathComponent:APP_NAME] stringByAppendingPathComponent:@"Contents/Library/LoginItems/OverSight Helper.app/Contents/MacOS/OverSight Helper"];
     
     //start it!
     // ->don't wait, as it won't exit
-    execTask(SUDO, @[@"-u", user, loginItem], NO);
+    execTask(loginItem, nil, NO);
     
     //happy
     bStarted = YES;
     
-//bail
 bail:
     
     return bStarted;
@@ -350,8 +332,8 @@ bail:
     //error
     NSError* error = nil;
     
-    //logged in user
-    NSString* user = nil;
+    //logged in user info
+    NSMutableDictionary* userInfo = nil;
     
     //uninstall command
     // ->changed between v1.0 and 1.1+
@@ -385,8 +367,8 @@ bail:
     #endif
     
     //get user
-    user = loggedinUser();
-    if(nil == user)
+    userInfo = loggedinUser();
+    if(nil == userInfo[@"user"])
     {
         //err msg
         logMsg(LOG_ERR, @"failed to determine logged-in user");
@@ -401,8 +383,7 @@ bail:
     #endif
         
     //call into login item to uninstall itself
-    // ->runs as logged in user, so can access user's login items, etc
-    execTask(SUDO, @[@"-u", user, loginItem, uninstallCmd], YES);
+    execTask(loginItem, @[uninstallCmd], YES);
     
     //dbg msg
     #ifdef DEBUG
@@ -436,13 +417,13 @@ bail:
         #endif
         
         //delete app's app support folder
-        if(YES == [[NSFileManager defaultManager] fileExistsAtPath:[self appSupportPath:user]])
+        if(YES == [[NSFileManager defaultManager] fileExistsAtPath:[self appSupportPath:userInfo[@"user"]]])
         {
             //delete
-            if(YES != [self removeAppSupport:user])
+            if(YES != [self removeAppSupport:userInfo[@"user"]])
             {
                 //err msg
-                logMsg(LOG_ERR, [NSString stringWithFormat:@"failed to delete app support directory %@", [self appSupportPath:user]]);
+                logMsg(LOG_ERR, [NSString stringWithFormat:@"failed to delete app support directory %@", [self appSupportPath:userInfo[@"user"]]]);
                 
                 //set flag
                 bAnyErrors = YES;
@@ -455,7 +436,7 @@ bail:
             else
             {
                 //dbg msg
-                logMsg(LOG_DEBUG, [NSString stringWithFormat:@"removed app support directory %@", [self appSupportPath:user]]);
+                logMsg(LOG_DEBUG, [NSString stringWithFormat:@"removed app support directory %@", [self appSupportPath:userInfo[@"user"]]]);
             }
             #endif
 
@@ -469,7 +450,6 @@ bail:
         wasUninstalled = YES;
     }
     
-//bail
 bail:
 
     return wasUninstalled;
@@ -531,7 +511,6 @@ bail:
     //happy
     createdDirectory = YES;
     
-//bail
 bail:
     
     return createdDirectory;
@@ -580,12 +559,9 @@ bail:
     //happy
     removedDirectory = YES;
     
-//bail
 bail:
     
     return removedDirectory;
 }
 
-
 @end
-

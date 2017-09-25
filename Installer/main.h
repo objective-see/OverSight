@@ -21,9 +21,9 @@
 BOOL spawnAsRoot(const char* path2Self);
 
 //install
-BOOL cmdlineInstall();
+BOOL cmdlineInstall(void);
 
 //uninstall
-BOOL cmdlineUninstall();
+BOOL cmdlineUninstall(void);
 
 #endif /* main_h */

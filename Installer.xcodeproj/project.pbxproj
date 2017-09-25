@@ -172,7 +172,7 @@
 		7D24C85D1D2CDEA7009932EE /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0800;
+				LastUpgradeCheck = 0900;
 				ORGANIZATIONNAME = "Objective-See";
 				TargetAttributes = {
 					7D24C8641D2CDEA7009932EE = {
@@ -229,7 +229,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "#for normal builds\n# ->just copy in app\n#cp -R -f $BUILT_PRODUCTS_DIR/OverSight.app $BUILT_PRODUCTS_DIR/$CONTENTS_FOLDER_PATH/Resources/\n\n#for achieving\n# ->first build OverSight in release mode (don't archive it)\n#   then archive (this) installer app\ncp -R -f ~/objective-see/OverSight/DerivedData/OverSight/Build/Products/Release/OverSight.app ~/objective-see/OverSight/DerivedData/OverSight/Build/Intermediates/ArchiveIntermediates/Installer/BuildProductsPath/Release/OverSight_Installer.app/Contents/Resources/\n";
+			shellScript = "#for normal builds\n# ->just copy in app\n#cp -R -f $BUILT_PRODUCTS_DIR/OverSight.app $BUILT_PRODUCTS_DIR/$CONTENTS_FOLDER_PATH/Resources/\n\n#for achieving\n# ->first build OverSight in release mode (don't archive it)\n#   then archive (this) installer app\n#cp -R -f ~/objective-see/OverSight/DerivedData/OverSight/Build/Products/Release/OverSight.app ~/objective-see/OverSight/DerivedData/OverSight/Build/Intermediates/ArchiveIntermediates/Installer/BuildProductsPath/Release/OverSight_Installer.app/Contents/Resources/\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -273,14 +273,20 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -319,14 +325,20 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;

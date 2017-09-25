@@ -13,15 +13,13 @@
 void logMsg(int level, NSString* msg);
 
 //prep/open log file
-BOOL initLogging();
+BOOL initLogging(void);
 
 //get path to log file
-NSString* logFilePath();
+NSString* logFilePath(void);
 
 //de-init logging
-void deinitLogging();
+void deinitLogging(void);
 
 //log to file
 void log2File(NSString* msg);
-
-

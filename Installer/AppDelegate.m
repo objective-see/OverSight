@@ -72,6 +72,9 @@ bail:
     //alloc/init
     configureWindowController = [[ConfigureWindowController alloc] initWithWindowNibName:@"ConfigureWindowController"];
     
+    //indicated title bar is tranparent (too)
+    self.configureWindowController.window.titlebarAppearsTransparent = YES;
+    
     //display it
     // ->call this first to so that outlets are connected
     [self.configureWindowController display];

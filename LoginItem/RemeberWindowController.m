@@ -137,9 +137,6 @@
             //close connection
             [xpcConnection invalidate];
 
-            //nil out
-            xpcConnection = nil;
-             
          }];
     }
     

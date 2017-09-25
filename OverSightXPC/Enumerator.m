@@ -23,8 +23,11 @@ static NSArray* ignoredProcs = nil;
 @synthesize audioActive;
 @synthesize userClients;
 @synthesize videoActive;
+@synthesize coreAudioProcess;
 @synthesize machSendersAudio;
 @synthesize machSendersVideo;
+@synthesize cameraAssistantProcess;
+
 
 //init
 -(instancetype)init
@@ -78,13 +81,28 @@ static NSArray* ignoredProcs = nil;
 // ->logic only exec'd while camera/mic is not in use, so these are all just baselined procs
 -(void)start
 {
-    //camera assistant
-    pid_t cameraAssistant = 0;
+    //flag
+    BOOL nap = NO;
     
     //baseline forever
     // ->though logic will skip if video or mic is active (respectively)
     while(YES)
     {
+        //le sleep?
+        if(nap == YES)
+        {
+            //nap
+            [NSThread sleepForTimeInterval:30];
+        }
+        
+        //set flag
+        // from now on, want to wait a bit
+        nap = YES;
+        
+        //pool
+        @autoreleasepool
+        {
+            
         //sync baselining
         @synchronized(self)
         {
@@ -97,31 +115,36 @@ static NSArray* ignoredProcs = nil;
                 #endif
                 
                 //find camera assistant
-                // ->first look for 'VDCAssistant'
-                cameraAssistant = findProcess(VDC_ASSISTANT);
-                if(0 == cameraAssistant)
+                // only do this once, or again, if it died
+                if( (0 == self.cameraAssistantProcess) ||
+                    (YES != isProcessAlive(self.cameraAssistantProcess)) )
                 {
-                    //look for 'AppleCameraAssistant'
-                    cameraAssistant = findProcess(APPLE_CAMERA_ASSISTANT);
+                    //find camera assistant
+                    // ->first look for 'VDCAssistant'
+                    self.cameraAssistantProcess = findProcess(VDC_ASSISTANT);
+                    if(0 == self.cameraAssistantProcess)
+                    {
+                        //look for 'AppleCameraAssistant'
+                        self.cameraAssistantProcess = findProcess(APPLE_CAMERA_ASSISTANT);
+                    }
                 }
                 
-                //sanity check
-                if(0 == cameraAssistant)
+                //baseline
+                if(0 != self.cameraAssistantProcess)
                 {
-                    //nap for a minute
-                    [NSThread sleepForTimeInterval:60];
+                    //dbg msg
+                    #ifdef DEBUG
+                    logMsg(LOG_DEBUG, [NSString stringWithFormat:@"camera assistent process: %d", self.coreAudioProcess]);
+                    #endif
                     
-                    //next
-                    continue;
+                    //enumerate procs that have send mach messages
+                    self.machSendersVideo = [self enumMachSenders:self.cameraAssistantProcess];
+                    
+                    //dbg msg
+                    #ifdef DEBUG
+                    logMsg(LOG_DEBUG, [NSString stringWithFormat:@"found %lu baselined mach senders: %@", (unsigned long)self.machSendersVideo.count, self.machSendersVideo]);
+                    #endif
                 }
-                
-                //enumerate procs that have send mach messages
-                self.machSendersVideo = [self enumMachSenders:cameraAssistant];
-                
-                //dbg msg
-                #ifdef DEBUG
-                logMsg(LOG_DEBUG, [NSString stringWithFormat:@"found %lu baselined mach senders: %@", (unsigned long)self.machSendersVideo.count, self.machSendersVideo]);
-                #endif
             }
             
             //only baseline if audio isn't active
@@ -132,29 +155,47 @@ static NSArray* ignoredProcs = nil;
                 logMsg(LOG_DEBUG, @"baselining mach senders for audio...");
                 #endif
                 
-                //enumerate procs that have send mach messages
-                self.machSendersAudio = [self enumMachSenders:findProcess(CORE_AUDIO)];
+                //find core audio
+                // only do this once, or again, if it died
+                if( (0 == self.coreAudioProcess) ||
+                    (YES != isProcessAlive(self.coreAudioProcess)) )
+                {
+                    //find core audio
+                    self.coreAudioProcess = findProcess(CORE_AUDIO);
+                }
                 
-                //dbg msg
-                #ifdef DEBUG
-                logMsg(LOG_DEBUG, [NSString stringWithFormat:@"found %lu baselined mach senders: %@", (unsigned long)self.machSendersAudio.count, self.machSendersVideo]);
-                
-                //dbg msg
-                logMsg(LOG_DEBUG, @"baselining i/o registry entries for audio...");
-                #endif
-                
-                //enumerate procs that have i/o registry entries
-                self.userClients = [self enumDomainUserClients];
-                
-                //dbg msg
-                #ifdef DEBUG
-                logMsg(LOG_DEBUG, [NSString stringWithFormat:@"found %lu baselined i/or registry senders: %@", (unsigned long)self.userClients.count, self.userClients]);
-                #endif
+                //baseline
+                if(0 != self.coreAudioProcess)
+                {
+                    //dbg msg
+                    #ifdef DEBUG
+                    logMsg(LOG_DEBUG, [NSString stringWithFormat:@"camera core audio process: %d", self.coreAudioProcess]);
+                    #endif
+                    
+                    //enumerate procs that have send mach messages
+                    self.machSendersAudio = [self enumMachSenders:self.coreAudioProcess];
+                    
+                    //dbg msg
+                    #ifdef DEBUG
+                    logMsg(LOG_DEBUG, [NSString stringWithFormat:@"found %lu baselined mach senders: %@", (unsigned long)self.machSendersAudio.count, self.machSendersVideo]);
+                    
+                    //dbg msg
+                    logMsg(LOG_DEBUG, @"baselining i/o registry entries for audio...");
+                    #endif
+                    
+                    //enumerate procs that have i/o registry entries
+                    self.userClients = [self enumDomainUserClients];
+                    
+                    //dbg msg
+                    #ifdef DEBUG
+                    logMsg(LOG_DEBUG, [NSString stringWithFormat:@"found %lu baselined i/or registry senders: %@", (unsigned long)self.userClients.count, self.userClients]);
+                    #endif
+                }
             }
-        }
+            
+        }//sync
         
-        //nap for a minute
-        [NSThread sleepForTimeInterval:60];
+        }//pool
     }
     
     return;
@@ -166,18 +207,19 @@ static NSArray* ignoredProcs = nil;
     //current procs
     NSMutableArray* videoProcs = nil;
     
+    //pool
+    @autoreleasepool
+    {
+    
     //mach senders
     NSMutableDictionary* currentSenders = nil;
     
     //candidate video procs
     // ->those that have new mach message
     NSMutableArray* candidateVideoProcs = nil;
-    
-    //pid of camera assistant process
-    pid_t cameraAssistant = 0;
-    
-    //'frontmost' application
-    pid_t activeApp = -1;
+
+    //foreground app
+    pid_t activeApp = 0;
     
     //alloc
     candidateVideoProcs = [NSMutableArray array];
@@ -186,17 +228,24 @@ static NSArray* ignoredProcs = nil;
     // ->prevent baselining thread from doing anything
     @synchronized(self)
     {
-
-    //first look for 'VDCAssistant'
-    cameraAssistant = findProcess(VDC_ASSISTANT);
-    if(0 == cameraAssistant)
+        
+    //find camera assistant
+    // only do this once, or again, if it died
+    if( (0 == self.cameraAssistantProcess) ||
+        (YES != isProcessAlive(self.cameraAssistantProcess)) )
     {
-        //look for 'AppleCameraAssistant'
-        cameraAssistant = findProcess(APPLE_CAMERA_ASSISTANT);
+        //find camera assistant
+        // ->first look for 'VDCAssistant'
+        self.cameraAssistantProcess = findProcess(VDC_ASSISTANT);
+        if(0 == self.cameraAssistantProcess)
+        {
+            //look for 'AppleCameraAssistant'
+            self.cameraAssistantProcess = findProcess(APPLE_CAMERA_ASSISTANT);
+        }
     }
     
     //sanity check
-    if(0 == cameraAssistant)
+    if(0 == self.cameraAssistantProcess)
     {
         //err msg
         logMsg(LOG_ERR, @"failed to find VDCAssistant/AppleCameraAssistant process");
@@ -207,7 +256,7 @@ static NSArray* ignoredProcs = nil;
         
     //get procs that currrently have sent Mach msg to *Assistant
     // ->returns dictionary of process id, and number of mach messages
-    currentSenders = [self enumMachSenders:cameraAssistant];
+    currentSenders = [self enumMachSenders:self.cameraAssistantProcess];
         
     //dbg msg
     #ifdef DEBUG
@@ -219,7 +268,7 @@ static NSArray* ignoredProcs = nil;
     {
         //add any candidate procs
         // ->those that have new mach message
-        if( [currentSenders[processID] intValue] > [self.machSendersVideo[processID] intValue])
+        if([currentSenders[processID] intValue] > [self.machSendersVideo[processID] intValue])
         {
             //ignore client/requestor
             if(clientPID == processID.intValue)
@@ -270,8 +319,9 @@ static NSArray* ignoredProcs = nil;
     videoProcs = [self sampleCandidates:candidateVideoProcs];
     
     }//sync
+        
+    }//pool
     
-//bail
 bail:
     
     return videoProcs;
@@ -282,6 +332,10 @@ bail:
 {
     //current procs
     NSMutableArray* audioProcs = nil;
+    
+    //pool
+    @autoreleasepool
+    {
     
     //current mach senders
     NSMutableDictionary* currentSenders = nil;
@@ -302,9 +356,6 @@ bail:
     //itersection set
     NSMutableSet* intersection = nil;
     
-    //pid of coreaudio process
-    pid_t coreAudio = 0;
-    
     //'frontmost' application
     pid_t activeApp = -1;
     
@@ -314,16 +365,22 @@ bail:
     //alloc array
     newUserClients = [NSMutableArray array];
     
-    //alloc array
-    candidateAudioProcs = [NSMutableArray array];
-    
     //sync this logic
     // ->prevent baselining thread from doing anything
     @synchronized(self)
     {
         //find coreaudio
-        coreAudio = findProcess(CORE_AUDIO);
-        if(0 == coreAudio)
+        //find core audio
+        // only do this once, or again, if it died
+        if( (0 == self.coreAudioProcess) ||
+            (YES != isProcessAlive(self.coreAudioProcess)) )
+        {
+            //find core audio
+            self.coreAudioProcess = findProcess(CORE_AUDIO);
+        }
+        
+        //sanity check
+        if(0 == self.coreAudioProcess)
         {
             //err msg
             logMsg(LOG_ERR, @"failed to find coreaudio process");
@@ -334,7 +391,7 @@ bail:
         
         //get procs that currrently have sent Mach msg to core audio
         // ->returns dictionary of process id, and number of mach messages
-        currentSenders = [self enumMachSenders:coreAudio];
+        currentSenders = [self enumMachSenders:self.coreAudioProcess];
         
         //dbg msg
         #ifdef DEBUG
@@ -509,8 +566,9 @@ bail:
         audioProcs = [self sampleCandidates:candidateAudioProcs];
         
     }//sync
+        
+    }//pool
     
-//bail
 bail:
     
     return audioProcs;
@@ -522,6 +580,10 @@ bail:
 {
     //senders
     NSMutableDictionary* senders = nil;
+    
+    //pool
+    @autoreleasepool
+    {
     
     //results from 'lsmp' cmd
     NSString* results = nil;
@@ -610,8 +672,9 @@ bail:
         //add/inc to dictionary
         senders[processID] = @([senders[processID] unsignedIntegerValue] + 1);
     }
+        
+    }//pool
     
-//bail
 bail:
     
     return senders;
@@ -621,6 +684,13 @@ bail:
 // ->returns dictionary of process id, and number of user client entries
 -(NSMutableDictionary*)enumDomainUserClients
 {
+    //array of RootDomainUserClients
+    NSMutableDictionary* clients = nil;
+    
+    //pool
+    @autoreleasepool
+    {
+    
     //matching service
     io_service_t matchingService = 0;
     
@@ -629,9 +699,6 @@ bail:
     
     //kids
     io_registry_entry_t child = 0;
-    
-    //array of RootDomainUserClients
-    NSMutableDictionary* clients = nil;
     
     //client creator
     CFTypeRef creator = 0;
@@ -670,6 +737,9 @@ bail:
         //always release child
         IOObjectRelease(child);
         
+        //unset
+        child = 0;
+        
         //if couldn't get a creator
         // ->might just not be of RootDomainUserClient, so skip
         if(0 == creator)
@@ -696,9 +766,11 @@ bail:
         
         //release
         CFRelease(creator);
+        
+        //unset
+        creator = 0;
     }
     
-//bail
 bail:
     
     //release iterator
@@ -706,6 +778,9 @@ bail:
     {
         //release
         IOObjectRelease(iterator);
+        
+        //unset
+        iterator = 0;
     }
     
     //release obj
@@ -713,10 +788,14 @@ bail:
     {
         //release
         IOObjectRelease(matchingService);
+        
+        //unset
+        matchingService = 0;
     }
+        
+    }//pool
     
     return clients;
-
 }
 
 //invoke 'sample' to confirm candidates are using CMIO/video/av inputs
@@ -725,6 +804,10 @@ bail:
 {
     //av procs
     NSMutableArray* avProcs = nil;
+    
+    //pool
+    @autoreleasepool
+    {
     
     //results from 'sample' cmd
     NSString* results = nil;
@@ -807,6 +890,8 @@ bail:
         [avProcs addObject:processID];
     }
     
+    }//pool
+    
     return avProcs;
 }
 
@@ -814,6 +899,10 @@ bail:
 // ->this looks for that file and deletes it
 -(void)deleteSampleFile:(NSString*)processPath
 {
+    //pool
+    @autoreleasepool
+    {
+    
     //error
     NSError* error = nil;
     
@@ -864,6 +953,8 @@ bail:
         }
     
     }//all files
+        
+    }//pool
     
 //bail
 bail:
@@ -876,9 +967,10 @@ bail:
 // ->extra logic is executed to 'refresh' iVars when video is disabled
 -(void)updateVideoStatus:(BOOL)isEnabled
 {
-    //camera assistant
-    pid_t cameraAssistant = 0;
-    
+    //pool
+    @autoreleasepool
+    {
+        
     //sync
     @synchronized(self)
     {
@@ -889,16 +981,23 @@ bail:
         // ->re-enumerate mach senders
         if(YES != isEnabled)
         {
-            //first, look for 'VDCAssistant'
-            cameraAssistant = findProcess(VDC_ASSISTANT);
-            if(0 == cameraAssistant)
+            //find camera assistant
+            // only do this once, or again, if it died
+            if( (0 == self.cameraAssistantProcess) ||
+               (YES != isProcessAlive(self.cameraAssistantProcess)) )
             {
-                //look for 'AppleCameraAssistant'
-                cameraAssistant = findProcess(APPLE_CAMERA_ASSISTANT);
+                //find camera assistant
+                // ->first look for 'VDCAssistant'
+                self.cameraAssistantProcess = findProcess(VDC_ASSISTANT);
+                if(0 == self.cameraAssistantProcess)
+                {
+                    //look for 'AppleCameraAssistant'
+                    self.cameraAssistantProcess = findProcess(APPLE_CAMERA_ASSISTANT);
+                }
             }
             
             //sanity check
-            if(0 == cameraAssistant)
+            if(0 == self.cameraAssistantProcess)
             {
                 //err msg
                 logMsg(LOG_ERR, @"failed to find VDCAssistant/AppleCameraAssistant process");
@@ -908,10 +1007,12 @@ bail:
             }
             
             //enumerate mach senders
-            self.machSendersVideo = [self enumMachSenders:cameraAssistant];
+            self.machSendersVideo = [self enumMachSenders:self.cameraAssistantProcess];
         }
         
     }//sync
+    
+    }//pool
     
 //bail
 bail:
@@ -923,6 +1024,10 @@ bail:
 // ->extra logic is executed to 'refresh' iVars when audio is disabled
 -(void)updateAudioStatus:(BOOL)isEnabled
 {
+    //pool
+    @autoreleasepool
+    {
+        
     //sync
     @synchronized(self)
     {
@@ -933,14 +1038,30 @@ bail:
         // ->re-enumerate mach senders & i/o registry user clients
         if(YES != isEnabled)
         {
-            //enumerate mach senders
-            self.machSendersAudio = [self enumMachSenders:findProcess(CORE_AUDIO)];
+            //find coreaudio
+            //find core audio
+            // only do this once, or again, if it died
+            if( (0 == self.coreAudioProcess) ||
+                (YES != isProcessAlive(self.coreAudioProcess)) )
+            {
+                //find core audio
+                self.coreAudioProcess = findProcess(CORE_AUDIO);
+            }
             
-            //enumerate i/o registry user clients
-            self.userClients = [self enumDomainUserClients];
+            //enumerate
+            if(0 != self.coreAudioProcess)
+            {
+                //enumerate mach senders
+                self.machSendersAudio = [self enumMachSenders:self.coreAudioProcess];
+                
+                //enumerate i/o registry user clients
+                self.userClients = [self enumDomainUserClients];
+            }
         }
     }
-    
+        
+    }//pool
+
     return;
 }
 

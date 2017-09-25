@@ -7,7 +7,7 @@
 //
 
 #import "main.h"
-
+#import "Logging.h"
 
 /* GLOBALS */
 
@@ -26,8 +26,8 @@ pid_t clientPID = 0;
 @implementation ServiceDelegate
 
 //automatically invoked
-//->allows NSXPCListener to configure/accept/resume a new incoming NSXPCConnection
-//  note: we only allow binaries signed by Objective-See to talk to this!
+// allows NSXPCListener to configure/accept/resume a new incoming NSXPCConnection
+// note: we only allow binaries signed by Objective-See to connect & talk to this!
 -(BOOL)listener:(NSXPCListener *)listener shouldAcceptNewConnection:(NSXPCConnection *)newConnection
 {
     //flag
@@ -38,6 +38,11 @@ pid_t clientPID = 0;
     
     //signing req string
     NSString *requirementString = nil;
+    
+    //dbg msg
+    #ifdef DEBUG
+    logMsg(LOG_DEBUG, @"new client connection");
+    #endif
     
     //init signing req string
     requirementString = [NSString stringWithFormat:@"anchor trusted and certificate leaf [subject.CN] = \"%@\"", SIGNING_AUTH];
@@ -68,11 +73,16 @@ pid_t clientPID = 0;
     //resume
     [newConnection resume];
     
+    //grab client/requestor's pid
+    clientPID = audit_token_to_pid(((ExtendedNSXPCConnection*)newConnection).auditToken);
+    
     //happy
     shouldAccept = YES;
     
-    //grab client/requestor's pid
-    clientPID = audit_token_to_pid(((ExtendedNSXPCConnection*)newConnection).auditToken);
+    //dbg msg
+    #ifdef DEBUG
+    logMsg(LOG_DEBUG, [NSString stringWithFormat:@"accepted new client connection (pid: %d)", clientPID]);
+    #endif
     
 //bail
 bail:
@@ -110,7 +120,7 @@ int main(int argc, const char *argv[])
     installExceptionHandlers();
          
     //create the delegate for the service.
-    delegate = [ServiceDelegate new];
+    delegate = [[ServiceDelegate alloc] init];
     
     //set up the one NSXPCListener for this service
     // ->handles incoming connections
@@ -126,7 +136,6 @@ int main(int argc, const char *argv[])
     //happy
     status = 0;
     
-//bail
 bail:
     
     return status;

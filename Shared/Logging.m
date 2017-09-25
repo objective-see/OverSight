@@ -31,7 +31,7 @@ void logMsg(int level, NSString* msg)
     level &= ~LOG_TO_FILE;
     
     //alloc/init
-    // ->always start w/ 'OVERSIGHT' + pid
+    // ->always start w/ 'LULU' + pid
     logPrefix = [NSMutableString stringWithFormat:@"OVERSIGHT(%d)", getpid()];
     
     //if its error, add error to prefix
@@ -44,8 +44,8 @@ void logMsg(int level, NSString* msg)
     //debug mode logic
     #ifdef DEBUG
     
-    //in debug mode. promote debug msgs to LOG_NOTICE
-    // ->OS X/macOS only shows LOG_NOTICE and above in the system log
+    //in debug mode promote debug msgs to LOG_NOTICE
+    // OSX/macOS only shows LOG_NOTICE and above
     if(LOG_DEBUG == level)
     {
         //promote
@@ -54,29 +54,23 @@ void logMsg(int level, NSString* msg)
     
     #endif
     
-    //log to syslog
-    syslog(level, "%s: %s", [logPrefix UTF8String], [msg UTF8String]);
+    //log to syslog if a level was specified
+    // as code doesn't use LOG_EMERG (0), this check is ok
+    if(0 != level)
+    {
+        //log to syslog
+        syslog(level, "%s: %s", [logPrefix UTF8String], [msg UTF8String]);
+    }
     
     //when a message is to be logged to file
-    // ->log it to file and syslog, when logging is enabled
+    // ->log it, when logging is enabled
     if(YES == shouldLog)
     {
-        //but only when logging is enabled
+        //but only when logging is enable
         if(nil != logFileHandle)
         {
             //log
             log2File(msg);
-            
-            //promote to notice for syslog
-            if(LOG_DEBUG == level)
-            {
-                //promote
-                level = LOG_NOTICE;
-            }
-            
-            //also syslog
-            // ->should result in 1 log msg, (in release), as all LOG_TO_FILE are at LOG_DEBUG level
-            syslog(level, "%s: %s", [logPrefix UTF8String], [msg UTF8String]);
         }
     }
     

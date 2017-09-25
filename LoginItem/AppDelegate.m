@@ -10,6 +10,7 @@
 #import "Logging.h"
 #import "Utilities.h"
 #import "AppDelegate.h"
+#import "XPCProtocol.h"
 
 @interface AppDelegate ()
 
@@ -29,16 +30,30 @@
     //preferences
     NSDictionary* preferences = nil;
     
+    //logged in user info
+    NSMutableDictionary* userInfo = nil;
+    
     //dbg msg
     #ifdef DEBUG
     logMsg(LOG_DEBUG, @"starting login item app logic");
     #endif
     
+    //get user
+    userInfo = loggedinUser();
+    if(nil == userInfo[@"user"])
+    {
+        //err msg
+        logMsg(LOG_ERR, @"failed to determine logged-in user");
+        
+        //bail
+        goto bail;
+    }
+    
     //drop group privs
-    setgid(getgid());
+    setgid([userInfo[@"gid"] intValue]);
     
     //drop user privs
-    setuid(getuid());
+    setuid([userInfo[@"uid"] intValue]);
 
     //load preferences
     preferences = [NSDictionary dictionaryWithContentsOfFile:[APP_PREFERENCES stringByExpandingTildeInPath]];
@@ -99,10 +114,12 @@
         
         //dbg msg
         // ->and to file
-        logMsg(LOG_DEBUG|LOG_TO_FILE, @"logging intialized");
-        
+        logMsg(LOG_DEBUG|LOG_TO_FILE, @"logging intialized (login item)");
     }
-
+    
+    //spawn 'heartbeat' thread to XPC to keep it open
+    [NSThread detachNewThreadSelector:@selector(heartBeat) toTarget:self withObject:nil];
+    
     //create/init av event monitor
     avMonitor = [[AVMonitor alloc] init];
     
@@ -194,6 +211,60 @@ bail:
     return;
 }
 
+//ping XPC service to keep it alive
+-(void)heartBeat
+{
+    //pool
+    @autoreleasepool {
+    
+    //xpc connection
+    __block NSXPCConnection* xpcConnection = nil;
+    
+    //wait semaphore
+    dispatch_semaphore_t waitSema = nil;
+    
+    //alloc XPC connection
+    xpcConnection = [[NSXPCConnection alloc] initWithServiceName:@"com.objective-see.OverSightXPC"];
+    
+    //set remote object interface
+    xpcConnection.remoteObjectInterface = [NSXPCInterface interfaceWithProtocol:@protocol(XPCProtocol)];
+    
+    //resume
+    [xpcConnection resume];
+
+    //forever
+    while(YES)
+    {
+        //init wait semaphore
+        waitSema = dispatch_semaphore_create(0);
+        
+        #ifdef DEBUG
+        //dbg msg
+        logMsg(LOG_DEBUG, @"sending XPC heart beat request");
+        #endif
+        
+        //XPC service to begin baselining mach messages
+        // ->wait, since want this to compelete before doing other things!
+        [[xpcConnection remoteObjectProxy] heartBeat:^(BOOL reply)
+         {
+             //signal sema
+             dispatch_semaphore_signal(waitSema);
+             
+         }];
+        
+        //wait until XPC is done
+        // ->XPC reply block will signal semaphore
+        dispatch_semaphore_wait(waitSema, DISPATCH_TIME_FOREVER);
+        
+        //nap
+        [NSThread sleepForTimeInterval:3.0f];
+    }
+    
+    }//pool
+    
+    return;
+}
+
 //going bye-bye
 // ->close logging
 -(void)applicationWillTerminate:(NSNotification *)notification
@@ -202,7 +273,7 @@ bail:
     logMsg(LOG_DEBUG|LOG_TO_FILE, @"OverSight ending");
     
     //log msg
-    logMsg(LOG_DEBUG|LOG_TO_FILE, @"logging deinitialized");
+    logMsg(LOG_DEBUG|LOG_TO_FILE, @"logging deinitialized (login item)");
     
     //stop logz
     deinitLogging();

@@ -33,6 +33,12 @@
 
 /* PROPERTIES */
 
+//camera assistant pid
+@property pid_t cameraAssistantProcess;
+
+//core audio pid
+@property pid_t coreAudioProcess;
+
 //flag indicating video is active
 @property BOOL videoActive;
 
@@ -48,8 +54,6 @@
 //list of procs that have i/o reg entries
 // ->IOService:/AppleACPIPlatformExpert/IOPMrootDomain/RootDomainUserClient
 @property(nonatomic, retain)NSMutableDictionary* userClients;
-
-
 
 /* METHODS */
 

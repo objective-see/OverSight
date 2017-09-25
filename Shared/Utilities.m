@@ -274,17 +274,27 @@ NSData* execTask(NSString* binaryPath, NSArray* arguments, BOOL shouldWait)
     //output
     NSData *output = nil;
     
+    //dispatch group
+    dispatch_group_t dispatchGroup = 0;
+    
     //init task
-    task = [NSTask new];
+    task = [[NSTask alloc] init];
     
     //init pipe
     outPipe = [NSPipe pipe];
+    
+    //create dispatch group
+    dispatchGroup = dispatch_group_create();
     
     //set task's path
     task.launchPath = binaryPath;
     
     //set task's args
-    task.arguments = arguments;
+    if(nil != arguments)
+    {
+        //add
+        task.arguments = arguments;
+    }
     
     //set task's output to pipe
     // ->but only if we're waiting for exit
@@ -299,6 +309,16 @@ NSData* execTask(NSString* binaryPath, NSArray* arguments, BOOL shouldWait)
     logMsg(LOG_DEBUG, [NSString stringWithFormat:@"@exec'ing %@ (args: %@)", binaryPath, arguments]);
     #endif
     
+    //enter dispatch
+    dispatch_group_enter(dispatchGroup);
+    
+    //set task's termination to leave dispatch group
+    task.terminationHandler = ^(NSTask *task){
+        
+        //leave
+        dispatch_group_leave(dispatchGroup);
+    };
+
     //wrap task launch
     @try
     {
@@ -333,7 +353,7 @@ NSData* execTask(NSString* binaryPath, NSArray* arguments, BOOL shouldWait)
     #endif
     
     //wait till exit
-    [task waitUntilExit];
+    dispatch_group_wait(dispatchGroup, DISPATCH_TIME_FOREVER);
         
     //dbg msg
     #ifdef DEBUG
@@ -344,6 +364,7 @@ NSData* execTask(NSString* binaryPath, NSArray* arguments, BOOL shouldWait)
     
 //bail
 bail:
+    
     
     return output;
 }
@@ -756,58 +777,53 @@ bail:
 //query interwebz to get latest version
 NSString* getLatestVersion()
 {
-    //version data
-    __block NSData* versionData = nil;
+    //product version(s) data
+    NSData* productsVersionData = nil;
     
     //version dictionary
-    NSDictionary* versionDictionary = nil;
+    NSDictionary* productsVersionDictionary = nil;
     
     //latest version
     NSString* latestVersion = nil;
     
-    //run in background if main thread
-    if(YES == [NSThread isMainThread])
-    {
-        //run in background
-        dispatch_sync(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
-        ^{
-            //get version data
-            versionData = [[NSData alloc] initWithContentsOfURL:[NSURL URLWithString:PRODUCT_VERSION_URL]];
-        });
-    }
-    //no need to background
-    else
-    {
-        //get version from remote URL
-        versionData = [[NSData alloc] initWithContentsOfURL:[NSURL URLWithString:PRODUCT_VERSION_URL]];
-    }
-    
-    //sanity check
-    if(nil == versionData)
+    //get version from remote URL
+    productsVersionData = [[NSData alloc] initWithContentsOfURL:[NSURL URLWithString:PRODUCT_VERSIONS_URL]];
+    if(nil == productsVersionData)
     {
         //bail
         goto bail;
     }
     
     //convert JSON to dictionary
-    versionDictionary = [NSJSONSerialization JSONObjectWithData:versionData options:0 error:nil];
-    
-    //sanity check
-    if(nil == versionDictionary)
+    // ->wrap as may throw exception
+    @try
+    {
+        //convert
+        productsVersionDictionary = [NSJSONSerialization JSONObjectWithData:productsVersionData options:0 error:nil];
+        if(nil == productsVersionDictionary)
+        {
+            //bail
+            goto bail;
+        }
+    }
+    @catch(NSException* exception)
     {
         //bail
         goto bail;
     }
     
     //extract latest version
-    latestVersion = versionDictionary[@"latestVersion"];
+    latestVersion = [[productsVersionDictionary objectForKey:@"OverSight"] objectForKey:@"version"];
     
-//bail
+    //dbg msg
+    #ifdef DEBUG
+    logMsg(LOG_DEBUG, [NSString stringWithFormat:@"latest version: %@", latestVersion]);
+    #endif
+    
 bail:
     
     return latestVersion;
 }
-
 
 //wait until a window is non nil
 // ->then make it modal
@@ -981,13 +997,26 @@ bail:
 }
 
 //get logged in user
-NSString* loggedinUser()
+// name, uid, and gid
+NSMutableDictionary* loggedinUser()
 {
+    //user info
+    NSMutableDictionary* userInfo = nil;
+    
     //store
     SCDynamicStoreRef store = nil;
     
     //user
     NSString* user = nil;
+    
+    //uid
+    uid_t uid = 0;
+    
+    //gid
+    gid_t gid = 0;
+    
+    //allco dictionary
+    userInfo = [NSMutableDictionary dictionary];
     
     //create store
     store = SCDynamicStoreCreate(NULL, CFSTR("GetConsoleUser"), NULL, NULL);
@@ -997,8 +1026,17 @@ NSString* loggedinUser()
         goto bail;
     }
     
-    //get user
-    user = CFBridgingRelease(SCDynamicStoreCopyConsoleUser(store, NULL, NULL));
+    //get user and uid/gid
+    user = CFBridgingRelease(SCDynamicStoreCopyConsoleUser(store, &uid, &gid));
+    
+    //add user
+    userInfo[@"user"] = user;
+    
+    //add uid
+    userInfo[@"uid"] = [NSNumber numberWithUnsignedInt:uid];
+     
+    //add uid
+    userInfo[@"gid"] = [NSNumber numberWithUnsignedInt:gid];
     
 //bail
 bail:
@@ -1010,7 +1048,7 @@ bail:
         CFRelease(store);
     }
     
-    return user;
+    return userInfo;
 }
 
 //find a process by name
@@ -1059,7 +1097,7 @@ pid_t findProcess(NSString* processName)
         //get name
         processPath = getProcessPath(pids[i]);
         if( (nil == processPath) ||
-           (0 == processPath.length) )
+            (0 == processPath.length) )
         {
             //skip
             continue;
@@ -1134,3 +1172,31 @@ pid_t frontmostApplication()
     return NSWorkspace.sharedWorkspace.frontmostApplication.processIdentifier;
 }
 
+//check if process is alive
+BOOL isProcessAlive(pid_t processID)
+{
+    //ret var
+    BOOL bIsAlive = NO;
+    
+    //signal status
+    int signalStatus = -1;
+    
+    //send kill with 0 to determine if alive
+    // -> see: http://stackoverflow.com/questions/9152979/check-if-process-exists-given-its-pid
+    signalStatus = kill(processID, 0);
+    
+    //is alive?
+    if( (0 == signalStatus) ||
+       ( (0 != signalStatus) && (errno != ESRCH) ) )
+    {
+        //dbg msg
+        #ifdef DEBUG
+        logMsg(LOG_DEBUG, [NSString stringWithFormat:@"agent (%d) is ALIVE", processID]);
+        #endif
+        
+        //alive!
+        bIsAlive = YES;
+    }
+    
+    return bIsAlive;
+}

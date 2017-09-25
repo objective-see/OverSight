@@ -28,7 +28,7 @@
 #define PRODUCT_URL @"https://objective-see.com/products/oversight.html"
 
 //product version url
-#define PRODUCT_VERSION_URL @"https://objective-see.com/products.json"
+#define PRODUCT_VERSIONS_URL @"https://objective-see.com/products.json"
 
 //patreon url
 #define PATREON_URL @"https://www.patreon.com/objective_see"
@@ -129,9 +129,6 @@
 //path to xattr
 #define XATTR @"/usr/bin/xattr"
 
-//path to sudo
-#define SUDO @"/usr/bin/sudo"
-
 //path to facetime
 #define FACE_TIME @"/Applications/FaceTime.app/Contents/MacOS/FaceTime"
 
@@ -186,6 +183,5 @@
 
 //log to file flag
 #define LOG_TO_FILE 0x10
-
 
 #endif
