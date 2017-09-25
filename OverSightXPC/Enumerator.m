@@ -161,7 +161,7 @@ static NSArray* ignoredProcs = nil;
 }
 
 //enumerate all (recent) process that appear to be using video
--(NSMutableArray*)enumVideoProcs
+-(NSMutableArray*)enumVideoProcs:(BOOL)polling
 {
     //current procs
     NSMutableArray* videoProcs = nil;
@@ -175,6 +175,9 @@ static NSArray* ignoredProcs = nil;
     
     //pid of camera assistant process
     pid_t cameraAssistant = 0;
+    
+    //'frontmost' application
+    pid_t activeApp = -1;
     
     //alloc
     candidateVideoProcs = [NSMutableArray array];
@@ -237,6 +240,30 @@ static NSArray* ignoredProcs = nil;
     
     //update
     self.machSendersVideo = currentSenders;
+        
+    //didn't find any?
+    // ->when not polling, add foreground process (and sample it below)
+    if( (0 == candidateVideoProcs.count) &&
+        (YES != polling))
+    {
+        //dbg msg
+        #ifdef DEBUG
+        logMsg(LOG_DEBUG, @"didn't find any candidate video apps, and not polling, so will grab (and sample) active application");
+        #endif
+        
+        //get active app
+        activeApp = frontmostApplication();
+        if(-1 != activeApp)
+        {
+            //dbg msg
+            #ifdef DEBUG
+            logMsg(LOG_DEBUG, [NSString stringWithFormat:@"found active application: %d", activeApp]);
+            #endif
+            
+            //add it
+            [candidateVideoProcs addObject:[NSNumber numberWithInt:activeApp]];
+        }
+    }
     
     //invoke 'sample' to confirm that candidates are using CMIO/video inputs
     // ->note, will skip FaceTime.app on macOS Sierra, as it doesn't do CMIO stuff directly
@@ -277,6 +304,9 @@ bail:
     
     //pid of coreaudio process
     pid_t coreAudio = 0;
+    
+    //'frontmost' application
+    pid_t activeApp = -1;
     
     //alloc array
     newSenders = [NSMutableArray array];
@@ -439,9 +469,9 @@ bail:
         logMsg(LOG_DEBUG, [NSString stringWithFormat:@"found %lu candidate audio procs: %@", (unsigned long)candidateAudioProcs.count, candidateAudioProcs]);
         #endif
         
-        //only once candidate?
+        //only one candidate?
         // ->all set, so assign, then bail here
-        if(candidateAudioProcs.count <= 1)
+        if(1 == candidateAudioProcs.count)
         {
             //assign
             audioProcs = candidateAudioProcs;
@@ -449,8 +479,31 @@ bail:
             //bail
             goto bail;
         }
-    
-        //got more than one candidate
+        
+        //still none
+        // ->add active app as candiate (and sample it, below)
+        if(0 == candidateAudioProcs.count)
+        {
+            //dbg msg
+            #ifdef DEBUG
+            logMsg(LOG_DEBUG, @"didn't find any candidate audio apps, will grab (and sample) active application");
+            #endif
+            
+            //get active app
+            activeApp = frontmostApplication();
+            if(-1 != activeApp)
+            {
+                //dbg msg
+                #ifdef DEBUG
+                logMsg(LOG_DEBUG, [NSString stringWithFormat:@"found active application: %d", activeApp]);
+                #endif
+                
+                //add it
+                [candidateAudioProcs addObject:[NSNumber numberWithInt:activeApp]];
+            }
+        }
+        
+        //got one or more candidate application
         // ->invoke 'sample' to determine which candidate is using CMIO/video inputs
         //   note: will skip FaceTime.app on macOS Sierra, as it doesn't do CMIO stuff directly
         audioProcs = [self sampleCandidates:candidateAudioProcs];

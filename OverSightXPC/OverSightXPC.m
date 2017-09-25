@@ -33,10 +33,10 @@
 }
 
 //call into emumerate to get (new) video proc
--(void)getVideoProcs:(void (^)(NSMutableArray *))reply
+-(void)getVideoProcs:(BOOL)polling reply:(void (^)(NSMutableArray *))reply
 {
     //reply w/ video procs
-    reply([[Enumerator sharedManager] enumVideoProcs]);
+    reply([[Enumerator sharedManager] enumVideoProcs:polling]);
     
     return;
 }

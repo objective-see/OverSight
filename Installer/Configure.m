@@ -41,7 +41,7 @@
             #endif
             
             //stop
-            // ->kill login item/XPC service
+            // ->kill main app/login item/XPC service
             [self stop];
             
             //uninstall
@@ -315,6 +315,9 @@ bail:
 //stop
 -(void)stop
 {
+    //kill main app
+    execTask(PKILL, @[[APP_NAME stringByDeletingPathExtension]], YES);
+    
     //kill helper app
     execTask(PKILL, @[APP_HELPER], YES);
     

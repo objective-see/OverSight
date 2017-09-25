@@ -80,4 +80,7 @@ pid_t findProcess(NSString* processName);
 //convert a textview to a clickable hyperlink
 void makeTextViewHyperlink(NSTextField* textField, NSURL* url);
 
+//get active application
+pid_t frontmostApplication();
+
 #endif

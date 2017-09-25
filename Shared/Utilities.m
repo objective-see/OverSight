@@ -1127,3 +1127,10 @@ void makeTextViewHyperlink(NSTextField* textField, NSURL* url)
     return;
 }
 
+//get frontmost (active) app
+pid_t frontmostApplication()
+{
+    //get/ret
+    return NSWorkspace.sharedWorkspace.frontmostApplication.processIdentifier;
+}
+

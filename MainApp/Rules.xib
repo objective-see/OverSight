@@ -144,8 +144,12 @@
                 </subviews>
                 <constraints>
                     <constraint firstItem="gth-To-Lf2" firstAttribute="top" secondItem="se5-gp-TjO" secondAttribute="top" constant="-1" id="0Jc-HW-sRY"/>
+                    <constraint firstAttribute="bottom" secondItem="gth-To-Lf2" secondAttribute="bottom" constant="-1" id="1XM-Vv-cJW"/>
                     <constraint firstAttribute="trailing" secondItem="gth-To-Lf2" secondAttribute="trailing" constant="-1" id="GjA-Ta-LSr"/>
+                    <constraint firstItem="gth-To-Lf2" firstAttribute="leading" secondItem="se5-gp-TjO" secondAttribute="leading" constant="-1" id="ehW-gX-Et6"/>
                     <constraint firstAttribute="bottom" secondItem="gth-To-Lf2" secondAttribute="bottom" constant="-1" id="gFc-Mm-n7w"/>
+                    <constraint firstAttribute="trailing" secondItem="gth-To-Lf2" secondAttribute="trailing" constant="-1" id="ga8-g4-rt6"/>
+                    <constraint firstItem="gth-To-Lf2" firstAttribute="top" secondItem="se5-gp-TjO" secondAttribute="top" constant="-1" id="gtf-7O-hid"/>
                     <constraint firstItem="gth-To-Lf2" firstAttribute="leading" secondItem="se5-gp-TjO" secondAttribute="leading" constant="-1" id="jrL-0c-zSr"/>
                 </constraints>
             </view>

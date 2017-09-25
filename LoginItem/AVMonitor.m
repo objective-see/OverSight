@@ -21,10 +21,10 @@
 @synthesize lastEvent;
 @synthesize whiteList;
 @synthesize audioActive;
+@synthesize rememberPopups;
 @synthesize activationAlerts;
 @synthesize lastNotification;
 @synthesize videoMonitorThread;
-@synthesize rememberWindowController;
 
 //init
 -(id)init
@@ -35,6 +35,9 @@
     {
         //alloc
         activationAlerts = [NSMutableDictionary dictionary];
+        
+        //alloc
+        rememberPopups = [NSMutableArray array];
         
         //load whitelist
         [self loadWhitelist];
@@ -568,10 +571,10 @@ bail:
         
         //set allowed classes
         [xpcConnection.remoteObjectInterface setClasses: [NSSet setWithObjects: [NSMutableArray class], [NSNumber class], nil]
-                                            forSelector: @selector(getVideoProcs:) argumentIndex: 0 ofReply: YES];
+                                            forSelector: @selector(getVideoProcs:reply:) argumentIndex: 0 ofReply: YES];
         
         //invoke XPC service
-        [[xpcConnection remoteObjectProxy] getVideoProcs:^(NSMutableArray* videoProcesses)
+        [[xpcConnection remoteObjectProxy] getVideoProcs:NO reply:^(NSMutableArray* videoProcesses)
          {
              //close connection
              [xpcConnection invalidate];
@@ -1279,7 +1282,7 @@ bail:
             #endif
             
             //delay, then close
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
                 
                 //close
                 [NSUserNotificationCenter.defaultUserNotificationCenter removeDeliveredNotification:notification];
@@ -1318,6 +1321,9 @@ bail:
     
     //log msg
     NSMutableString* logMessage = nil;
+    
+    //remember popup/window controller
+    RememberWindowController* rememberWindowController = nil;
     
     //always (manually) load preferences
     preferences = [NSDictionary dictionaryWithContentsOfFile:[APP_PREFERENCES stringByExpandingTildeInPath]];
@@ -1442,29 +1448,33 @@ bail:
             //bail
             goto bail;
         }
-     
-        //alloc/init settings window
-        if(nil == self.rememberWindowController)
-        {
-            //alloc/init
-            rememberWindowController = [[RememberWindowController alloc] initWithWindowNibName:@"RememberPopup"];
-        }
+        
+        //alloc/init
+        rememberWindowController = [[RememberWindowController alloc] initWithWindowNibName:@"RememberPopup"];
         
         //center window
-        [[self.rememberWindowController window] center];
+        [[rememberWindowController window] center];
         
         //show it
-        [self.rememberWindowController showWindow:self];
+        [rememberWindowController showWindow:self];
         
         //manually configure
         // ->invoke here as the outlets will be set
-        [self.rememberWindowController configure:notification avMonitor:self];
+        [rememberWindowController configure:notification avMonitor:self];
         
         //make it key window
-        [self.rememberWindowController.window makeKeyAndOrderFront:self];
+        [rememberWindowController.window makeKeyAndOrderFront:self];
         
         //make window front
         [NSApp activateIgnoringOtherApps:YES];
+        
+        //save reference to window
+        // ->otherwise memory is freed/window not shown :/
+        @synchronized (self)
+        {
+            //save
+            [self.rememberPopups addObject:rememberWindowController];
+        }
     }
     
     //when user clicks 'block'
@@ -1620,7 +1630,7 @@ bail:
     //set classes
     // ->arrays/numbers ok to vend
     [xpcConnection.remoteObjectInterface setClasses: [NSSet setWithObjects: [NSMutableArray class], [NSNumber class], nil]
-                                        forSelector: @selector(getVideoProcs:) argumentIndex: 0 ofReply: YES];
+                                        forSelector: @selector(getVideoProcs:reply:) argumentIndex: 0 ofReply: YES];
     //resume
     [xpcConnection resume];
     
@@ -1637,7 +1647,7 @@ bail:
         
         //invoke XPC service to get (new) video procs
         // ->will generate user notifications for any new processes
-        [[xpcConnection remoteObjectProxy] getVideoProcs:^(NSMutableArray* videoProcesses)
+        [[xpcConnection remoteObjectProxy] getVideoProcs:YES reply:^(NSMutableArray* videoProcesses)
          {
              //dbg msg
              #ifdef DEBUG

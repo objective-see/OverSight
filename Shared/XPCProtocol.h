@@ -18,7 +18,7 @@
 -(void)getAudioProcs:(void (^)(NSMutableArray *))reply;
 
 //get (new) video procs
--(void)getVideoProcs:(void (^)(NSMutableArray *))reply;
+-(void)getVideoProcs:(BOOL)polling reply:(void (^)(NSMutableArray *))reply;
 
 //update status video
 // ->allows enumerator to stop baselining (when active), etc

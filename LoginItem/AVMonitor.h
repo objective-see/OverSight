@@ -46,8 +46,8 @@
 //monitor thread
 @property(nonatomic, retain)NSThread* videoMonitorThread;
 
-//remember popup/window controller
-@property(nonatomic, retain)RememberWindowController* rememberWindowController;
+//popup windows
+@property(nonatomic, retain)NSMutableArray* rememberPopups;
 
 //last event
 @property(nonatomic, retain)NSDictionary* lastEvent;

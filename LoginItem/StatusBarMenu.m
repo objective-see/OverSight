@@ -8,10 +8,10 @@
 
 #import "Consts.h"
 #import "Logging.h"
+#import "Utilities.h"
 #import "AppDelegate.h"
 #import "XPCProtocol.h"
 #import "StatusBarMenu.h"
-
 
 #import <CoreMediaIO/CMIOHardware.h>
 #import <AVFoundation/AVFoundation.h>
@@ -239,13 +239,16 @@
     //resume
     [xpcConnection resume];
     
-    //tell XPC about audio status
-    // ->for example, when audio is active, will stop baselining
+    //tell XPC to exit
     [[xpcConnection remoteObjectProxy] exit];
     
     //give it a sec for XPC msg to go thru
-    // ->can't wait on XPC since its killing itself!
+    // ->don't wait on XPC since its killing itself!
     [NSThread sleepForTimeInterval:0.10f];
+    
+    //kill main (preference) app
+    // ->might be open, and looks odd if its still present
+    execTask(PKILL, @[[APP_NAME stringByDeletingPathExtension]], YES);
     
     //bye!
     [[NSApplication sharedApplication] terminate:nil];

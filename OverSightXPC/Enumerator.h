@@ -64,7 +64,7 @@
 -(NSMutableArray*)enumAudioProcs;
 
 //enumerate all (recent) process that appear to be using video
--(NSMutableArray*)enumVideoProcs;
+-(NSMutableArray*)enumVideoProcs:(BOOL)polling;
 
 //set status of audio
 -(void)updateAudioStatus:(BOOL)isEnabled;

@@ -20,8 +20,6 @@
 @synthesize avMonitor;
 @synthesize processPath;
 
-//@synthesize versionLabel;
-
 //automatically called when nib is loaded
 // ->center window
 -(void)awakeFromNib
@@ -31,7 +29,7 @@
 }
 
 //automatically invoked when window is loaded
-// ->set to white
+// ->set to window to white
 -(void)windowDidLoad
 {
     //super
@@ -40,9 +38,6 @@
     //make white
     [self.window setBackgroundColor: NSColor.whiteColor];
     
-    //set version sting
-    //[self.versionLabel setStringValue:[NSString stringWithFormat:@"version: %@", getAppVersion()]];
-
     return;
 }
 
@@ -156,4 +151,24 @@ bail:
 
     return;
 }
+
+//automatically invoked when window is closing
+// ->remove self from array
+-(void)windowWillClose:(NSNotification *)notification
+{
+    //dbg msg
+    #ifdef DEBUG
+    logMsg(LOG_DEBUG, @"window is closing, will remove array reference");
+    #endif
+
+    //sync to remove
+    @synchronized (self.avMonitor) {
+        
+        //remove
+        [self.avMonitor.rememberPopups removeObject:self];
+    }
+    
+    return;
+}
+
 @end
