@@ -1,81 +1,443 @@
 //
-//  Utilities.m
-//  OverSight
+//  file: utilities.m
+//  project: OverSight (shared)
+//  description: various helper/utility functions
 //
-//  Created by Patrick Wardle on 7/7/16.
-//  Copyright (c) 2016 Objective-See. All rights reserved.
+//  created by Patrick Wardle
+//  copyright (c) 2017 Objective-See. All rights reserved.
 //
 
-#import "Consts.h"
-#import "Logging.h"
-#import "Utilities.h"
+@import OSLog;
 
+#import "consts.h"
+#import "utilities.h"
+
+#import <dlfcn.h>
 #import <signal.h>
 #import <unistd.h>
 #import <libproc.h>
-#import <sys/stat.h>
 #import <sys/sysctl.h>
+#import <Carbon/Carbon.h>
 #import <Security/Security.h>
 #import <Foundation/Foundation.h>
 #import <CommonCrypto/CommonDigest.h>
 #import <SystemConfiguration/SystemConfiguration.h>
 
+/* GLOBALS */
 
-//get OS version
-NSDictionary* getOSVersion()
-{
-    //os version info
-    NSMutableDictionary* osVersionInfo = nil;
-    
-    //major v
-    SInt32 majorVersion = 0;
-    
-    //minor v
-    SInt32 minorVersion = 0;
-    
-    //alloc dictionary
-    osVersionInfo = [NSMutableDictionary dictionary];
-    
-    //get major version
-    if(STATUS_SUCCESS != Gestalt(gestaltSystemVersionMajor, &majorVersion))
-    {
-        //reset
-        osVersionInfo = nil;
-        
-        //bail
-        goto bail;
-    }
-    
-    //get minor version
-    if(STATUS_SUCCESS != Gestalt(gestaltSystemVersionMinor, &minorVersion))
-    {
-        //reset
-        osVersionInfo = nil;
-        
-        //bail
-        goto bail;
-    }
-    
-    //set major version
-    osVersionInfo[@"majorVersion"] = [NSNumber numberWithInteger:majorVersion];
-    
-    //set minor version
-    osVersionInfo[@"minorVersion"] = [NSNumber numberWithInteger:minorVersion];
-    
-//bail
-bail:
-    
-    return osVersionInfo;
-    
-}
-
+//log handle
+extern os_log_t logHandle;
 
 //get app's version
-// ->extracted from Info.plist
+// extracted from Info.plist
 NSString* getAppVersion()
 {
     //read and return 'CFBundleVersion' from bundle
     return [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
+}
+
+//given an app binary
+// try get app's bundle
+NSBundle* getAppBundle(NSString* binaryPath)
+{
+    //bundle
+    NSBundle* appBundle = nil;
+    
+    //app path
+    NSString* appPath = nil;
+    
+    //build app path
+    // assuming path is <blah.app>/Contents/MacOS/<blah>
+    appPath = [[[binaryPath stringByDeletingLastPathComponent] stringByDeletingLastPathComponent] stringByDeletingLastPathComponent];
+    if(YES != [appPath hasSuffix:@".app"])
+    {
+        //bail
+        goto bail;
+    }
+    
+    //try to load app's bundle
+    appBundle = [NSBundle bundleWithPath:appPath];
+    if(nil == appBundle)
+    {
+        //bail
+        goto bail;
+    }
+    
+    //sanity check
+    // binary paths match?
+    if(YES != [appBundle.executablePath isEqualToString:binaryPath])
+    {
+        //unset
+        appBundle = nil;
+        
+        //bail
+        goto bail;
+    }
+    
+bail:
+    
+    return appBundle;
+}
+
+//figure out binary's name
+// either via app bundle, or from path
+NSString* getBinaryName(NSString* path)
+{
+    //name
+    NSString* name = nil;
+    
+    //bundle
+    NSBundle* bundle = nil;
+    
+    //try get bundle
+    // then extract name from 'CFBundleName'
+    bundle = getAppBundle(path);
+    if(nil != bundle)
+    {
+        //extract name
+        name = [bundle infoDictionary][@"CFBundleName"];
+    }
+    
+    //no app bundle || no 'CFBundleName'?
+    // just use last component from the path
+    if(nil == name)
+    {
+        //set name
+        name = [path lastPathComponent];
+    }
+    
+    return name;
+}
+
+//get path to (main) app of a login item
+// login item is in app bundle, so parse up to get main app
+NSString* getMainAppPath()
+{
+    //path components
+    NSArray *pathComponents = nil;
+    
+    //path to config (main) app
+    NSString* mainApp = nil;
+    
+    //get path components
+    // then build full path to main app
+    pathComponents = [[[NSBundle mainBundle] bundlePath] pathComponents];
+    if(pathComponents.count > 4)
+    {
+        //init path to full (main) app
+        mainApp = [NSString pathWithComponents:[pathComponents subarrayWithRange:NSMakeRange(0, pathComponents.count - 4)]];
+    }
+    
+    //when (still) nil
+    // use default path
+    if(nil == mainApp)
+    {
+        //default
+        mainApp = [@"/Applications" stringByAppendingPathComponent:APP_NAME];
+    }
+    
+    return mainApp;
+}
+
+//give path to app
+// get full path to its binary
+NSString* getAppBinary(NSString* appPath)
+{
+    //binary path
+    NSString* binaryPath = nil;
+    
+    //app bundle
+    NSBundle* appBundle = nil;
+    
+    //load app bundle
+    appBundle = [NSBundle bundleWithPath:appPath];
+    if(nil == appBundle)
+    {
+        //err msg
+        os_log_error(logHandle, "ERROR: failed to load app bundle for %@", appPath);
+        
+        //bail
+        goto bail;
+    }
+    
+    //extract executable
+    binaryPath = appBundle.executablePath;
+    
+bail:
+    
+    return binaryPath;
+}
+
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+
+//get (true) parent
+NSDictionary* getRealParent(pid_t pid)
+{
+    //process info
+    NSDictionary* processInfo = nil;
+    
+    //process serial number
+    ProcessSerialNumber psn = {0, kNoProcess};
+    
+    //(parent) process serial number
+    ProcessSerialNumber ppsn = {0, kNoProcess};
+    
+    //get process serial number from pid
+    if(noErr != GetProcessForPID(pid, &psn))
+    {
+        //err
+        goto bail;
+    }
+    
+    //get process (carbon) info
+    processInfo = CFBridgingRelease(ProcessInformationCopyDictionary(&psn, (UInt32)kProcessDictionaryIncludeAllInformationMask));
+    if(nil == processInfo)
+    {
+        //err
+        goto bail;
+    }
+    
+    //extract/convert parent ppsn
+    ppsn.lowLongOfPSN =  [processInfo[@"ParentPSN"] longLongValue] & 0x00000000FFFFFFFFLL;
+    ppsn.highLongOfPSN = ([processInfo[@"ParentPSN"] longLongValue] >> 32) & 0x00000000FFFFFFFFLL;
+    
+    //get parent process (carbon) info
+    processInfo = CFBridgingRelease(ProcessInformationCopyDictionary(&ppsn, (UInt32)kProcessDictionaryIncludeAllInformationMask));
+    if(nil == processInfo)
+    {
+        //err
+        goto bail;
+    }
+    
+bail:
+    
+    return processInfo;
+}
+
+#pragma GCC diagnostic pop
+
+/*
+
+//build an array of processes ancestry
+// uses `GetProcessForPID` to try get (real) parent
+NSMutableArray* generateProcessHierarchy(pid_t pid, NSString* name)
+{
+    //process hierarchy
+    NSMutableArray* processHierarchy = nil;
+    
+    //current process id
+    pid_t currentPID = -1;
+    
+    //parent pid
+    pid_t parentPID = -1;
+    
+    //process name
+    NSString* parentName = nil;
+    
+    //alloc
+    processHierarchy = [NSMutableArray array];
+
+    //parent
+    NSDictionary* parent = nil;
+    
+    //add current process (leaf)
+    // parent(s) will then be added at front...
+    [processHierarchy addObject:[@{@"pid":[NSNumber numberWithInt:pid], @"name":valueForStringItem(name)} mutableCopy]];
+    
+    //init current to self
+    currentPID = pid;
+    
+    //scan back
+    while(YES)
+    {
+        //get (real) parent
+        parent = getRealParent(currentPID);
+        if(nil == parent)
+        {
+            break;
+        }
+        
+        //get parent pid
+        parentPID = [parent[@"pid"] intValue];
+        
+        //end of heirarchy?
+        if( (0 == parentPID) ||
+            (-1 == parentPID) ||
+            (currentPID == parentPID) )
+        {
+            //bail
+            break;
+        }
+        
+        //get name
+        // first from bundle, then from executable
+        name = parent[@"CFBundleName"];
+        if(0 == name.length)
+        {
+            //via executable
+            name = [parent[@"CFBundleExecutable"] lastPathComponent];
+        }
+        
+        //add parent
+        // always at front
+        [processHierarchy insertObject:[@{@"pid":[NSNumber numberWithInt:parentPID], @"name":valueForStringItem(parentName)} mutableCopy] atIndex:0];
+        
+        //update
+        currentPID = parentPID;
+    }
+    
+    return processHierarchy;
+}
+ 
+*/
+
+//check if something is nil
+// if so, return a default ('unknown') value
+NSString* valueForStringItem(NSString* item)
+{
+    return (nil != item) ? item : @"unknown";
+}
+
+//find 'top-level' app of binary
+// useful to determine if binary (or other app) is embedded in a 'parent' app bundle
+NSString* topLevelApp(NSString* binaryPath)
+{
+    //app path
+    NSString* appPath = nil;
+    
+    //offset of (first) '.app'
+    NSRange offset;
+    
+    //find first instance of '.app' in path
+    offset = [binaryPath rangeOfString:@".app/" options:NSCaseInsensitiveSearch];
+    if(NSNotFound == offset.location)
+    {
+        //bail
+        goto bail;
+    }
+    
+    //extact app path
+    // from start, to & including '.app'
+    appPath = [binaryPath substringWithRange:NSMakeRange(0, offset.location+4)];
+
+bail:
+    
+    return appPath;
+}
+
+//verify that an app bundle is valid
+// signed & with (our) signing auth / identifier
+OSStatus verifyApp(NSString* path, NSString* signingAuth)
+{
+    //status
+    OSStatus status = !noErr;
+    
+    //signing req string
+    NSString *requirement = nil;
+    
+    //code
+    SecStaticCodeRef staticCode = NULL;
+    
+    //signing reqs
+    SecRequirementRef requirementRef = NULL;
+    
+    //init signing req string
+    requirement = [NSString stringWithFormat:@"anchor apple generic and identifier \"%@\" and certificate leaf [subject.CN] = \"%@\" and info [CFBundleShortVersionString] >= \"1.0.0\"", INSTALLER_ID, signingAuth];
+    
+    //create static code
+    status = SecStaticCodeCreateWithPath((__bridge CFURLRef)([NSURL fileURLWithPath:path]), kSecCSDefaultFlags, &staticCode);
+    if(noErr != status)
+    {
+        //err msg
+        os_log_error(logHandle, "ERROR: SecStaticCodeCreateWithPath failed w/ %d", status);
+        
+        //bail
+        goto bail;
+    }
+    
+    //create req string
+    status = SecRequirementCreateWithString((__bridge CFStringRef _Nonnull)(requirement), kSecCSDefaultFlags, &requirementRef);
+    if( (noErr != status) ||
+       (requirementRef == NULL) )
+    {
+        //err msg
+        os_log_error(logHandle, "ERROR: SecRequirementCreateWithString failed w/ %d", status);
+        
+        //bail
+        goto bail;
+    }
+    
+    //check if file is signed w/ apple dev id by checking if it conforms to req string
+    status = SecStaticCodeCheckValidity(staticCode, kSecCSDefaultFlags, requirementRef);
+    if(noErr != status)
+    {
+        //err msg
+        os_log_error(logHandle, "ERROR: SecStaticCodeCheckValidity failed w/ %d", status);
+        
+        //bail
+        goto bail;
+    }
+    
+    //happy
+    status = noErr;
+    
+bail:
+    
+    //free req reference
+    if(NULL != requirementRef)
+    {
+        //free
+        CFRelease(requirementRef);
+        requirementRef = NULL;
+    }
+    
+    //free static code
+    if(NULL != staticCode)
+    {
+        //free
+        CFRelease(staticCode);
+        staticCode = NULL;
+    }
+    
+    return status;
+}
+
+//get name of logged in user
+NSString* getConsoleUser()
+{
+    //copy/return user
+    return CFBridgingRelease(SCDynamicStoreCopyConsoleUser(NULL, NULL, NULL));
+}
+
+//get process name
+// either via app bundle, or path
+NSString* getProcessName(NSString* path)
+{
+    //process name
+    NSString* processName = nil;
+    
+    //app bundle
+    NSBundle* appBundle = nil;
+    
+    //try find an app bundle
+    appBundle = findAppBundle(path);
+    if(nil != appBundle)
+    {
+        //grab name from app's bundle
+        processName = [appBundle infoDictionary][@"CFBundleName"];
+    }
+    
+    //still nil?
+    // just grab from path
+    if(nil == processName)
+    {
+        //from path
+        processName = [path lastPathComponent];
+    }
+    
+    return processName;
 }
 
 //given a path to binary
@@ -89,7 +451,7 @@ NSBundle* findAppBundle(NSString* binaryPath)
     NSString* appPath = nil;
     
     //first just try full path
-    appPath = binaryPath;
+    appPath = [[binaryPath stringByStandardizingPath] stringByResolvingSymlinksInPath];
     
     //try to find the app's bundle/info dictionary
     do
@@ -146,16 +508,14 @@ BOOL setFileOwner(NSString* path, NSNumber* groupID, NSNumber* ownerID, BOOL rec
     if(YES != [[NSFileManager defaultManager] setAttributes:fileOwner ofItemAtPath:path error:NULL])
     {
         //err msg
-        logMsg(LOG_ERR, [NSString stringWithFormat:@"failed to set ownership for %@ (%@)", path, fileOwner]);
+        os_log_error(logHandle, "ERROR: failed to set ownership for %@ (%@)", path, fileOwner);
         
         //bail
         goto bail;
     }
     
     //dbg msg
-    #ifdef DEBUG
-    logMsg(LOG_DEBUG, [NSString stringWithFormat:@"set ownership for %@ (%@)", path, fileOwner]);
-    #endif
+    os_log_debug(logHandle, "set ownership for %@ (%@)", path, fileOwner);
     
     //do it recursively
     if(YES == recursive)
@@ -179,7 +539,7 @@ BOOL setFileOwner(NSString* path, NSNumber* groupID, NSNumber* ownerID, BOOL rec
             if(YES != [[NSFileManager defaultManager] setAttributes:fileOwner ofItemAtPath:fullPath error:NULL])
             {
                 //err msg
-                logMsg(LOG_ERR, [NSString stringWithFormat:@"failed to set ownership for %@ (%@)", fullPath, fileOwner]);
+                os_log_error(logHandle, "ERROR: failed to set ownership for %@ (%@)", fullPath, fileOwner);
                 
                 //bail
                 goto bail;
@@ -224,8 +584,7 @@ BOOL setFilePermissions(NSString* file, int permissions, BOOL recursive)
         root = [NSURL fileURLWithPath:file];
         
         //init enumerator
-        enumerator = [[NSFileManager defaultManager] enumeratorAtURL:root includingPropertiesForKeys:[NSArray arrayWithObject:NSURLIsDirectoryKey] options:0
-                                                        errorHandler:^(NSURL *url, NSError *error) { return YES; }];
+        enumerator = [[NSFileManager defaultManager] enumeratorAtURL:root includingPropertiesForKeys:[NSArray arrayWithObject:NSURLIsDirectoryKey] options:0 errorHandler:nil];
     
         //set file permissions on each
         for(NSURL* currentFile in enumerator)
@@ -234,7 +593,7 @@ BOOL setFilePermissions(NSString* file, int permissions, BOOL recursive)
             if(YES != [[NSFileManager defaultManager] setAttributes:filePermissions ofItemAtPath:currentFile.path error:&error])
             {
                 //err msg
-                logMsg(LOG_ERR, [NSString stringWithFormat:@"failed to set permissions for %@ (%@), %@", currentFile.path, filePermissions, error]);
+                os_log_error(logHandle, "ERROR: failed to set permissions for %@ (%@), %@", currentFile.path, filePermissions, error);
                 
                 //bail
                 goto bail;
@@ -243,11 +602,11 @@ BOOL setFilePermissions(NSString* file, int permissions, BOOL recursive)
     }
     
     //always set permissions on passed in file (or top-level directory)
-    // ->note: recursive enumerator skips root directory, so execute this always
+    // note: recursive enumerator skips root directory, so execute this always
     if(YES != [[NSFileManager defaultManager] setAttributes:filePermissions ofItemAtPath:file error:NULL])
     {
         //err msg
-        logMsg(LOG_ERR, [NSString stringWithFormat:@"failed to set permissions for %@ (%@)", file, filePermissions]);
+        os_log_error(logHandle, "ERROR: failed to set permissions for %@ (%@)", file, filePermissions);
         
         //bail
         goto bail;
@@ -256,147 +615,16 @@ BOOL setFilePermissions(NSString* file, int permissions, BOOL recursive)
     //happy
     bSetPermissions = YES;
     
-//bail
 bail:
     
     return bSetPermissions;
-}
-
-//exec a process and grab it's output
-NSData* execTask(NSString* binaryPath, NSArray* arguments, BOOL shouldWait)
-{
-    //task
-    NSTask *task = nil;
-    
-    //output pipe
-    NSPipe *outPipe = nil;
-    
-    //output
-    NSData *output = nil;
-    
-    //dispatch group
-    dispatch_group_t dispatchGroup = 0;
-    
-    //init task
-    task = [[NSTask alloc] init];
-    
-    //init pipe
-    outPipe = [NSPipe pipe];
-    
-    //create dispatch group
-    dispatchGroup = dispatch_group_create();
-    
-    //set task's path
-    task.launchPath = binaryPath;
-    
-    //set task's args
-    if(nil != arguments)
-    {
-        //add
-        task.arguments = arguments;
-    }
-    
-    //set task's output to pipe
-    // ->but only if we're waiting for exit
-    if(YES == shouldWait)
-    {
-        //redirect
-        task.standardOutput = outPipe;
-    }
-    
-    //dbg msg
-    #ifdef DEBUG
-    logMsg(LOG_DEBUG, [NSString stringWithFormat:@"@exec'ing %@ (args: %@)", binaryPath, arguments]);
-    #endif
-    
-    //enter dispatch
-    dispatch_group_enter(dispatchGroup);
-    
-    //set task's termination to leave dispatch group
-    task.terminationHandler = ^(NSTask *task){
-        
-        //leave
-        dispatch_group_leave(dispatchGroup);
-    };
-
-    //wrap task launch
-    @try
-    {
-        //launch
-        [task launch];
-    }
-    @catch(NSException* exception)
-    {
-        //err msg
-        logMsg(LOG_ERR, [NSString stringWithFormat:@"task failed with %@", exception]);
-        
-        //bail
-        goto bail;
-    }
-    
-    //when waiting
-    // ->grab data
-    if(YES == shouldWait)
-    {
-    
-    //dbg msg
-    #ifdef DEBUG
-    logMsg(LOG_DEBUG, @"invoking 'readDataToEndOfFile' to get all data");
-    #endif
-    
-    //read until file is closed
-    output = [outPipe.fileHandleForReading readDataToEndOfFile];
-    
-    //dbg msg
-    #ifdef DEBUG
-    logMsg(LOG_DEBUG, @"now waiting for task to exit");
-    #endif
-    
-    //wait till exit
-    dispatch_group_wait(dispatchGroup, DISPATCH_TIME_FOREVER);
-        
-    //dbg msg
-    #ifdef DEBUG
-    logMsg(LOG_DEBUG, @"task exited");
-    #endif
-    
-    }//wait
-    
-//bail
-bail:
-    
-    
-    return output;
-}
-
-//get OS's major or minor version
-SInt32 getVersion(OSType selector)
-{
-    //version
-    // ->major or minor
-    SInt32 version = -1;
-    
-    //get version info
-    if(noErr != Gestalt(selector, &version))
-    {
-        //reset version
-        version = -1;
-        
-        //err
-        goto bail;
-    }
-    
-//bail
-bail:
-    
-    return version;
 }
 
 //get process's path
 NSString* getProcessPath(pid_t pid)
 {
     //task path
-    NSString* taskPath = nil;
+    NSString* processPath = nil;
     
     //buffer for process path
     char pathBuffer[PROC_PIDPATHINFO_MAXSIZE] = {0};
@@ -408,7 +636,7 @@ NSString* getProcessPath(pid_t pid)
     int mib[3] = {0};
     
     //system's size for max args
-    int systemMaxArgs = 0;
+    unsigned long systemMaxArgs = 0;
     
     //process's args
     char* taskArgs = NULL;
@@ -420,17 +648,17 @@ NSString* getProcessPath(pid_t pid)
     size_t size = 0;
     
     //reset buffer
-    bzero(pathBuffer, PROC_PIDPATHINFO_MAXSIZE);
+    memset(pathBuffer, 0x0, PROC_PIDPATHINFO_MAXSIZE);
     
     //first attempt to get path via 'proc_pidpath()'
     status = proc_pidpath(pid, pathBuffer, sizeof(pathBuffer));
     if(0 != status)
     {
         //init task's name
-        taskPath = [NSString stringWithUTF8String:pathBuffer];
+        processPath = [NSString stringWithUTF8String:pathBuffer];
     }
     //otherwise
-    // ->try via task's args ('KERN_PROCARGS2')
+    // try via task's args ('KERN_PROCARGS2')
     else
     {
         //init mib
@@ -473,7 +701,7 @@ NSString* getProcessPath(pid_t pid)
         }
         
         //sanity check
-        // ->ensure buffer is somewhat sane
+        // ensure buffer is somewhat sane
         if(size <= sizeof(int))
         {
             //bail
@@ -481,15 +709,13 @@ NSString* getProcessPath(pid_t pid)
         }
         
         //extract number of args
-        // ->at start of buffer
         memcpy(&numberOfArgs, taskArgs, sizeof(numberOfArgs));
         
         //extract task's name
-        // ->follows # of args (int) and is NULL-terminated
-        taskPath = [NSString stringWithUTF8String:taskArgs + sizeof(int)];
+        // follows # of args (int) and is NULL-terminated
+        processPath = [NSString stringWithUTF8String:taskArgs + sizeof(int)];
     }
     
-//bail
 bail:
     
     //free process args
@@ -502,66 +728,19 @@ bail:
         taskArgs = NULL;
     }
     
-    return taskPath;
+    return processPath;
 }
 
-//given a pid
-// ->get the name of the process
-NSString* getProcessName(pid_t pid)
-{
-    //task path
-    NSString* processName = nil;
-    
-    //process path
-    NSString* processPath = nil;
-    
-    //app's bundle
-    NSBundle* appBundle = nil;
-    
-    //get process path
-    processPath = getProcessPath(pid);
-    if( (nil == processPath) ||
-        (0 == processPath.length) )
-    {
-        //default to 'unknown'
-        processName = @"<unknown>";
-        
-        //bail
-        goto bail;
-    }
-    
-    //try find an app bundle
-    appBundle = findAppBundle(processPath);
-    if(nil != appBundle)
-    {
-        //grab name from app's bundle
-        processName = [appBundle infoDictionary][@"CFBundleName"];
-    }
-    
-    //still nil?
-    // ->just grab from path
-    if(nil == processName)
-    {
-        //from path
-        processName = [processPath lastPathComponent];
-    }
-    
-//bail
-bail:
-    
-    return processName;
-}
-
-//given a process name
-// ->get the (first) instance of that process
-pid_t getProcessID(NSString* processName, uid_t userID)
+//given a process path and user
+// return array of all matching pids
+NSMutableArray* getProcessIDs(NSString* processPath, int userID)
 {
     //status
     int status = -1;
     
-    //process id
-    pid_t processID = -1;
-        
+    //process IDs
+    NSMutableArray* processIDs = nil;
+    
     //# of procs
     int numberOfProcesses = 0;
         
@@ -569,7 +748,7 @@ pid_t getProcessID(NSString* processName, uid_t userID)
     pid_t* pids = NULL;
     
     //process info struct
-    struct kinfo_proc procInfo = {0};
+    struct kinfo_proc procInfo;
     
     //size of struct
     size_t procInfoSize = sizeof(procInfo);
@@ -577,14 +756,25 @@ pid_t getProcessID(NSString* processName, uid_t userID)
     //mib
     int mib[4] = {CTL_KERN, KERN_PROC, KERN_PROC_PID, -1};
     
+    //clear buffer
+    memset(&procInfo, 0x0, procInfoSize);
+    
     //get # of procs
-    numberOfProcesses = proc_listpids(PROC_ALL_PIDS, 0, NULL, 0);
+    numberOfProcesses = proc_listallpids(NULL, 0);
+    if(-1 == numberOfProcesses)
+    {
+        //bail
+        goto bail;
+    }
     
     //alloc buffer for pids
-    pids = calloc(numberOfProcesses, sizeof(pid_t));
+    pids = calloc((unsigned long)numberOfProcesses, sizeof(pid_t));
+    
+    //alloc
+    processIDs = [NSMutableArray array];
     
     //get list of pids
-    status = proc_listpids(PROC_ALL_PIDS, 0, pids, numberOfProcesses * sizeof(pid_t));
+    status = proc_listallpids(pids, numberOfProcesses * (int)sizeof(pid_t));
     if(status < 0)
     {
         //bail
@@ -592,8 +782,8 @@ pid_t getProcessID(NSString* processName, uid_t userID)
     }
         
     //iterate over all pids
-    // ->get name for each
-    for(int i = 0; i < numberOfProcesses; ++i)
+    // ->get name for each process
+    for(int i = 0; i < (int)numberOfProcesses; i++)
     {
         //skip blank pids
         if(0 == pids[i])
@@ -602,39 +792,41 @@ pid_t getProcessID(NSString* processName, uid_t userID)
             continue;
         }
         
-        //skip if name doesn't match
-        if(YES != [processName isEqualToString:getProcessName(pids[i])])
+        //skip if path doesn't match
+        if(YES != [processPath isEqualToString:getProcessPath(pids[i])])
         {
             //next
             continue;
         }
         
-        //init mib
-        mib[0x3] = pids[i];
-        
-        //make syscall to get proc info
-        if( (0 != sysctl(mib, 0x4, &procInfo, &procInfoSize, NULL, 0)) ||
-            (0 == procInfoSize) )
+        //need to also match on user?
+        // caller can pass in -1 to skip this check
+        if(-1 != userID)
         {
-            //skip
-            continue;
-        }
+            //init mib
+            mib[0x3] = pids[i];
+            
+            //make syscall to get proc info for user
+            if( (0 != sysctl(mib, 0x4, &procInfo, &procInfoSize, NULL, 0)) ||
+                (0 == procInfoSize) )
+            {
+                //skip
+                continue;
+            }
 
-        //skip if user id doesn't match
-        if(userID != procInfo.kp_eproc.e_ucred.cr_uid)
-        {
-            //skip
-            continue;
+            //skip if user id doesn't match
+            if(userID != (int)procInfo.kp_eproc.e_ucred.cr_uid)
+            {
+                //skip
+                continue;
+            }
         }
         
         //got match
-        processID = pids[i];
-        
-        //exit loop
-        break;
+        // add to list
+        [processIDs addObject:[NSNumber numberWithInt:pids[i]]];
     }
-        
-//bail
+    
 bail:
         
     //free buffer
@@ -647,12 +839,28 @@ bail:
         pids = NULL;
     }
     
-    return processID;
+    return processIDs;
 }
 
+//enable/disable a menu
+void toggleMenu(NSMenu* menu, BOOL shouldEnable)
+{
+    //disable autoenable
+    menu.autoenablesItems = NO;
+    
+    //iterate over
+    // set state of each item
+    for(NSMenuItem* item in menu.itemArray)
+    {
+        //set state
+        item.enabled = shouldEnable;
+    }
+    
+    return;
+}
 
 //get an icon for a process
-// ->for apps, this will be app's icon, otherwise just a standard system one
+// for apps, this will be app's icon, otherwise just a standard system one
 NSImage* getIconForProcess(NSString* path)
 {
     //icon's file name
@@ -668,39 +876,64 @@ NSImage* getIconForProcess(NSString* path)
     NSImage* icon = nil;
     
     //system's document icon
-    static NSData* documentIcon = nil;
+    static NSImage* documentIcon = nil;
     
     //bundle
     NSBundle* appBundle = nil;
+    
+    //invalid path?
+    // grab a default icon and bail
+    if(YES != [[NSFileManager defaultManager] fileExistsAtPath:path])
+    {
+        //set icon to system 'application' icon
+        icon = [[NSWorkspace sharedWorkspace]
+                iconForFileType: NSFileTypeForHFSTypeCode(kGenericApplicationIcon)];
+        
+        //set size to 64 @2x
+        [icon setSize:NSMakeSize(128, 128)];
+   
+        //bail
+        goto bail;
+    }
     
     //first try grab bundle
     // ->then extact icon from this
     appBundle = findAppBundle(path);
     if(nil != appBundle)
     {
-        //get file
-        iconFile = appBundle.infoDictionary[@"CFBundleIconFile"];
-        
-        //get path extension
-        iconExtension = [iconFile pathExtension];
-        
-        //if its blank (i.e. not specified)
-        // ->go with 'icns'
-        if(YES == [iconExtension isEqualTo:@""])
+        //extract icon
+        icon = [[NSWorkspace sharedWorkspace] iconForFile:appBundle.bundlePath];
+        if(nil != icon)
         {
-            //set type
-            iconExtension = @"icns";
+            //done!
+            goto bail;
         }
         
-        //set full path
-        iconPath = [appBundle pathForResource:[iconFile stringByDeletingPathExtension] ofType:iconExtension];
-        
-        //load it
-        icon = [[NSImage alloc] initWithContentsOfFile:iconPath];
+        //get file
+        iconFile = appBundle.infoDictionary[@"CFBundleIconFile"];
+        if(nil != iconFile)
+        {
+            //get path extension
+            iconExtension = [iconFile pathExtension];
+            
+            //if its blank (i.e. not specified)
+            // go with 'icns'
+            if(YES == [iconExtension isEqualTo:@""])
+            {
+                //set type
+                iconExtension = @"icns";
+            }
+            
+            //set full path
+            iconPath = [appBundle pathForResource:[iconFile stringByDeletingPathExtension] ofType:iconExtension];
+            
+            //load it
+            icon = [[NSImage alloc] initWithContentsOfFile:iconPath];
+        }
     }
     
     //process is not an app or couldn't get icon
-    // ->try to get it via shared workspace
+    // try to get it via shared workspace
     if( (nil == appBundle) ||
         (nil == icon) )
     {
@@ -708,129 +941,39 @@ NSImage* getIconForProcess(NSString* path)
         icon = [[NSWorkspace sharedWorkspace] iconForFile:path];
         
         //load system document icon
-        // ->static var, so only load once
+        // static var, so only load once
         if(nil == documentIcon)
         {
             //load
-            documentIcon = [[[NSWorkspace sharedWorkspace] iconForFileType:
-                             NSFileTypeForHFSTypeCode(kGenericDocumentIcon)] TIFFRepresentation];
+            documentIcon = [[NSWorkspace sharedWorkspace] iconForFileType:
+                            NSFileTypeForHFSTypeCode(kGenericDocumentIcon)];
         }
         
         //if 'iconForFile' method doesn't find and icon, it returns the system 'document' icon
-        // ->the system 'applicatoon' icon seems more applicable, so use that here...
-        if(YES == [[icon TIFFRepresentation] isEqual:documentIcon])
+        // the system 'application' icon seems more applicable, so use that here...
+        if(YES == [icon isEqual:documentIcon])
         {
-            //set icon to system 'applicaiton' icon
+            //set icon to system 'application' icon
             icon = [[NSWorkspace sharedWorkspace]
-                         iconForFileType: NSFileTypeForHFSTypeCode(kGenericApplicationIcon)];
+                    iconForFileType: NSFileTypeForHFSTypeCode(kGenericApplicationIcon)];
         }
         
         //'iconForFileType' returns small icons
-        // ->so set size to 128
+        // so set size to 64 @2x
         [icon setSize:NSMakeSize(128, 128)];
     }
+    
+bail:
     
     return icon;
 }
 
-//determine if there is a new version
-// -1, YES or NO
-NSInteger isNewVersion(NSMutableString* versionString)
-{
-    //flag
-    NSInteger newVersionExists = -1;
-    
-    //installed version
-    NSString* installedVersion = nil;
-    
-    //latest version
-    NSString* latestVersion = nil;
-    
-    //get installed version
-    installedVersion = getAppVersion();
-    
-    //get latest version
-    // ->will query internet (obj-see website)
-    latestVersion = getLatestVersion();
-    if(nil == latestVersion)
-    {
-        //set error msg
-        [versionString setString:@"failed to get latest version"];
-        
-        //bail
-        goto bail;
-    }
-    
-    //save version
-    [versionString setString:latestVersion];
-    
-    //set version flag
-    // ->YES/NO
-    newVersionExists = (NSOrderedAscending == [installedVersion compare:latestVersion options:NSNumericSearch]);
-    
-//bail
-bail:
-    
-    return newVersionExists;
-}
-
-//query interwebz to get latest version
-NSString* getLatestVersion()
-{
-    //product version(s) data
-    NSData* productsVersionData = nil;
-    
-    //version dictionary
-    NSDictionary* productsVersionDictionary = nil;
-    
-    //latest version
-    NSString* latestVersion = nil;
-    
-    //get version from remote URL
-    productsVersionData = [[NSData alloc] initWithContentsOfURL:[NSURL URLWithString:PRODUCT_VERSIONS_URL]];
-    if(nil == productsVersionData)
-    {
-        //bail
-        goto bail;
-    }
-    
-    //convert JSON to dictionary
-    // ->wrap as may throw exception
-    @try
-    {
-        //convert
-        productsVersionDictionary = [NSJSONSerialization JSONObjectWithData:productsVersionData options:0 error:nil];
-        if(nil == productsVersionDictionary)
-        {
-            //bail
-            goto bail;
-        }
-    }
-    @catch(NSException* exception)
-    {
-        //bail
-        goto bail;
-    }
-    
-    //extract latest version
-    latestVersion = [[productsVersionDictionary objectForKey:@"OverSight"] objectForKey:@"version"];
-    
-    //dbg msg
-    #ifdef DEBUG
-    logMsg(LOG_DEBUG, [NSString stringWithFormat:@"latest version: %@", latestVersion]);
-    #endif
-    
-bail:
-    
-    return latestVersion;
-}
-
 //wait until a window is non nil
-// ->then make it modal
+// then make it modal
 void makeModal(NSWindowController* windowController)
 {
     //wait up to 1 second window to be non-nil
-    // ->then make modal
+    // then make modal
     for(int i=0; i<20; i++)
     {
         //can make it modal once we have a window
@@ -856,13 +999,102 @@ void makeModal(NSWindowController* windowController)
     return;
 }
 
+//find a process by name
+pid_t findProcess(NSString* processName)
+{
+    //pid
+    pid_t processID = 0;
+    
+    //status
+    int status = -1;
+    
+    //# of procs
+    int numberOfProcesses = 0;
+    
+    //array of pids
+    pid_t* pids = NULL;
+    
+    //process path
+    NSString* processPath = nil;
+    
+    //get # of procs
+    numberOfProcesses = proc_listpids(PROC_ALL_PIDS, 0, NULL, 0);
+    if(-1 == numberOfProcesses)
+    {
+        //bail
+        goto bail;
+    }
+    
+    //alloc buffer for pids
+    pids = calloc((unsigned long)numberOfProcesses, sizeof(pid_t));
+    
+    //get list of pids
+    status = proc_listpids(PROC_ALL_PIDS, 0, pids, numberOfProcesses * (int)sizeof(pid_t));
+    if(status < 0)
+    {
+        //bail
+        goto bail;
+    }
+    
+    //iterate over all pids
+    // get name for each via helper function
+    for(int i = 0; i < numberOfProcesses; ++i)
+    {
+        //skip blank pids
+        if(0 == pids[i])
+        {
+            //skip
+            continue;
+        }
+        
+        //get name
+        processPath = getProcessPath(pids[i]);
+        if( (nil == processPath) ||
+           (0 == processPath.length) )
+        {
+            //skip
+            continue;
+        }
+        
+        //match?
+        if(YES == [processPath isEqualToString:processName])
+        {
+            //save
+            processID = pids[i];
+            
+            //pau
+            break;
+        }
+        
+    }//all procs
+    
+bail:
+    
+    //free buffer
+    if(NULL != pids)
+    {
+        //free
+        free(pids);
+    }
+    
+    return processID;
+}
+
+//for login item enable/disable
+// we use the launch services APIs, since replacements don't always work :(
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
 //toggle login item
-// ->either add (install) or remove (uninstall)
+// either add (install) or remove (uninstall)
 BOOL toggleLoginItem(NSURL* loginItem, int toggleFlag)
 {
     //flag
     BOOL wasToggled = NO;
-
+    
+    //flag
+    BOOL alreadyAdded = NO;
+    
     //login item ref
     LSSharedFileListRef loginItemsRef = NULL;
     
@@ -879,9 +1111,46 @@ BOOL toggleLoginItem(NSURL* loginItem, int toggleFlag)
     if(ACTION_INSTALL_FLAG == toggleFlag)
     {
         //dbg msg
-        #ifdef DEBUG
-        logMsg(LOG_DEBUG, [NSString stringWithFormat:@"adding login item %@", loginItem]);
-        #endif
+        os_log_debug(logHandle, "adding login item %@", loginItem);
+        
+        //grab existing login items
+        loginItems = LSSharedFileListCopySnapshot(loginItemsRef, nil);
+        
+        //already added?
+        for(id item in (__bridge NSArray *)loginItems)
+        {
+            //grab current item
+            currentLoginItem = LSSharedFileListItemCopyResolvedURL((__bridge LSSharedFileListItemRef)item, 0, NULL);
+            if(NULL == currentLoginItem) continue;
+            
+            //is match?
+            if(YES == [(__bridge NSURL *)currentLoginItem isEqual:loginItem])
+            {
+                //set flag
+                alreadyAdded = YES;
+            }
+            
+            //release
+            CFRelease(currentLoginItem);
+            currentLoginItem = NULL;
+            
+            //done?
+            if(YES == alreadyAdded) break;
+        }
+        
+        //sanity check
+        if(YES == alreadyAdded)
+        {
+            //dbg msg
+            os_log_debug(logHandle, "%@ already exists as a login item", loginItem);
+            
+            //happy
+            wasToggled = YES;
+            
+            //done
+            goto bail;
+            
+        }
         
         //add
         LSSharedFileListItemRef itemRef = LSSharedFileListInsertItemURL(loginItemsRef, kLSSharedFileListItemLast, NULL, NULL, (__bridge CFURLRef)(loginItem), NULL, NULL);
@@ -890,9 +1159,7 @@ BOOL toggleLoginItem(NSURL* loginItem, int toggleFlag)
         if(NULL != itemRef)
         {
             //dbg msg
-            #ifdef DEBUG
-            logMsg(LOG_DEBUG, [NSString stringWithFormat:@"added %@/%@", loginItem, itemRef]);
-            #endif
+            os_log_debug(logHandle, "added %@/%@", loginItem, itemRef);
             
             //release
             CFRelease(itemRef);
@@ -904,7 +1171,7 @@ BOOL toggleLoginItem(NSURL* loginItem, int toggleFlag)
         else
         {
             //err msg
-            logMsg(LOG_ERR, @"failed to add login item");
+            os_log_error(logHandle, "ERROR: failed to add login item");
             
             //bail
             goto bail;
@@ -917,24 +1184,19 @@ BOOL toggleLoginItem(NSURL* loginItem, int toggleFlag)
     else
     {
         //dbg msg
-        #ifdef DEBUG
-        logMsg(LOG_DEBUG, [NSString stringWithFormat:@"removing login item %@", loginItem]);
-        #endif
+        os_log_debug(logHandle, "removing login item %@", loginItem);
         
         //grab existing login items
         loginItems = LSSharedFileListCopySnapshot(loginItemsRef, nil);
         
         //iterate over all login items
-        // ->look for self, then remove it/them
-        for (id item in (__bridge NSArray *)loginItems)
+        // look for self, then remove it
+        for(id item in (__bridge NSArray *)loginItems)
         {
             //get current login item
-            if( (noErr != LSSharedFileListItemResolve((__bridge LSSharedFileListItemRef)item, 0, (CFURLRef*)&currentLoginItem, NULL)) ||
-                (NULL == currentLoginItem) )
-            {
-                //skip
-                continue;
-            }
+            currentLoginItem = LSSharedFileListItemCopyResolvedURL((__bridge LSSharedFileListItemRef)item, 0, NULL);
+            if(NULL == currentLoginItem) continue;
+        
             
             //current login item match self?
             if(YES == [(__bridge NSURL *)currentLoginItem isEqual:loginItem])
@@ -943,34 +1205,32 @@ BOOL toggleLoginItem(NSURL* loginItem, int toggleFlag)
                 if(noErr != LSSharedFileListItemRemove(loginItemsRef, (__bridge LSSharedFileListItemRef)item))
                 {
                     //err msg
-                    logMsg(LOG_ERR, @"failed to remove login item");
+                    os_log_error(logHandle, "ERROR: failed to remove login item");
                     
                     //bail
                     goto bail;
                 }
                 
                 //dbg msg
-                logMsg(LOG_DEBUG, [NSString stringWithFormat:@"removed loginItem: %@", loginItem]);
+                os_log_debug(logHandle, "removed login item: %@", loginItem);
                 
                 //happy
                 wasToggled = YES;
+                
+                //all done
+                goto bail;
             }
             
             //release
-            if(NULL != currentLoginItem)
-            {
-                //release
-                CFRelease(currentLoginItem);
-                
-                //reset
-                currentLoginItem = NULL;
-            }
+            CFRelease(currentLoginItem);
+            
+            //reset
+            currentLoginItem = NULL;
             
         }//all login items
         
     }//remove/uninstall
     
-//bail
 bail:
     
     //release login items
@@ -993,184 +1253,18 @@ bail:
         loginItemsRef = NULL;
     }
     
+    //release url
+    if(NULL != currentLoginItem)
+    {
+        //release
+        CFRelease(currentLoginItem);
+        currentLoginItem = NULL;
+    }
+    
     return wasToggled;
 }
 
-//get logged in user
-// name, uid, and gid
-NSMutableDictionary* loggedinUser()
-{
-    //user info
-    NSMutableDictionary* userInfo = nil;
-    
-    //store
-    SCDynamicStoreRef store = nil;
-    
-    //user
-    NSString* user = nil;
-    
-    //uid
-    uid_t uid = 0;
-    
-    //gid
-    gid_t gid = 0;
-    
-    //allco dictionary
-    userInfo = [NSMutableDictionary dictionary];
-    
-    //create store
-    store = SCDynamicStoreCreate(NULL, CFSTR("GetConsoleUser"), NULL, NULL);
-    if(NULL == store)
-    {
-        //bail
-        goto bail;
-    }
-    
-    //get user and uid/gid
-    user = CFBridgingRelease(SCDynamicStoreCopyConsoleUser(store, &uid, &gid));
-    
-    //add user
-    userInfo[@"user"] = user;
-    
-    //add uid
-    userInfo[@"uid"] = [NSNumber numberWithUnsignedInt:uid];
-     
-    //add uid
-    userInfo[@"gid"] = [NSNumber numberWithUnsignedInt:gid];
-    
-//bail
-bail:
-    
-    //release store
-    if(NULL != store)
-    {
-        //release
-        CFRelease(store);
-    }
-    
-    return userInfo;
-}
-
-//find a process by name
-pid_t findProcess(NSString* processName)
-{
-    //pid
-    pid_t processID = 0;
-    
-    //status
-    int status = -1;
-    
-    //# of procs
-    int numberOfProcesses = 0;
-    
-    //array of pids
-    pid_t* pids = NULL;
-    
-    //process path
-    NSString* processPath = nil;
-    
-    //get # of procs
-    numberOfProcesses = proc_listpids(PROC_ALL_PIDS, 0, NULL, 0);
-    
-    //alloc buffer for pids
-    pids = calloc(numberOfProcesses, sizeof(pid_t));
-    
-    //get list of pids
-    status = proc_listpids(PROC_ALL_PIDS, 0, pids, numberOfProcesses * sizeof(pid_t));
-    if(status < 0)
-    {
-        //bail
-        goto bail;
-    }
-    
-    //iterate over all pids
-    // ->get name for each via helper function
-    for(int i = 0; i < numberOfProcesses; ++i)
-    {
-        //skip blank pids
-        if(0 == pids[i])
-        {
-            //skip
-            continue;
-        }
-        
-        //get name
-        processPath = getProcessPath(pids[i]);
-        if( (nil == processPath) ||
-            (0 == processPath.length) )
-        {
-            //skip
-            continue;
-        }
-        
-        //match?
-        if(YES == [processPath isEqualToString:processName])
-        {
-            //save
-            processID = pids[i];
-            
-            //pau
-            break;
-        }
-        
-    }//all procs
-    
-//bail
-bail:
-    
-    //free buffer
-    if(NULL != pids)
-    {
-        //free
-        free(pids);
-    }
-    
-    return processID;
-}
-
-//convert a textview to a clickable hyperlink
-void makeTextViewHyperlink(NSTextField* textField, NSURL* url)
-{
-    //hyperlink
-    NSMutableAttributedString *hyperlinkString = nil;
-    
-    //range
-    NSRange range = {0};
-    
-    //init hyper link
-    hyperlinkString = [[NSMutableAttributedString alloc] initWithString:textField.stringValue];
-    
-    //init range
-    range = NSMakeRange(0, [hyperlinkString length]);
-    
-    //start editing
-    [hyperlinkString beginEditing];
-    
-    //add url
-    [hyperlinkString addAttribute:NSLinkAttributeName value:url range:range];
-    
-    //make it blue
-    [hyperlinkString addAttribute:NSForegroundColorAttributeName value:[NSColor blueColor] range:NSMakeRange(0, [hyperlinkString length])];
-    
-    //underline
-    [hyperlinkString addAttribute:
-     NSUnderlineStyleAttributeName value:[NSNumber numberWithInt:NSSingleUnderlineStyle] range:NSMakeRange(0, [hyperlinkString length])];
-    
-    //done editing
-    [hyperlinkString endEditing];
-    
-    //set text
-    [textField setAttributedStringValue:hyperlinkString];
-    
-    return;
-}
-
-//get frontmost (active) app
-pid_t frontmostApplication()
-{
-    //get/ret
-    return NSWorkspace.sharedWorkspace.frontmostApplication.processIdentifier;
-}
+#pragma clang diagnostic pop
 
 //check if process is alive
 BOOL isProcessAlive(pid_t processID)
@@ -1182,21 +1276,375 @@ BOOL isProcessAlive(pid_t processID)
     int signalStatus = -1;
     
     //send kill with 0 to determine if alive
-    // -> see: http://stackoverflow.com/questions/9152979/check-if-process-exists-given-its-pid
     signalStatus = kill(processID, 0);
     
     //is alive?
     if( (0 == signalStatus) ||
-       ( (0 != signalStatus) && (errno != ESRCH) ) )
+        ((0 != signalStatus) && (errno != ESRCH)) )
     {
-        //dbg msg
-        #ifdef DEBUG
-        logMsg(LOG_DEBUG, [NSString stringWithFormat:@"agent (%d) is ALIVE", processID]);
-        #endif
-        
         //alive!
         bIsAlive = YES;
     }
     
     return bIsAlive;
+}
+
+
+//hash a file
+NSMutableString* hashFile(NSString* filePath)
+{
+    //file's contents
+    NSData* fileContents = nil;
+    
+    //hash digest
+    uint8_t digestSHA256[CC_SHA256_DIGEST_LENGTH] = {0};
+    
+    //hash as string
+    NSMutableString* sha256 = nil;
+    
+    //index var
+    NSUInteger index = 0;
+    
+    //init
+    sha256 = [NSMutableString string];
+    
+    //load file
+    if(nil == (fileContents = [NSData dataWithContentsOfFile:filePath]))
+    {
+        //bail
+        goto bail;
+    }
+    
+    //sha256 it
+    CC_SHA256(fileContents.bytes, (unsigned int)fileContents.length, digestSHA256);
+    
+    //convert to NSString
+    // iterate over each bytes in computed digest and format
+    for(index=0; index < CC_SHA256_DIGEST_LENGTH; index++)
+    {
+        //format/append
+        [sha256 appendFormat:@"%02lX", (unsigned long)digestSHA256[index]];
+    }
+    
+bail:
+    
+    return sha256;
+}
+
+//exec a process with args
+// if 'shouldWait' is set, wait and return stdout/in and termination status
+NSMutableDictionary* execTask(NSString* binaryPath, NSArray* arguments, BOOL shouldWait, BOOL grabOutput)
+{
+    //task
+    NSTask* task = nil;
+    
+    //output pipe for stdout
+    NSPipe* stdOutPipe = nil;
+    
+    //output pipe for stderr
+    NSPipe* stdErrPipe = nil;
+    
+    //read handle for stdout
+    NSFileHandle* stdOutReadHandle = nil;
+    
+    //read handle for stderr
+    NSFileHandle* stdErrReadHandle = nil;
+    
+    //results dictionary
+    NSMutableDictionary* results = nil;
+    
+    //output for stdout
+    NSMutableData *stdOutData = nil;
+    
+    //output for stderr
+    NSMutableData *stdErrData = nil;
+    
+    //init dictionary for results
+    results = [NSMutableDictionary dictionary];
+    
+    //init task
+    task = [[NSTask alloc] init];
+    
+    //sanity check
+    // NSTask throws if path isn't found...
+    if(YES != [NSFileManager.defaultManager fileExistsAtPath:binaryPath])
+    {
+        //bail
+        goto bail;
+    }
+    
+    //only setup pipes if wait flag is set
+    if(YES == grabOutput)
+    {
+        //init stdout pipe
+        stdOutPipe = [NSPipe pipe];
+        
+        //init stderr pipe
+        stdErrPipe = [NSPipe pipe];
+        
+        //init stdout read handle
+        stdOutReadHandle = [stdOutPipe fileHandleForReading];
+        
+        //init stderr read handle
+        stdErrReadHandle = [stdErrPipe fileHandleForReading];
+        
+        //init stdout output buffer
+        stdOutData = [NSMutableData data];
+        
+        //init stderr output buffer
+        stdErrData = [NSMutableData data];
+        
+        //set task's stdout
+        task.standardOutput = stdOutPipe;
+        
+        //set task's stderr
+        task.standardError = stdErrPipe;
+    }
+    
+    //set task's path
+    task.launchPath = binaryPath;
+    
+    //set task's args
+    if(nil != arguments)
+    {
+        //set
+        task.arguments = arguments;
+    }
+    
+    //dbg msg
+    os_log_debug(logHandle, "execing task %{public}@ (arguments: %{public}@)", task.launchPath, task.arguments);
+    
+    //wrap task launch
+    @try
+    {
+        //launch
+        [task launch];
+    }
+    @catch(NSException *exception)
+    {
+        //err msg
+        os_log_debug(logHandle, "failed to launch task (%{public}@)", exception);
+        
+        //bail
+        goto bail;
+    }
+    
+    //no need to wait
+    // can just bail w/ no output
+    if( (YES != shouldWait) &&
+        (YES != grabOutput) )
+    {
+        //bail
+        goto bail;
+    }
+    
+    //wait
+    // ...but no output
+    else if( (YES == shouldWait) &&
+             (YES != grabOutput) )
+    {
+        //wait
+        [task waitUntilExit];
+        
+        //add exit code
+        results[EXIT_CODE] = [NSNumber numberWithInteger:task.terminationStatus];
+        
+        //bail
+        goto bail;
+    }
+    
+    //grab output?
+    // even if wait not set, still will wait!
+    else
+    {
+        //read in stdout/stderr
+        while(YES == [task isRunning])
+        {
+            //accumulate stdout
+            [stdOutData appendData:[stdOutReadHandle readDataToEndOfFile]];
+            
+            //accumulate stderr
+            [stdErrData appendData:[stdErrReadHandle readDataToEndOfFile]];
+        }
+        
+        //grab any leftover stdout
+        [stdOutData appendData:[stdOutReadHandle readDataToEndOfFile]];
+        
+        //grab any leftover stderr
+        [stdErrData appendData:[stdErrReadHandle readDataToEndOfFile]];
+        
+        //add stdout
+        if(0 != stdOutData.length)
+        {
+            //add
+            results[STDOUT] = stdOutData;
+        }
+        
+        //add stderr
+        if(0 != stdErrData.length)
+        {
+            //add
+            results[STDERR] = stdErrData;
+        }
+        
+        //add exit code
+        results[EXIT_CODE] = [NSNumber numberWithInteger:task.terminationStatus];
+    }
+
+bail:
+    
+    //dbg msg
+    os_log_debug(logHandle, "task completed with %@", results);
+    
+    return results;
+}
+
+
+//loads a framework
+// note: assumes it is in 'Framework' dir
+NSBundle* loadFramework(NSString* name)
+{
+    //handle
+    NSBundle* framework = nil;
+    
+    //framework path
+    NSString* path = nil;
+    
+    //init path
+    path = [NSString stringWithFormat:@"%@/../Frameworks/%@", [NSProcessInfo.processInfo.arguments[0] stringByDeletingLastPathComponent], name];
+    
+    //standardize path
+    path = [path stringByStandardizingPath];
+    
+    //init framework (bundle)
+    framework = [NSBundle bundleWithPath:path];
+    if(NULL == framework)
+    {
+        //bail
+        goto bail;
+    }
+    
+    //load framework
+    if(YES != [framework loadAndReturnError:nil])
+    {
+        //bail
+        goto bail;
+    }
+    
+bail:
+    
+    return framework;
+}
+
+//check if a file is restricted (SIP)
+BOOL isFileRestricted(NSString* file)
+{
+    //flag
+    BOOL restricted = NO;
+    
+    //info
+    struct stat info = {0};
+    
+    //clear
+    memset(&info, 0x0, sizeof(struct stat));
+    
+    //get file info
+    if(0 == lstat(file.UTF8String, &info))
+    {
+        //check flags
+        restricted = (BOOL)(info.st_flags & SF_RESTRICTED);
+    }
+    
+    return restricted;
+}
+
+//in dark mode?
+BOOL isDarkMode()
+{
+    return [[[NSUserDefaults standardUserDefaults] stringForKey:@"AppleInterfaceStyle"] isEqualToString:@"Dark"];
+}
+
+//running on M1?
+BOOL AppleSilicon(void)
+{
+    //flag
+    BOOL isAppleSilicon = NO;
+    
+    //type
+    cpu_type_t type = -1;
+    
+    //size
+    size_t size = 0;
+    
+    //mib
+    int mib[CTL_MAXNAME] = {0};
+    
+    //length
+    size_t length = CTL_MAXNAME;
+    
+    //get mib for 'proc_cputype'
+    if(noErr != sysctlnametomib("sysctl.proc_cputype", mib, &length))
+    {
+        //bail
+        goto bail;
+    }
+    
+    //add pid
+    mib[length] = getpid();
+    
+    //inc length
+    length++;
+    
+    //init size
+    size = sizeof(cpu_type_t);
+    
+    //get CPU type
+    if(noErr != sysctl(mib, (u_int)length, &type, &size, 0, 0))
+    {
+        //bail
+        goto bail;
+    }
+    
+    isAppleSilicon = (CPU_TYPE_ARM64 == type);
+    
+bail:
+    
+    return isAppleSilicon;
+}
+
+//show an alert
+NSModalResponse showAlert(NSString* messageText, NSString* informativeText)
+{
+    //alert
+    NSAlert* alert = nil;
+    
+    //response
+    NSModalResponse response = 0;
+    
+    //init alert
+    alert = [[NSAlert alloc] init];
+    
+    //set style
+    alert.alertStyle = NSAlertStyleWarning;
+    
+    //main text
+    alert.messageText = messageText;
+    
+    //add details
+    if(nil != informativeText)
+    {
+        //details
+        alert.informativeText = informativeText;
+    }
+    
+    //add button
+    [alert addButtonWithTitle:@"OK"];
+    
+    //make app active
+    [NSApp activateIgnoringOtherApps:YES];
+    
+    //show
+    response = [alert runModal];
+    
+    return response;
 }

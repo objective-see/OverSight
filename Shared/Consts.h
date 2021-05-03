@@ -1,76 +1,89 @@
 //
-//  Consts.h
-//  OverSight
+//  file: consts.h
+//  project: OverSight (shared)
+//  description: #defines and what not
 //
-//  Created by Patrick Wardle on 7/7/16.
-//  Copyright (c) 2016 Objective-See. All rights reserved.
+//  created by Patrick Wardle
+//  copyright (c) 2020 Objective-See. All rights reserved.
 //
 
-#ifndef OS_Consts_h
-#define OS_Consts_h
+#ifndef consts_h
+#define consts_h
 
-//success
-#define STATUS_SUCCESS 0
+//start at login
+#define PREF_AUTOSTART_MODE @"startAtLogin"
 
-//apps folder
-#define APPS_FOLDER @"/Applications"
+//disable 'inactive' alerts
+#define PREF_DISABLE_INACTIVE @"disableInactive"
+
+//pref
+// execute action
+#define PREF_EXECUTE_ACTION @"executeAction"
+
+//pref
+// execution path
+#define PREF_EXECUTE_PATH @"executePath"
+
+//pref
+// execute action
+#define PREF_EXECUTE_ACTION_ARGS @"executeActionArgs"
+
+//cs consts
+// from: cs_blobs.h
+#define CS_VALID 0x00000001
+#define CS_ADHOC 0x0000002
+#define CS_RUNTIME 0x00010000
+
+//patreon url
+#define PATREON_URL @"https://www.patreon.com/join/objective_see"
+
+//sentry crash reporting URL
+#define SENTRY_DSN @"https://729ac84fd0014ea1aa48ca46386546b6@o130950.ingest.sentry.io/5745525"
 
 //app name
-#define APP_NAME @"OverSight.app"
+#define PRODUCT_NAME @"OverSight"
 
-//app helper name
-#define APP_HELPER @"OverSight Helper"
+//bundle ID
+#define BUNDLE_ID "com.objective-see.oversight"
 
-//app helper XPC
-#define APP_HELPER_XPC @"OverSight XPC"
+//main app bundle id
+#define MAIN_APP_ID @"com.objective-see.oversight"
 
-//product url
-#define PRODUCT_URL @"https://objective-see.com/products/oversight.html"
+//helper (login item) ID
+#define HELPER_ID @"com.objective-see.oversight.helper"
+
+//installer (app) ID
+#define INSTALLER_ID @"com.objective-see.oversight.installer"
+
+//installer (helper) ID
+#define CONFIG_HELPER_ID @"com.objective-see.oversight.uninstallHelper"
+
+//signing auth
+#define SIGNING_AUTH @"Developer ID Application: Objective-See, LLC (VBG97UB4TA)"
 
 //product version url
 #define PRODUCT_VERSIONS_URL @"https://objective-see.com/products.json"
 
-//patreon url
-#define PATREON_URL @"https://www.patreon.com/objective_see"
+//product url
+#define PRODUCT_URL @"https://objective-see.com/products/oversight.html"
 
-//OS version x
-#define OS_MAJOR_VERSION_X 10
+//error(s) url
+#define ERRORS_URL @"https://objective-see.com/errors.html"
 
-//OS minor version yosemite
-#define OS_MINOR_VERSION_YOSEMITE 10
+//support us button tag
+#define BUTTON_SUPPORT_US 100
 
-//OS minor version el capitan
-#define OS_MINOR_VERSION_EL_CAPITAN 11
+//more info button tag
+#define BUTTON_MORE_INFO 101
 
-//install flag
-#define CMD_INSTALL "-install"
+//install cmd
+#define CMD_INSTALL @"-install"
 
-//uninstall flag
-#define CMD_UNINSTALL "-uninstall"
+//uninstall cmd
+#define CMD_UNINSTALL @"-uninstall"
 
-//action to install
-// ->also button title
-#define ACTION_INSTALL @"Install"
-
-//action to uninstall
-// ->also button title
-#define ACTION_UNINSTALL @"Uninstall"
-
-//button title
-// ->close
-#define ACTION_CLOSE @"Close"
-
-//button title
-// ->next
-#define ACTION_NEXT @"Next »"
-
-//button title
-// ->no
-#define ACTION_NO @"No"
-
-//button title
-// ->yes
-#define ACTION_YES @"Yes!"
+//install cmd
+#define CMD_UPGRADE @"-upgrade"
 
 //flag to uninstall
 #define ACTION_UNINSTALL_FLAG 0
@@ -78,65 +91,131 @@
 //flag to install
 #define ACTION_INSTALL_FLAG 1
 
-//flag for partial uninstall (leave whitelist)
-#define UNINSTALL_PARIAL 0
+//flag for partial uninstall
+// leave preferences file, etc.
+#define UNINSTALL_PARTIAL 0
 
 //flag for full uninstall
 #define UNINSTALL_FULL 1
 
-//error msg
-#define KEY_ERROR_MSG @"errorMsg"
+//add rule, block
+#define BUTTON_BLOCK 0
 
-//sub msg
-#define KEY_ERROR_SUB_MSG @"errorSubMsg"
+//add rule, allow
+#define BUTTON_ALLOW 1
 
-//error URL
-#define KEY_ERROR_URL @"errorURL"
+//prefs
+// disabled status
+#define PREF_IS_DISABLED @"disabled"
 
-//flag for error popup
-#define KEY_ERROR_SHOULD_EXIT @"shouldExit"
+//prefs
+// passive mode
+#define PREF_PASSIVE_MODE @"passiveMode"
 
-//errors url
-#define ERRORS_URL @"https://objective-see.com/errors.html"
+//prefs
+// icon mode
+#define PREF_NO_ICON_MODE @"noIconMode"
+
+//prefs
+// update mode
+#define PREF_NO_UPDATE_MODE @"noupdateMode"
+
+//allowed items (key)
+#define PREFS_ALLOWED_ITEMS @"allowedItems"
 
 //general error URL
 #define FATAL_ERROR_URL @"https://objective-see.com/errors.html"
 
-//path to preferences
-#define APP_PREFERENCES @"~/Library/Preferences/com.objective-see.OverSight.plist"
+//key for exit code
+#define EXIT_CODE @"exitCode"
 
-//log activity button
-#define PREF_LOG_ACTIVITY @"logActivity"
+//rules changed
+#define RULES_CHANGED @"com.objective-see.oversight.rulesChanged"
 
-//automatically check for updates button
-#define PREF_CHECK_4_UPDATES @"check4Updates"
+//first time flag
+#define INITIAL_LAUNCH @"-initialLaunch"
 
-//run in headless mode
-#define PREF_RUN_HEADLESS @"runHeadless"
+/* INSTALLER */
 
-//start at login
-#define PREF_START_AT_LOGIN @"startAtLogin"
+//menu: 'about'
+#define MENU_ITEM_ABOUT 0
 
-//disable 'inactive' alerts
-#define PREF_DISABLE_INACTIVE @"disableInactive"
+//menu: 'quit'
+#define MENU_ITEM_QUIT 1
 
-//keycode for 'q'
-#define KEYCODE_Q 0x0C
 
-//path to pkill
-#define PKILL @"/usr/bin/pkill"
+//app name
+#define APP_NAME @"OverSight.app"
 
-//path to xattr
-#define XATTR @"/usr/bin/xattr"
+//apps folder
+#define APPS_FOLDER @"/Applications"
+
+//frame shift
+// for status msg to avoid activity indicator
+#define FRAME_SHIFT 45
+
+//flag to close
+#define ACTION_CLOSE_FLAG -1
+
+//cmdline flag to uninstall
+#define ACTION_UNINSTALL @"-uninstall"
+
+//flag to uninstall
+#define ACTION_UNINSTALL_FLAG 0
+
+//cmdline flag to uninstall
+#define ACTION_INSTALL @"-install"
+
+//flag to install
+#define ACTION_INSTALL_FLAG 1
+
+//button title: upgrade
+#define ACTION_UPGRADE @"Upgrade"
+
+//button title: close
+#define ACTION_CLOSE @"Close"
+
+//button title: next
+#define ACTION_NEXT @"Next »"
+
+//show friends
+#define ACTION_SHOW_SUPPORT 4
+
+//support us
+#define ACTION_SUPPORT 5
+
+//register
+#define LSREGISTER @"/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/LaunchServices.framework/Versions/A/Support/lsregister"
+
+//path to open
+#define OPEN @"/usr/bin/open"
+
+//path to launchctl
+#define LAUNCHCTL @"/bin/launchctl"
+
+//path to defaults
+#define DEFAULTS @"/usr/bin/defaults"
+
+//path to kill all
+#define KILL_ALL @"/usr/bin/killall"
 
 //path to facetime
-#define FACE_TIME @"/Applications/FaceTime.app/Contents/MacOS/FaceTime"
+#define FACE_TIME @"/System/Applications/FaceTime.app/Contents/MacOS/FaceTime"
 
-//app support directory
-#define APP_SUPPORT_DIRECTORY @"Library/Application Support/Objective-See/OverSight"
+//rules window
+#define WINDOW_RULES 0
 
-//whitelist
-#define FILE_WHITELIST @"whitelist.plist"
+//preferences window
+#define WINDOW_PREFERENCES 1
+
+//key for stdout output
+#define STDOUT @"stdOutput"
+
+//key for stderr output
+#define STDERR @"stdError"
+
+//key for exit code
+#define EXIT_CODE @"exitCode"
 
 //event keys
 #define EVENT_DEVICE @"device"
@@ -145,43 +224,9 @@
 #define EVENT_PROCESS_ID @"processID"
 #define EVENT_ALERT_TYPE @"alertType"
 #define EVENT_ALERT_CLOSED @"eventClose"
-#define EVENT_PROCESS_NAME @"processName"
 #define EVENT_PROCESS_PATH @"processPath"
 
-//unknown process
-#define PROCESS_UNKNOWN @"<unknown>"
-
-//went inactive
-#define ALERT_INACTIVE @0x0
-
-//went active
-#define ALERT_ACTIVATE @0x1
-
-//source audio
-#define SOURCE_AUDIO @0x1
-
-//source video
-#define SOURCE_VIDEO @0x2
-
-//always allow button
-#define BUTTON_ALWAYS_ALLOW 100
-
-//no/close button
-#define BUTTON_NO 101
-
-//id (tag) for detailed text in rules table
-#define TABLE_ROW_SUB_TEXT_TAG 101
-
-//support us button tag
-#define BUTTON_SUPPORT_US 100
-
-//more info button tag
-#define BUTTON_MORE_INFO 101
-
-//log file name
-#define LOG_FILE_NAME @"OverSight.log"
-
-//log to file flag
-#define LOG_TO_FILE 0x10
+//av devices
+typedef enum {Device_Camera, Device_Microphone} AVDevice;
 
 #endif

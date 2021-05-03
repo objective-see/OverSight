@@ -2,9 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:Installer.xcodeproj">
+      location = "group:Installer/Installer.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:/Users/patrickw/objective-see/OverSight/OverSight.xcodeproj">
+      location = "group:Application/Application.xcodeproj">
    </FileRef>
 </Workspace>
