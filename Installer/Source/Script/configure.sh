@@ -38,3 +38,6 @@ rm -rf "${2}"
 killall "OverSight" 2> /dev/null
 killall "com.objective-see.OverSight.helper" 2> /dev/null
 killall "OverSight Helper" 2> /dev/null
+
+#happy
+exit 0
