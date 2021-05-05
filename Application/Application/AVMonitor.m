@@ -504,6 +504,9 @@ extern os_log_t logHandle;
 {
     //dbg msg
     os_log_debug(logHandle, "starting audio monitor");
+   
+    //built in mic
+    AudioObjectID builtInMic = 0;
     
     //msg count
     // used to correlate msgs
@@ -514,8 +517,22 @@ extern os_log_t logHandle;
     
     //init regex
     regex = [NSRegularExpression regularExpressionWithPattern:@"pid:(\\d*)," options:0 error:nil];
-        
-    //start logging
+    
+    //find built-in mic
+    builtInMic = [self findBuiltInMic];
+    if(0 != builtInMic)
+    {
+        //start (device) monitor
+        [self watchAudio:builtInMic];
+    }
+    //error :/
+    else
+    {
+        //err msg
+        os_log_error(logHandle, "ERROR: failed to find built-in mic");
+    }
+    
+    //start audio-related log monitoring
     // looking for tccd access msgs from coreaudio
     [self.audioLogMonitor start:[NSPredicate predicateWithFormat:@"process == 'coreaudiod' && subsystem == 'com.apple.TCC' && category == 'access'"] level:Log_Level_Info callback:^(OSLogEvent* event) {
         
@@ -628,7 +645,7 @@ extern os_log_t logHandle;
                 [self generateNotification:Device_Microphone state:NSControlStateValueOn client:client];
                     
                 //execute action
-                [self executeUserAction:Device_Microphone state:NSControlStateValueOn client:nil];
+                [self executeUserAction:Device_Microphone state:NSControlStateValueOn client:client];
                 
             });
         }
@@ -659,7 +676,7 @@ extern os_log_t logHandle;
     for(AVCaptureDevice* currentCamera in [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo])
     {
         //dbg msg
-        os_log_debug(logHandle, "device: %@/%@", currentCamera.manufacturer, currentCamera.localizedName);
+        os_log_debug(logHandle, "device: %{public}@/%{public}@", currentCamera.manufacturer, currentCamera.localizedName);
         
         //sanity check
         // make sure is has private 'connectionID' iVar
@@ -685,7 +702,7 @@ extern os_log_t logHandle;
         if(NSControlStateValueOn == [self getCameraStatus:connectionID])
         {
             //dbg msg
-            os_log_debug(logHandle, "device: %@/%@, is on!", currentCamera.manufacturer, currentCamera.localizedName);
+            os_log_debug(logHandle, "device: %{public}@/%{public}@, is on!", currentCamera.manufacturer, currentCamera.localizedName);
             
             //set
             cameraOn = YES;
@@ -700,21 +717,15 @@ bail:
     return cameraOn;
 }
 
-//is (any) camera on?
--(BOOL)isMicOn
+//get built-in mic
+-(AudioObjectID)findBuiltInMic
 {
-    //flag
-    BOOL isMicOn = NO;
-    
+    //mic
+    AudioObjectID builtInMic = 0;
+
     //selector for getting device id
     SEL methodSelector = nil;
-    
-    //device's connection id
-    unsigned int connectionID = 0;
-    
-    //dbg msg
-    os_log_debug(logHandle, "checking if built-in mic is active");
-    
+
     //init selector
     methodSelector = NSSelectorFromString(@"connectionID");
  
@@ -722,15 +733,10 @@ bail:
     for(AVCaptureDevice* currentMic in [AVCaptureDevice devicesWithMediaType:AVMediaTypeAudio])
     {
         //dbg msg
-        os_log_debug(logHandle, "device: %@/%@", currentMic.manufacturer, currentMic.localizedName);
+        os_log_debug(logHandle, "device: %{public}@/%{public}@", currentMic.manufacturer, currentMic.localizedName);
         
         //sanity check
-        // make sure is has private 'connectionID' iVar
-        if(YES != [currentMic respondsToSelector:methodSelector])
-        {
-            //skip
-            continue;
-        }
+        if(YES != [currentMic respondsToSelector:methodSelector]) continue;
         
         //check if apple
         // also check input source
@@ -738,35 +744,119 @@ bail:
             (YES == [[[currentMic activeInputSource] inputSourceID] isEqualToString:@"imic"]) )
         {
             //ignore leak warning
-            // ->we know what we're doing via this 'performSelector'
             #pragma clang diagnostic push
             #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
             
             //grab connection ID
-            connectionID = (unsigned int)[currentMic performSelector:NSSelectorFromString(@"connectionID") withObject:nil];
+            builtInMic = (unsigned int)[currentMic performSelector:methodSelector withObject:nil];
             
             //restore
             #pragma clang diagnostic pop
             
-            //get state
-            // is mic on?
-            if(NSControlStateValueOn == [self getMicState:connectionID])
-            {
-                //dbg msg
-                os_log_debug(logHandle, "device: %@/%@, is on!", currentMic.manufacturer, currentMic.localizedName);
-                
-                //set
-                isMicOn = YES;
-                
-                //done
-                break;
-            }
+            //done
+            break;
         }
     }
     
+    return builtInMic;
+    
+}
+
+//is built-in mic on?
+-(BOOL)isMicOn
+{
+    //flag
+    BOOL isMicOn = NO;
+    
+    //mic's ID
+    AudioObjectID builtInMic = 0;
+    
+    //dbg msg
+    os_log_debug(logHandle, "checking if built-in mic is active");
+    
+    //find mic
+    builtInMic = [self findBuiltInMic];
+    if( (0 != builtInMic) &&
+        (NSControlStateValueOn == [self getMicState:builtInMic]) )
+    {
+        //dbg msg
+        os_log_debug(logHandle, "built-in mic is on");
+        
+        //set
+        isMicOn = YES;
+    }
+
     return isMicOn;
 }
     
+//register for audio notifcations
+// ...only care about mic deactivation request
+-(BOOL)watchAudio:(AudioObjectID)builtInMic
+{
+    //ret var
+    BOOL bRegistered = NO;
+    
+    //status var
+    OSStatus status = -1;
+    
+    //property struct
+    AudioObjectPropertyAddress propertyStruct = {0};
+    
+    //init property struct's selector
+    propertyStruct.mSelector = kAudioDevicePropertyDeviceIsRunningSomewhere;
+    
+    //init property struct's scope
+    propertyStruct.mScope = kAudioObjectPropertyScopeGlobal;
+    
+    //init property struct's element
+    propertyStruct.mElement = kAudioObjectPropertyElementMaster;
+    
+    //block
+    // invoked when audio changes
+    AudioObjectPropertyListenerBlock listenerBlock = ^(UInt32 inNumberAddresses, const AudioObjectPropertyAddress *inAddresses)
+    {
+        //state
+        NSInteger state = -1;
+        
+        //get state
+        state = [self getMicState:builtInMic];
+        
+        //dbg msg
+        os_log_debug(logHandle, "built in mic changed state to %ld", (long)state);
+        
+        //mic off?
+        if(NSControlStateValueOff == state)
+        {
+            //dbg msg
+            os_log_debug(logHandle, "built in mic turned to off");
+            
+            //show notification
+            [self generateNotification:Device_Microphone state:NSControlStateValueOff client:nil];
+                
+            //execute action
+            [self executeUserAction:Device_Microphone state:NSControlStateValueOn client:nil];
+        }
+    };
+    
+    //add property listener for audio changes
+    status = AudioObjectAddPropertyListenerBlock(builtInMic, &propertyStruct, dispatch_get_main_queue(), listenerBlock);
+    if(noErr != status)
+    {
+        //err msg
+        os_log_error(logHandle, "ERROR: AudioObjectAddPropertyListenerBlock() failed with %d", status);
+        
+        //bail
+        goto bail;
+    }
+
+    //happy
+    bRegistered = YES;
+    
+bail:
+    
+    return bRegistered;
+}
+
 //determine if audio device is active
 -(UInt32)getMicState:(AudioObjectID)deviceID
 {
@@ -774,7 +864,7 @@ bail:
     OSStatus status = -1;
     
     //running flag
-    UInt32 isRunning = -1;
+    UInt32 isRunning = 0;
     
     //size of query flag
     UInt32 propertySize = 0;
@@ -801,8 +891,6 @@ bail:
     return isRunning;
 }
 
-
-
 //check if a specified video is active
 // note: on M1 this always says 'on' (smh apple)
 -(UInt32)getCameraStatus:(CMIODeviceID)deviceID
@@ -811,7 +899,7 @@ bail:
     OSStatus status = -1;
     
     //running flag
-    UInt32 isRunning = -1;
+    UInt32 isRunning = 0;
     
     //size of query flag
     UInt32 propertySize = 0;

@@ -1141,7 +1141,7 @@ BOOL toggleLoginItem(NSURL* loginItem, int toggleFlag)
         if(YES == alreadyAdded)
         {
             //dbg msg
-            os_log_debug(logHandle, "%@ already exists as a login item", loginItem);
+            os_log_debug(logHandle, "%{public}@ already exists as a login item", loginItem);
             
             //happy
             wasToggled = YES;

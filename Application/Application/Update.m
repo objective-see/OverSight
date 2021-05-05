@@ -95,7 +95,7 @@ extern os_log_t logHandle;
     latestVersion = [[productsVersionDictionary objectForKey:@"OverSight"] objectForKey:@"version"];
     
     //dbg msg
-    os_log_debug(logHandle, "latest version: %@", latestVersion);
+    os_log_debug(logHandle, "latest version: %{public}@", latestVersion);
     
 bail:
     
