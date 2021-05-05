@@ -184,8 +184,8 @@
 //support us
 #define ACTION_SUPPORT 5
 
-//register
-#define LSREGISTER @"/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/LaunchServices.framework/Versions/A/Support/lsregister"
+//path to xattr
+#define XATTR @"/usr/bin/xattr"
 
 //path to open
 #define OPEN @"/usr/bin/open"
@@ -222,8 +222,6 @@
 #define EVENT_TIMESTAMP @"timeStamp"
 #define EVENT_DEVICE_STATUS @"status"
 #define EVENT_PROCESS_ID @"processID"
-#define EVENT_ALERT_TYPE @"alertType"
-#define EVENT_ALERT_CLOSED @"eventClose"
 #define EVENT_PROCESS_PATH @"processPath"
 
 //av devices

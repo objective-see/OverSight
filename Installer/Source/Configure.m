@@ -395,6 +395,10 @@ bail:
     //init app dest
     applicationDest = [@"/Applications" stringByAppendingPathComponent:APP_NAME];
     
+    //remove xattrs
+    // otherwise app translocation may causes issues
+    execTask(XATTR, @[@"-rc", applicationDest], YES, NO);
+
     //copy
     if(YES != [NSFileManager.defaultManager copyItemAtPath:applicationSrc toPath:applicationDest error:&error])
     {

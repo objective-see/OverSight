@@ -602,6 +602,7 @@ extern os_log_t logHandle;
                 return;
             }
             
+            //is mic (really) on?
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                 
                 //make sure mic is on
@@ -629,10 +630,7 @@ extern os_log_t logHandle;
                 //execute action
                 [self executeUserAction:Device_Microphone state:NSControlStateValueOn client:nil];
                 
-                
             });
-            
-            
         }
     }];
     
@@ -913,7 +911,7 @@ bail:
         content.categoryIdentifier = @BUNDLE_ID;
         
         //set user info
-        content.userInfo = @{EVENT_DEVICE:@(Device_Camera), EVENT_PROCESS_ID:client.pid, EVENT_PROCESS_PATH:client.path};
+        content.userInfo = @{EVENT_DEVICE:@(device), EVENT_PROCESS_ID:client.pid, EVENT_PROCESS_PATH:client.path};
     }
     
     //init request
