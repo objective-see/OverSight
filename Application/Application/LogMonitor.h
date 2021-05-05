@@ -69,7 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
 /* METHODS */
 
 //start
--(BOOL)start:(NSPredicate*)predicate callback:(void(^)(OSLogEvent*))callback;
+-(BOOL)start:(NSPredicate*)predicate level:(NSUInteger)level callback:(void(^)(OSLogEvent*))callback;
 
 //stop
 -(void)stop;

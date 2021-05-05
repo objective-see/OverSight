@@ -72,7 +72,7 @@ bail:
 
 //start logging
 // pass in predicate to match, and callback
--(BOOL)start:(NSPredicate*)predicate callback:(void(^)(OSLogEvent*))callback
+-(BOOL)start:(NSPredicate*)predicate level:(NSUInteger)level callback:(void(^)(OSLogEvent*))callback
 {
     //flag
     BOOL started = NO;
@@ -172,7 +172,7 @@ bail:
     }
 
     //set debug & info flags
-    [self.liveStream setFlags:0x1];
+    [self.liveStream setFlags:level];
     
     //activate
     [self.liveStream activate];

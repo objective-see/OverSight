@@ -229,4 +229,7 @@
 //av devices
 typedef enum {Device_Camera, Device_Microphone} AVDevice;
 
+//log levels
+typedef enum {Log_Level_Default, Log_Level_Info, Log_Level_Debug} LogLevels;
+
 #endif

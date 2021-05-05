@@ -883,11 +883,10 @@ NSImage* getIconForProcess(NSString* path)
     
     //invalid path?
     // grab a default icon and bail
-    if(YES != [[NSFileManager defaultManager] fileExistsAtPath:path])
+    if(YES != [NSFileManager.defaultManager fileExistsAtPath:path])
     {
         //set icon to system 'application' icon
-        icon = [[NSWorkspace sharedWorkspace]
-                iconForFileType: NSFileTypeForHFSTypeCode(kGenericApplicationIcon)];
+        icon = [NSWorkspace.sharedWorkspace iconForFileType: NSFileTypeForHFSTypeCode(kGenericApplicationIcon)];
         
         //set size to 64 @2x
         [icon setSize:NSMakeSize(128, 128)];
@@ -902,7 +901,7 @@ NSImage* getIconForProcess(NSString* path)
     if(nil != appBundle)
     {
         //extract icon
-        icon = [[NSWorkspace sharedWorkspace] iconForFile:appBundle.bundlePath];
+        icon = [NSWorkspace.sharedWorkspace iconForFile:appBundle.bundlePath];
         if(nil != icon)
         {
             //done!

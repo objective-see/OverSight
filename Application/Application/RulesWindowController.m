@@ -71,6 +71,30 @@ extern os_log_t logHandle;
         
         //dbg msg
         os_log_debug(logHandle, "loaded %lu allowed items", (unsigned long)self.rules.count);
+        
+        //remove any non-existant (old) items
+        for(NSInteger i = self.rules.count-1; i >= 0; i--)
+        {
+            //item path
+            NSString* itemPath = nil;
+            
+            //extract
+            itemPath = self.rules[i][EVENT_PROCESS_PATH];
+            
+            //item no longer exists?
+            if(YES != [NSFileManager.defaultManager fileExistsAtPath:itemPath])
+            {
+                //dbg msg
+                os_log_debug(logHandle, "removing allowed item %{public}@, as it no longer exists", itemPath);
+                
+                //remove
+                [self.rules removeObjectAtIndex:i];
+            }
+        }
+        
+        //save & sync cleaned up list
+        [NSUserDefaults.standardUserDefaults setObject:self.rules forKey:PREFS_ALLOWED_ITEMS];
+        [NSUserDefaults.standardUserDefaults synchronize];
 
         //sort
         // case insenstive on name

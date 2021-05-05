@@ -14,11 +14,17 @@
 
 @interface AVMonitor : NSObject <UNUserNotificationCenterDelegate>
 
-//log monitor
-@property(nonatomic, retain)LogMonitor* logMonitor;
+//video log monitor
+@property(nonatomic, retain)LogMonitor* videoLogMonitor;
+
+//audio log monitor
+@property(nonatomic, retain)LogMonitor* audioLogMonitor;
 
 //clients
 @property(nonatomic, retain)NSMutableArray* clients;
+
+//audio clients
+@property(nonatomic, retain)NSMutableArray* audioClients;
 
 //camera state
 @property NSControlStateValue cameraState;

@@ -28,6 +28,7 @@ extern os_log_t logHandle;
 @implementation AVMonitor
 
 @synthesize clients;
+@synthesize audioClients;
 
 //init
 // create XPC connection & set remote obj interface
@@ -49,11 +50,17 @@ extern os_log_t logHandle;
     self = [super init];
     if(nil != self)
     {
-        //init log monitor
-        self.logMonitor = [[LogMonitor alloc] init];
+        //init video log monitor
+        self.videoLogMonitor = [[LogMonitor alloc] init];
         
-        //init clients
+        //init audio log monitor
+        self.audioLogMonitor = [[LogMonitor alloc] init];
+        
+        //init video clients
         self.clients = [NSMutableArray array];
+        
+        //init audio clients
+        self.audioClients = [NSMutableArray array];
         
         //set up delegate
         UNUserNotificationCenter.currentNotificationCenter.delegate = self;
@@ -65,23 +72,24 @@ extern os_log_t logHandle;
             os_log_debug(logHandle, "permission to display notifications granted? %d (error: %@)", granted, error);
             
             //not granted/error
-            if( (nil != error) &&
+            if( (nil != error) ||
                 (YES != granted) )
             {
                 //main thread?
                 if(YES == NSThread.isMainThread)
                 {
-                    //show an error alert
-                    showAlert(@"ERROR: permisssion not granted to display notifications", [NSString stringWithFormat:@"system error information: %@", error]);
+                    //show alert
+                    showAlert(@"ERROR: OverSight not authorized to display notifications!", @"Please authorize via the \"Notifications\" pane (in System Preferences).");
                 }
                 //bg thread
                 // show alert on main thread
                 else
                 {
+                    //on main thread
                     dispatch_async(dispatch_get_main_queue(),
                     ^{
-                        //show an error alert
-                        showAlert(@"ERROR: permisssion not granted to display notifications", [NSString stringWithFormat:@"system error information: %@", error]);
+                        //show alert
+                        showAlert(@"ERROR: OverSight not authorized to display notifications!", @"Please authorize via the \"Notifications\" pane (in System Preferences).");
                     });
                 }
             }
@@ -103,7 +111,7 @@ extern os_log_t logHandle;
         [UNUserNotificationCenter.currentNotificationCenter setNotificationCategories:[NSSet setWithObject:category]];
         
         //any active cameras
-        // only call on intel, since broken on M1
+        // only call on intel, since broken on M1 :/
         if(YES != AppleSilicon())
         {
             self.cameraState = [self isACameraOn];
@@ -123,6 +131,9 @@ extern os_log_t logHandle;
     //invoke appropriate architecute monitoring logic
     (YES == AppleSilicon()) ? [self monitorM1] : [self monitorIntel];
     
+    //monitor audio
+    [self startAudioMonitor];
+    
     return;
 }
 
@@ -134,7 +145,7 @@ extern os_log_t logHandle;
     os_log_debug(logHandle, "CPU architecuture: M1, will leverage 'appleh13camerad'");
     
     //start logging
-    [self.logMonitor start:[NSPredicate predicateWithFormat:@"process == 'appleh13camerad'"] callback:^(OSLogEvent* event) {
+    [self.videoLogMonitor start:[NSPredicate predicateWithFormat:@"process == 'appleh13camerad'"] level:Log_Level_Default callback:^(OSLogEvent* event) {
     
         //new client
         // add to list
@@ -170,12 +181,8 @@ extern os_log_t logHandle;
                     //show notification
                     [self generateNotification:Device_Camera state:NSControlStateValueOn client:client];
                     
-                    //execute user-specified action?
-                    if(YES == [NSUserDefaults.standardUserDefaults boolForKey:PREF_EXECUTE_ACTION])
-                    {
-                        //execute action
-                        [self executeUserAction:Device_Camera state:NSControlStateValueOff client:nil];
-                    }
+                    //execute action
+                    [self executeUserAction:Device_Camera state:NSControlStateValueOn client:nil];
                 }
                 
                 //will handle when "on" camera msg is delivered
@@ -209,12 +216,8 @@ extern os_log_t logHandle;
             //remove
             [self.clients removeLastObject];
             
-            //execute user-specified action?
-            if(YES == [NSUserDefaults.standardUserDefaults boolForKey:PREF_EXECUTE_ACTION])
-            {
-                //execute action
-                [self executeUserAction:Device_Camera state:NSControlStateValueOn client:client];
-            }
+            //execute action
+            [self executeUserAction:Device_Camera state:NSControlStateValueOn client:client];
         }
         
         //dead client
@@ -235,7 +238,7 @@ extern os_log_t logHandle;
                 @synchronized (self) {
                     
                 //find and remove client
-                for (NSInteger i = self.clients.count - 1; i >= 0; i--)
+                for(NSInteger i = self.clients.count - 1; i >= 0; i--)
                 {
                     if(pid != ((Client*)self.clients[i]).pid) continue;
                     
@@ -266,12 +269,8 @@ extern os_log_t logHandle;
                 //show notification
                 [self generateNotification:Device_Camera state:NSControlStateValueOff client:nil];
                 
-                //execute user-specified action?
-                if(YES == [NSUserDefaults.standardUserDefaults boolForKey:PREF_EXECUTE_ACTION])
-                {
-                    //execute action
-                    [self executeUserAction:Device_Camera state:NSControlStateValueOff client:nil];
-                }
+                //execute action
+                [self executeUserAction:Device_Camera state:NSControlStateValueOff client:nil];
             }
             else
             {
@@ -285,7 +284,7 @@ extern os_log_t logHandle;
     return;
 }
 
-
+//TODO: log info mode ...more info?
 //on Intel systems
 // monitor for video events via 'VDCAssistant'
 -(void)monitorIntel
@@ -298,7 +297,7 @@ extern os_log_t logHandle;
     __block unsigned long long msgCount = 0;
         
     //start logging
-    [self.logMonitor start:[NSPredicate predicateWithFormat:@"process == 'VDCAssistant'"] callback:^(OSLogEvent* event) {
+    [self.videoLogMonitor start:[NSPredicate predicateWithFormat:@"process == 'VDCAssistant'"] level:Log_Level_Default callback:^(OSLogEvent* event) {
     
         //inc
         msgCount++;
@@ -414,12 +413,8 @@ extern os_log_t logHandle;
             // ok if client is (still) nil...
             [self generateNotification:Device_Camera state:NSControlStateValueOn client:client];
             
-            //execute user-specified action?
-            if(YES == [NSUserDefaults.standardUserDefaults boolForKey:PREF_EXECUTE_ACTION])
-            {
-                //execute action
-                [self executeUserAction:Device_Camera state:NSControlStateValueOn client:client];
-            }
+            //execute action
+            [self executeUserAction:Device_Camera state:NSControlStateValueOn client:client];
         }
         
         //dead client
@@ -488,12 +483,8 @@ extern os_log_t logHandle;
                         //show notification
                         [self generateNotification:Device_Camera state:NSControlStateValueOff client:nil];
                         
-                        //execute user-specified action?
-                        if(YES == [NSUserDefaults.standardUserDefaults boolForKey:PREF_EXECUTE_ACTION])
-                        {
-                            //execute action
-                            [self executeUserAction:Device_Camera state:NSControlStateValueOff client:nil];
-                        }
+                        //execute action
+                        [self executeUserAction:Device_Camera state:NSControlStateValueOff client:nil];
                     }
                     else
                     {
@@ -501,18 +492,151 @@ extern os_log_t logHandle;
                         os_log_debug(logHandle, "user has set preference to ingore 'inactive' notifications");
                     }
                 }
+            });
+        }
+    }];
+    
+    return;
+}
+
+//start monitor audio
+-(void)startAudioMonitor
+{
+    //dbg msg
+    os_log_debug(logHandle, "starting audio monitor");
+    
+    //msg count
+    // used to correlate msgs
+    __block unsigned long long msgCount = 0;
+    
+    //pid extraction regex
+    NSRegularExpression* regex = nil;
+    
+    //init regex
+    regex = [NSRegularExpression regularExpressionWithPattern:@"pid:(\\d*)," options:0 error:nil];
+        
+    //start logging
+    // looking for tccd access msgs from coreaudio
+    [self.audioLogMonitor start:[NSPredicate predicateWithFormat:@"process == 'coreaudiod' && subsystem == 'com.apple.TCC' && category == 'access'"] level:Log_Level_Info callback:^(OSLogEvent* event) {
+        
+        //inc
+        msgCount++;
+        
+        //tcc request
+        if(YES == [event.composedMessage containsString:@"function=TCCAccessRequest, service=kTCCServiceMicrophone"])
+        {
+            //client
+            Client* client = nil;
+            
+            //pid
+            NSNumber* pid = nil;
+            
+            //match
+            NSTextCheckingResult* match = nil;
+            
+            //dbg msg
+            os_log_debug(logHandle, "new tcc access msg: %{public}@", event.composedMessage);
+            
+            //match/extract pid
+            match = [regex firstMatchInString:event.composedMessage options:0 range:NSMakeRange(0, event.composedMessage.length)];
+            
+            //no match?
+            if( (nil == match) ||
+                (NSNotFound == match.range.location) ||
+                (match.numberOfRanges < 2) )
+            {
+                //ignore
+                return;
+            }
+            
+            //extract pid
+            pid = @([[event.composedMessage substringWithRange:[match rangeAtIndex:1]] intValue]);
+            if(nil == pid)
+            {
+                //ignore
+                return;
+            }
+            
+            //init client
+            client = [[Client alloc] init];
+            client.msgCount = msgCount;
+            client.pid = pid;
+            client.path = getProcessPath(pid.intValue);
+            client.name = getProcessName(client.path);
+            
+            //dbg msg
+            os_log_debug(logHandle, "new client: %{public}@", client);
+            
+            //add client
+            [self.audioClients addObject:client];
+        }
+        
+        //auth ok msg
+        else if(YES == [event.composedMessage containsString:@"RECV: synchronous reply"])
+        {
+            //client
+            __block Client* client = nil;
+            
+            //(split) response
+            NSArray* response = nil;
+            
+            //dbg msg
+            os_log_debug(logHandle, "new client tccd response : %{public}@", event.composedMessage);
+            
+            //response
+            response = [event.composedMessage componentsSeparatedByString:@"\n"];
+            if( (response.count < 2) ||
+                (YES != [response[1] hasSuffix:@"2"]) ||
+                (YES != [response[1] containsString:@"auth_value"]) )
+            {
+                //ignore
+                return;
+            }
+                
+            //get last client
+            // check that it the one in the *last* msg
+            client = self.audioClients.lastObject;
+            if(client.msgCount != msgCount-1)
+            {
+                //ignore
+                return;
+            }
+            
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                
+                //make sure mic is on
+                if(YES != [self isMicOn])
+                {
+                    //dbg msg
+                    os_log_debug(logHandle, "mic is not on...");
+                    
+                    //ignore
+                    return;
+                }
+            
+                //more than one client?
+                // only use candiate client if it's the foreground
+                if( (0 != self.audioClients.count) &&
+                    (YES != [NSWorkspace.sharedWorkspace.frontmostApplication.executableURL.path isEqualToString:client.path]) )
+                {
+                    //reset
+                    client = nil;
+                }
+                    
+                //show notification
+                [self generateNotification:Device_Microphone state:NSControlStateValueOn client:client];
+                    
+                //execute action
+                [self executeUserAction:Device_Microphone state:NSControlStateValueOn client:nil];
                 
                 
             });
             
             
-            
         }
-    
     }];
     
     return;
-    
 }
 
 //is (any) camera on?
@@ -577,6 +701,108 @@ bail:
     
     return cameraOn;
 }
+
+//is (any) camera on?
+-(BOOL)isMicOn
+{
+    //flag
+    BOOL isMicOn = NO;
+    
+    //selector for getting device id
+    SEL methodSelector = nil;
+    
+    //device's connection id
+    unsigned int connectionID = 0;
+    
+    //dbg msg
+    os_log_debug(logHandle, "checking if built-in mic is active");
+    
+    //init selector
+    methodSelector = NSSelectorFromString(@"connectionID");
+ 
+    //look for mic that belongs to apple
+    for(AVCaptureDevice* currentMic in [AVCaptureDevice devicesWithMediaType:AVMediaTypeAudio])
+    {
+        //dbg msg
+        os_log_debug(logHandle, "device: %@/%@", currentMic.manufacturer, currentMic.localizedName);
+        
+        //sanity check
+        // make sure is has private 'connectionID' iVar
+        if(YES != [currentMic respondsToSelector:methodSelector])
+        {
+            //skip
+            continue;
+        }
+        
+        //check if apple
+        // also check input source
+        if( (YES == [currentMic.manufacturer isEqualToString:@"Apple Inc."]) &&
+            (YES == [[[currentMic activeInputSource] inputSourceID] isEqualToString:@"imic"]) )
+        {
+            //ignore leak warning
+            // ->we know what we're doing via this 'performSelector'
+            #pragma clang diagnostic push
+            #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+            
+            //grab connection ID
+            connectionID = (unsigned int)[currentMic performSelector:NSSelectorFromString(@"connectionID") withObject:nil];
+            
+            //restore
+            #pragma clang diagnostic pop
+            
+            //get state
+            // is mic on?
+            if(NSControlStateValueOn == [self getMicState:connectionID])
+            {
+                //dbg msg
+                os_log_debug(logHandle, "device: %@/%@, is on!", currentMic.manufacturer, currentMic.localizedName);
+                
+                //set
+                isMicOn = YES;
+                
+                //done
+                break;
+            }
+        }
+    }
+    
+    return isMicOn;
+}
+    
+//determine if audio device is active
+-(UInt32)getMicState:(AudioObjectID)deviceID
+{
+    //status var
+    OSStatus status = -1;
+    
+    //running flag
+    UInt32 isRunning = -1;
+    
+    //size of query flag
+    UInt32 propertySize = 0;
+    
+    //init size
+    propertySize = sizeof(isRunning);
+    
+    //query to get 'kAudioDevicePropertyDeviceIsRunningSomewhere' status
+    status = AudioDeviceGetProperty(deviceID, 0, false, kAudioDevicePropertyDeviceIsRunningSomewhere, &propertySize, &isRunning);
+    if(noErr != status)
+    {
+        //err msg
+        os_log_error(logHandle, "ERROR: getting status of audio device failed with %d", status);
+        
+        //set error
+        isRunning = -1;
+        
+        //bail
+        goto bail;
+    }
+    
+bail:
+    
+    return isRunning;
+}
+
 
 
 //check if a specified video is active
@@ -721,6 +947,16 @@ bail:
     
     //args
     NSMutableArray* args = nil;
+    
+    //execute user-specified action?
+    if(YES != [NSUserDefaults.standardUserDefaults boolForKey:PREF_EXECUTE_ACTION])
+    {
+        //dbg msg
+        os_log_debug(logHandle, "'execute action' is disabled");
+        
+        //bail
+        goto bail;
+    }
 
     //dbg msg
     os_log_debug(logHandle, "executing user action");
@@ -770,8 +1006,11 @@ bail:
 //stop monitor
 -(void)stop
 {
-    //stop logging
-    [self.logMonitor stop];
+    //stop video log monitoring
+    [self.videoLogMonitor stop];
+    
+    //stop audio log monitoring
+    [self.audioLogMonitor stop];
     
     return;
 }
