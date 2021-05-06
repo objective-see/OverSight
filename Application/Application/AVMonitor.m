@@ -29,6 +29,7 @@ extern os_log_t logHandle;
 
 @synthesize clients;
 @synthesize audioClients;
+@synthesize lastMicEvent;
 
 //init
 // create XPC connection & set remote obj interface
@@ -823,6 +824,23 @@ bail:
         
         //dbg msg
         os_log_debug(logHandle, "built in mic changed state to %ld", (long)state);
+        
+        //ingore if event is too soon
+        // macOS seems to toggle mic on/off on an off event :|
+        if( (nil != self.lastMicEvent) &&
+            ([[NSDate date] timeIntervalSinceDate:self.lastMicEvent] < 0.5f) )
+        {
+            //dbg msg
+            os_log_debug(logHandle, "ignoring mic event, as it happened <0.5s ");
+            
+            //update
+            self.lastMicEvent = [NSDate date];
+            
+            return;
+        }
+           
+        //update
+        self.lastMicEvent = [NSDate date];
         
         //mic off?
         if(NSControlStateValueOff == state)

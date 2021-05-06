@@ -32,6 +32,9 @@
 //microphone state
 @property NSControlStateValue microphoneState;
 
+//last microphone state
+@property(nonatomic, retain)NSDate* lastMicEvent;
+
 /* METHODS */
 
 //start

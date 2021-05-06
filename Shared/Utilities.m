@@ -1493,7 +1493,7 @@ NSMutableDictionary* execTask(NSString* binaryPath, NSArray* arguments, BOOL sho
 bail:
     
     //dbg msg
-    os_log_debug(logHandle, "task completed with %@", results);
+    os_log_debug(logHandle, "task completed with %{public}@", results);
     
     return results;
 }
