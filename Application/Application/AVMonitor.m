@@ -14,11 +14,6 @@
 #import "AVMonitor.h"
 #import "utilities.h"
 
-#import <CoreAudio/CoreAudio.h>
-#import <CoreMedia/CoreMedia.h>
-#import <Foundation/Foundation.h>
-#import <CoreMediaIO/CMIOHardware.h>
-
 
 /* GLOBALS */
 
@@ -812,9 +807,12 @@ bail:
     //init property struct's element
     propertyStruct.mElement = kAudioObjectPropertyElementMaster;
     
+    //weak self
+    __unsafe_unretained typeof(self)weakSelf = self;
+    
     //block
     // invoked when audio changes
-    AudioObjectPropertyListenerBlock listenerBlock = ^(UInt32 inNumberAddresses, const AudioObjectPropertyAddress *inAddresses)
+    self.listenerBlock = ^(UInt32 inNumberAddresses, const AudioObjectPropertyAddress *inAddresses)
     {
         //state
         NSInteger state = -1;
@@ -834,13 +832,13 @@ bail:
             os_log_debug(logHandle, "ignoring mic event, as it happened <0.5s ");
             
             //update
-            self.lastMicEvent = [NSDate date];
+            weakSelf.lastMicEvent = [NSDate date];
             
             return;
         }
            
         //update
-        self.lastMicEvent = [NSDate date];
+        weakSelf.lastMicEvent = [NSDate date];
         
         //mic off?
         if(NSControlStateValueOff == state)
@@ -849,15 +847,15 @@ bail:
             os_log_debug(logHandle, "built in mic turned to off");
             
             //show notification
-            [self generateNotification:Device_Microphone state:NSControlStateValueOff client:nil];
+            [weakSelf generateNotification:Device_Microphone state:NSControlStateValueOff client:nil];
                 
             //execute action
-            [self executeUserAction:Device_Microphone state:NSControlStateValueOn client:nil];
+            [weakSelf executeUserAction:Device_Microphone state:NSControlStateValueOn client:nil];
         }
     };
     
     //add property listener for audio changes
-    status = AudioObjectAddPropertyListenerBlock(builtInMic, &propertyStruct, dispatch_get_main_queue(), listenerBlock);
+    status = AudioObjectAddPropertyListenerBlock(builtInMic, &propertyStruct, dispatch_get_main_queue(), self.listenerBlock);
     if(noErr != status)
     {
         //err msg
@@ -873,6 +871,49 @@ bail:
 bail:
     
     return bRegistered;
+}
+
+//stop audio monitor
+-(void)stopAudioMonitor
+{
+    //status
+    OSStatus status = -1;
+    
+    //built in mic
+    AudioObjectID builtInMic = 0;
+    
+    //property struct
+    AudioObjectPropertyAddress propertyStruct = {0};
+    
+    //dbg msg
+    os_log_debug(logHandle, "stopping audio (device) monitor");
+    
+    //init property struct's selector
+    propertyStruct.mSelector = kAudioDevicePropertyDeviceIsRunningSomewhere;
+    
+    //init property struct's scope
+    propertyStruct.mScope = kAudioObjectPropertyScopeGlobal;
+    
+    //init property struct's element
+    propertyStruct.mElement = kAudioObjectPropertyElementMaster;
+    
+    //find built-in mic
+    builtInMic = [self findBuiltInMic];
+    if(0 != builtInMic)
+    {
+        //remove
+        status = AudioObjectRemovePropertyListenerBlock(builtInMic, &propertyStruct, dispatch_get_main_queue(), self.listenerBlock);
+        if(noErr != status)
+        {
+            //err msg
+            os_log_error(logHandle, "ERROR: 'AudioObjectRemovePropertyListenerBlock' failed with %d", status);
+        }
+    }
+    
+bail:
+    
+    return;
+    
 }
 
 //determine if audio device is active
@@ -1115,6 +1156,9 @@ bail:
     
     //stop audio log monitoring
     [self.audioLogMonitor stop];
+    
+    //stop audio (device) monitor
+    [self stopAudioMonitor];
     
     return;
 }

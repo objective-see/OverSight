@@ -10,6 +10,11 @@
 @import Foundation;
 @import UserNotifications;
 
+#import <CoreAudio/CoreAudio.h>
+#import <CoreMedia/CoreMedia.h>
+#import <Foundation/Foundation.h>
+#import <CoreMediaIO/CMIOHardware.h>
+
 #import "LogMonitor.h"
 
 @interface AVMonitor : NSObject <UNUserNotificationCenterDelegate>
@@ -25,6 +30,9 @@
 
 //audio clients
 @property(nonatomic, retain)NSMutableArray* audioClients;
+
+//audio (mic) callback
+@property(nonatomic, copy)AudioObjectPropertyListenerBlock listenerBlock;
 
 //camera state
 @property NSControlStateValue cameraState;

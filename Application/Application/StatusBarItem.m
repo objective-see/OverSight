@@ -204,8 +204,20 @@ enum menuItems
             //stop monitor
             if(YES == self.isDisabled)
             {
+                //dbg msg
+                os_log_debug(logHandle, "will stop monitor");
+                
                 //stop
                 [((AppDelegate*)[[NSApplication sharedApplication] delegate]).avMonitor stop];
+            }
+            //(re)start monitor
+            else
+            {
+                //dbg msg
+                os_log_debug(logHandle, "will (re)start monitor");
+                
+                //start
+                [((AppDelegate*)[[NSApplication sharedApplication] delegate]).avMonitor start];
             }
         
             break;

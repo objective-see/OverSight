@@ -39,6 +39,9 @@ extern os_log_t logHandle;
     //flag
     BOOL autoLaunched = NO;
     
+    //init
+    self.avMonitor = [[AVMonitor alloc] init];
+    
     //get real parent
     parent = getRealParent(getpid());
     
@@ -68,9 +71,6 @@ extern os_log_t logHandle;
     // kick off device monitoring
     if(YES != [NSUserDefaults.standardUserDefaults boolForKey:PREF_IS_DISABLED])
     {
-        //init
-        self.avMonitor = [[AVMonitor alloc] init];
-        
         //start
         [self.avMonitor start];
     }
