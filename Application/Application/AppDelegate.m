@@ -81,7 +81,6 @@ extern os_log_t logHandle;
         os_log_debug(logHandle, "is disabled, didn't start monitor");
     }
     
-    
     //automatically check for updates?
     if(YES != [NSUserDefaults.standardUserDefaults boolForKey:PREF_NO_UPDATE_MODE])
     {

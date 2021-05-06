@@ -54,7 +54,7 @@ enum menuItems
             
             //first time?
             // show popover
-            if(YES == [[[NSProcessInfo processInfo] arguments] containsObject:INITIAL_LAUNCH])
+            if(YES == [NSProcessInfo.processInfo.arguments containsObject:INITIAL_LAUNCH])
             {
                 //dbg msg
                 os_log_debug(logHandle, "initial launch, will show popover");
@@ -136,7 +136,7 @@ enum menuItems
     
     //show popover
     // have to wait cuz...
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1.0 * NSEC_PER_SEC), dispatch_get_main_queue(),
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1.5 * NSEC_PER_SEC), dispatch_get_main_queue(),
     ^{
        //show
        [self.popover showRelativeToRect:self.statusItem.button.bounds ofView:self.statusItem.button preferredEdge:NSMinYEdge];
@@ -144,7 +144,7 @@ enum menuItems
     
     //wait a bit
     // then automatically hide popup if user has not closed it
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3 * NSEC_PER_SEC), dispatch_get_main_queue(),
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3.5 * NSEC_PER_SEC), dispatch_get_main_queue(),
     ^{
         //still visible?
         // close it then...

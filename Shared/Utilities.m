@@ -1110,7 +1110,7 @@ BOOL toggleLoginItem(NSURL* loginItem, int toggleFlag)
     if(ACTION_INSTALL_FLAG == toggleFlag)
     {
         //dbg msg
-        os_log_debug(logHandle, "adding login item %@", loginItem);
+        os_log_debug(logHandle, "adding login item %{public}@", loginItem);
         
         //grab existing login items
         loginItems = LSSharedFileListCopySnapshot(loginItemsRef, nil);
@@ -1158,7 +1158,7 @@ BOOL toggleLoginItem(NSURL* loginItem, int toggleFlag)
         if(NULL != itemRef)
         {
             //dbg msg
-            os_log_debug(logHandle, "added %@/%@", loginItem, itemRef);
+            os_log_debug(logHandle, "added %{public}@/%{public}@", loginItem, itemRef);
             
             //release
             CFRelease(itemRef);
