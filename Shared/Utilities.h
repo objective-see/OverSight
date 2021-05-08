@@ -131,4 +131,6 @@ BOOL AppleSilicon(void);
 //show an alert
 NSModalResponse showAlert(NSString* messageText, NSString* informativeText);
 
+BOOL hasAdminPrivileges(void);
+
 #endif

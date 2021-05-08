@@ -242,7 +242,7 @@ bail:
     if(YES != [defaultManager copyItemAtPath:app toPath:appCopy error:&error])
     {
         //err msg
-        os_log_error(logHandle, "ERROR: failed to copy %@ to %@ (error: %@)", app, appCopy, error.description);
+        os_log_error(logHandle, "ERROR: failed to copy %{public}@ to %{public}@ (error: %@)", app, appCopy, error.description);
         
         //bail
         goto bail;

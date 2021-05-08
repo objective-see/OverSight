@@ -399,7 +399,7 @@ bail:
     if(YES != [NSFileManager.defaultManager copyItemAtPath:applicationSrc toPath:applicationDest error:&error])
     {
         //err msg
-        os_log_error(logHandle, "ERROR: failed to copy %@ -> %@ (error: %@)", applicationSrc, applicationDest, error);
+        os_log_error(logHandle, "ERROR: failed to copy %{public}@ -> %{public}@ (error: %@)", applicationSrc, applicationDest, error);
         
         //bail
         goto bail;

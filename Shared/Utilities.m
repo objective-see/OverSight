@@ -12,6 +12,8 @@
 #import "consts.h"
 #import "utilities.h"
 
+#import <pwd.h>
+#import <grp.h>
 #import <dlfcn.h>
 #import <signal.h>
 #import <unistd.h>
@@ -1646,4 +1648,45 @@ NSModalResponse showAlert(NSString* messageText, NSString* informativeText)
     response = [alert runModal];
     
     return response;
+}
+
+
+//checks if user has admin privs
+// ->based off http://stackoverflow.com/questions/30000443/asking-for-admin-privileges-for-only-standard-accounts
+BOOL hasAdminPrivileges()
+{
+    //flag
+    BOOL isAdmin = NO;
+    
+    //password entry
+    struct passwd* pwentry = NULL;
+    
+    //admin group
+    struct group* adminGroup = NULL;
+    
+    //get password entry for current user
+    pwentry = getpwuid(getuid());
+    
+    //get admin group
+    adminGroup = getgrnam("admin");
+    
+    //iterate over entries
+    // ->check if current user is part of the admin group
+    while(*adminGroup->gr_mem != NULL)
+    {
+        //check if admin
+        if (strcmp(pwentry->pw_name, *adminGroup->gr_mem) == 0)
+        {
+            //yay!
+            isAdmin = YES;
+            
+            //exit loop
+            break;
+        }
+        
+        //try next
+        adminGroup->gr_mem++;
+    }
+    
+    return isAdmin;
 }

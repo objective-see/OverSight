@@ -36,6 +36,16 @@ int main(int argc, char *argv[])
         options.debug = YES;
     }];
     
+    //user gotta be admin
+    if(YES != hasAdminPrivileges())
+    {
+        //show alert
+        showAlert(@"ERROR: Insuffient Privileges.", @"Administrator privileges are required to monitor the camera & microphone.");
+        
+        //bail
+        goto bail;
+    }
+    
     //cmdline install?
     if(YES == [NSProcessInfo.processInfo.arguments containsObject:CMD_INSTALL])
     {
