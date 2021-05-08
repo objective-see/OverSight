@@ -395,10 +395,6 @@ bail:
     //init app dest
     applicationDest = [@"/Applications" stringByAppendingPathComponent:APP_NAME];
     
-    //remove xattrs
-    // otherwise app translocation may causes issues
-    execTask(XATTR, @[@"-rc", applicationDest], YES, NO);
-
     //copy
     if(YES != [NSFileManager.defaultManager copyItemAtPath:applicationSrc toPath:applicationDest error:&error])
     {
@@ -411,6 +407,13 @@ bail:
     
     //dbg msg
     os_log_debug(logHandle, "copied %{public}@ -> %{public}@", applicationSrc, applicationDest);
+    
+    //remove xattrs
+    // otherwise app translocation may causes issues
+    execTask(XATTR, @[@"-rc", applicationDest], YES, NO);
+    
+    //dbg msg
+    os_log_debug(logHandle, "removed %{public}@'s xattrs", applicationDest);
     
     //happy
     wasInstalled = YES;

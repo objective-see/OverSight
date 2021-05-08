@@ -138,6 +138,12 @@ extern os_log_t logHandle;
 {
     //action
     NSInteger action = 0;
+    
+    //app path
+    NSURL* appPath = nil;
+    
+    //error
+    NSError* error = nil;
 
     //grab tag
     action = ((NSButton*)sender).tag;
@@ -206,11 +212,18 @@ extern os_log_t logHandle;
             // launch helper/login item
             if(YES == self.supportView.window.isVisible)
             {
-                //dbg msg
-                os_log_debug(logHandle, "now launching: %@", APP_NAME);
+                //init app path
+                appPath = [NSURL fileURLWithPath:[@"/Applications" stringByAppendingPathComponent:APP_NAME]];
                 
-                //launch helper app
-                execTask(OPEN, @[[@"/Applications" stringByAppendingPathComponent:APP_NAME], @"--args", INITIAL_LAUNCH], NO, NO);
+                //dbg msg
+                os_log_debug(logHandle, "now launching: %{public}@", appPath);
+                
+                //launch it
+                if(nil == [[NSWorkspace sharedWorkspace] launchApplicationAtURL:appPath options:0 configuration:@{NSWorkspaceLaunchConfigurationArguments:@[INITIAL_LAUNCH]} error:&error])
+                {
+                    //err msg
+                    os_log_error(logHandle, "ERROR: failed to launch %{public}@ (error: %{public}@)", appPath, error);
+                }
             }
             
             //close window
