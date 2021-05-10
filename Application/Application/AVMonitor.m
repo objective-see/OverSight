@@ -14,7 +14,6 @@
 #import "AVMonitor.h"
 #import "utilities.h"
 
-
 /* GLOBALS */
 
 //log handle
@@ -22,12 +21,11 @@ extern os_log_t logHandle;
 
 @implementation AVMonitor
 
-@synthesize clients;
+@synthesize videoClients;
 @synthesize audioClients;
 @synthesize lastMicEvent;
 
 //init
-// create XPC connection & set remote obj interface
 -(id)init
 {
     //action: allow
@@ -53,7 +51,7 @@ extern os_log_t logHandle;
         self.audioLogMonitor = [[LogMonitor alloc] init];
         
         //init video clients
-        self.clients = [NSMutableArray array];
+        self.videoClients = [NSMutableArray array];
         
         //init audio clients
         self.audioClients = [NSMutableArray array];
@@ -125,7 +123,7 @@ extern os_log_t logHandle;
     os_log_debug(logHandle, "starting AV monitoring");
     
     //invoke appropriate architecute monitoring logic
-    (YES == AppleSilicon()) ? [self monitorM1] : [self monitorIntel];
+    (YES == AppleSilicon()) ? [self startVideoMonitorM1] : [self startVideoMonitorIntel];
     
     //monitor audio
     [self startAudioMonitor];
@@ -135,19 +133,22 @@ extern os_log_t logHandle;
 
 //on M1 systems
 // monitor for video events via 'appleh13camerad'
--(void)monitorM1
+-(void)startVideoMonitorM1
 {
     //dbg msg
     os_log_debug(logHandle, "CPU architecuture: M1, will leverage 'appleh13camerad'");
     
     //start logging
-    [self.videoLogMonitor start:[NSPredicate predicateWithFormat:@"process == 'appleh13camerad'"] level:Log_Level_Default callback:^(OSLogEvent* event) {
+    [self.videoLogMonitor start:[NSPredicate predicateWithFormat:@"process == 'appleh13camerad'"] level:Log_Level_Default callback:^(OSLogEvent* logEvent) {
     
         //new client
         // add to list
-        if( (YES == [event.composedMessage hasPrefix:@"TCC access already allowed for pid"]) ||
-            (YES == [event.composedMessage hasPrefix:@"TCC preflight access returned allowed for pid"]) )
+        if( (YES == [logEvent.composedMessage hasPrefix:@"TCC access already allowed for pid"]) ||
+            (YES == [logEvent.composedMessage hasPrefix:@"TCC preflight access returned allowed for pid"]) )
         {
+            //event
+            Event* event = nil;
+            
             //client
             Client* client = nil;
             
@@ -155,10 +156,10 @@ extern os_log_t logHandle;
             NSNumber* pid = nil;
             
             //dbg msg
-            os_log_debug(logHandle, "new client msg: %{public}@", event.composedMessage);
+            os_log_debug(logHandle, "new (video) client msg: %{public}@", logEvent.composedMessage);
             
             //extract pid
-            pid = @([event.composedMessage componentsSeparatedByString:@" "].lastObject.intValue);
+            pid = @([logEvent.composedMessage componentsSeparatedByString:@" "].lastObject.intValue);
             if(nil != pid)
             {
                 //init client
@@ -168,78 +169,85 @@ extern os_log_t logHandle;
                 client.name = getProcessName(client.path);
                 
                 //dbg msg
-                os_log_debug(logHandle, "new client: %{public}@", client);
+                os_log_debug(logHandle, "new (video) client: %{public}@", client);
+                
+                //init event
+                event = [[Event alloc] init:client device:Device_Camera state:self.cameraState];
                 
                 //camera already on?
                 // show notifcation for new client
                 if(NSControlStateValueOn == self.cameraState)
                 {
                     //show notification
-                    [self generateNotification:Device_Camera state:NSControlStateValueOn client:client];
+                    [self generateNotification:event];
                     
                     //execute action
-                    [self executeUserAction:Device_Camera state:NSControlStateValueOn client:nil];
+                    [self executeUserAction:event];
                 }
                 
                 //will handle when "on" camera msg is delivered
                 else
                 {
                     //add client
-                    [self.clients addObject:client];
+                    [self.videoClients addObject:client];
                 }
             }
         }
         
         //camera on
         // show alert!
-        else if(YES == [event.composedMessage isEqualToString:@"StartStream : StartStream: Powering ON camera"])
+        else if(YES == [logEvent.composedMessage isEqualToString:@"StartStream : StartStream: Powering ON camera"])
         {
+            //event
+            Event* event = nil;
+            
             //client
             Client* client = nil;
             
             //dbg msg
-            os_log_debug(logHandle, "camera on msg: %{public}@", event.composedMessage);
+            os_log_debug(logHandle, "camera on msg: %{public}@", logEvent.composedMessage);
             
             //set state
             self.cameraState = NSControlStateValueOn;
             
             //last client should be responsible one
-            client = self.clients.lastObject;
+            client = self.videoClients.lastObject;
+            
+            //init event
+            event = [[Event alloc] init:client device:Device_Camera state:self.cameraState];
             
             //show notification
-            [self generateNotification:Device_Camera state:NSControlStateValueOn client:client];
-            
-            //remove
-            [self.clients removeLastObject];
+            [self generateNotification:event];
             
             //execute action
-            [self executeUserAction:Device_Camera state:NSControlStateValueOn client:client];
+            [self executeUserAction:event];
         }
         
         //dead client
         // remove from list
-        else if(YES == [event.composedMessage hasPrefix:@"Removing client: pid"])
+        else if(YES == [logEvent.composedMessage hasPrefix:@"Removing client: pid"])
         {
             //pid
             NSNumber* pid = 0;
             
             //dbg msg
-            os_log_debug(logHandle, "removed client msg: %{public}@", event.composedMessage);
+            os_log_debug(logHandle, "removed client msg: %{public}@", logEvent.composedMessage);
             
             //extract pid
-            pid = @([event.composedMessage componentsSeparatedByString:@" "].lastObject.intValue);
+            pid = @([logEvent.composedMessage componentsSeparatedByString:@" "].lastObject.intValue);
             if(nil != pid)
             {
                 //sync
                 @synchronized (self) {
                     
                 //find and remove client
-                for(NSInteger i = self.clients.count - 1; i >= 0; i--)
+                for(NSInteger i = self.videoClients.count - 1; i >= 0; i--)
                 {
-                    if(pid != ((Client*)self.clients[i]).pid) continue;
+                    //pid doesn't match?
+                    if(pid != ((Client*)self.videoClients[i]).pid) continue;
                     
                     //remove
-                    [self.clients removeObjectAtIndex:i];
+                    [self.videoClients removeObjectAtIndex:i];
                         
                     //dbg msg
                     os_log_debug(logHandle, "removed client at index %ld", (long)i);
@@ -251,28 +259,45 @@ extern os_log_t logHandle;
         
         //camera off
         // show inactive notification
-        else if(YES == [event.composedMessage hasPrefix:@"StopStream : Powering OFF camera"])
+        else if(YES == [logEvent.composedMessage hasPrefix:@"StopStream : Powering OFF camera"])
         {
+            //event
+            Event* event = nil;
+            
             //dbg msg
-            os_log_debug(logHandle, "camera off msg: %{public}@", event.composedMessage);
+            os_log_debug(logHandle, "camera off msg: %{public}@", logEvent.composedMessage);
             
             //set state
             self.cameraState = NSControlStateValueOff;
+            
+            //init event
+            event = [[Event alloc] init:nil device:Device_Camera state:self.cameraState];
             
             //show inactive notifcations?
             if(YES != [NSUserDefaults.standardUserDefaults boolForKey:PREF_DISABLE_INACTIVE])
             {
                 //show notification
-                [self generateNotification:Device_Camera state:NSControlStateValueOff client:nil];
+                [self generateNotification:event];
                 
                 //execute action
-                [self executeUserAction:Device_Camera state:NSControlStateValueOff client:nil];
+                [self executeUserAction:event];
             }
             else
             {
                 //dbg msg
                 os_log_debug(logHandle, "user has set preference to ingore 'inactive' notifications");
             }
+            
+            //sync
+            @synchronized (self) {
+                    
+                //remove
+                [self.videoClients removeAllObjects];
+                
+                //dbg msg
+                os_log_debug(logHandle, "removed all (video) clients");
+             
+            }//sync
         }
     
     }];
@@ -282,7 +307,7 @@ extern os_log_t logHandle;
 
 //on Intel systems
 // monitor for video events via 'VDCAssistant'
--(void)monitorIntel
+-(void)startVideoMonitorIntel
 {
     //dbg msg
     os_log_debug(logHandle, "CPU architecuture: Intel ...will leverage 'VDCAssistant'");
@@ -292,14 +317,14 @@ extern os_log_t logHandle;
     __block unsigned long long msgCount = 0;
         
     //start logging
-    [self.videoLogMonitor start:[NSPredicate predicateWithFormat:@"process == 'VDCAssistant'"] level:Log_Level_Default callback:^(OSLogEvent* event) {
+    [self.videoLogMonitor start:[NSPredicate predicateWithFormat:@"process == 'VDCAssistant'"] level:Log_Level_Default callback:^(OSLogEvent* logEvent) {
     
         //inc
         msgCount++;
         
         //new client
         // add to list
-        if(YES == [event.composedMessage hasPrefix:@"Client Connect for PID"])
+        if(YES == [logEvent.composedMessage hasPrefix:@"Client Connect for PID"])
         {
             //client
             Client* client = nil;
@@ -308,10 +333,10 @@ extern os_log_t logHandle;
             NSNumber* pid = nil;
             
             //dbg msg
-            os_log_debug(logHandle, "new client msg: %{public}@", event.composedMessage);
+            os_log_debug(logHandle, "new client msg: %{public}@", logEvent.composedMessage);
             
             //extract pid
-            pid = @([event.composedMessage componentsSeparatedByString:@" "].lastObject.intValue);
+            pid = @([logEvent.composedMessage componentsSeparatedByString:@" "].lastObject.intValue);
             if(nil != pid)
             {
                 //init client
@@ -322,15 +347,15 @@ extern os_log_t logHandle;
                 client.name = getProcessName(client.path);
                 
                 //dbg msg
-                os_log_debug(logHandle, "new client: %{public}@", client);
+                os_log_debug(logHandle, "new (video) client: %{public}@", client);
                 
                 //add client
-                [self.clients addObject:client];
+                [self.videoClients addObject:client];
             }
         }
         //client w/ id msg
         // update (last) client, with client id
-        else if(YES == [event.composedMessage containsString:@"GetDevicesState for client"])
+        else if(YES == [logEvent.composedMessage containsString:@"GetDevicesState for client"])
         {
             //client
             Client* client = nil;
@@ -339,15 +364,15 @@ extern os_log_t logHandle;
             NSNumber* clientID = nil;
             
             //dbg msg
-            os_log_debug(logHandle, "new client id msg : %{public}@", event.composedMessage);
+            os_log_debug(logHandle, "new client id msg : %{public}@", logEvent.composedMessage);
             
             //extract client id
-            clientID = @([event.composedMessage componentsSeparatedByString:@" "].lastObject.intValue);
+            clientID = @([logEvent.composedMessage componentsSeparatedByString:@" "].lastObject.intValue);
             if(0 != clientID)
             {
                 //get last client
                 // check that it the one in the *last* msg
-                client = self.clients.lastObject;
+                client = self.videoClients.lastObject;
                 if(client.msgCount == msgCount-1)
                 {
                     //add id
@@ -358,8 +383,11 @@ extern os_log_t logHandle;
         
         //camera on (for client)
         // show notification
-        else if(YES == [event.composedMessage containsString:@"StartStream for client"])
+        else if(YES == [logEvent.composedMessage containsString:@"StartStream for client"])
         {
+            //event
+            Event* event = nil;
+            
             //client
             Client* client = nil;
             
@@ -367,17 +395,17 @@ extern os_log_t logHandle;
             NSNumber* clientID = nil;
             
             //dbg msg
-            os_log_debug(logHandle, "camera on msg: %{public}@", event.composedMessage);
+            os_log_debug(logHandle, "camera on msg: %{public}@", logEvent.composedMessage);
             
             //set state
             self.cameraState = NSControlStateValueOn;
             
             //extract client id
-            clientID = @([event.composedMessage componentsSeparatedByString:@" "].lastObject.intValue);
+            clientID = @([logEvent.composedMessage componentsSeparatedByString:@" "].lastObject.intValue);
             if(0 != clientID)
             {
                 //find client w/ matching id
-                for(Client* candidateClient in self.clients)
+                for(Client* candidateClient in self.videoClients)
                 {
                     //match?
                     if(candidateClient.clientID == clientID)
@@ -395,28 +423,31 @@ extern os_log_t logHandle;
                 if(nil == client)
                 {
                     //facetime check?
-                    if( (YES == [((Client*)self.clients.lastObject).path isEqualToString:FACE_TIME]) &&
+                    if( (YES == [((Client*)self.videoClients.lastObject).path isEqualToString:FACE_TIME]) &&
                         (YES == [NSWorkspace.sharedWorkspace.frontmostApplication.executableURL.path isEqualToString:FACE_TIME]) )
                     {
                         //set
-                        client = self.clients.lastObject;
+                        client = self.videoClients.lastObject;
                     }
                 }
             }
             
+            //init event
+            event = [[Event alloc] init:client device:Device_Camera state:self.cameraState];
+            
             //show notification
             // ok if client is (still) nil...
-            [self generateNotification:Device_Camera state:NSControlStateValueOn client:client];
+            [self generateNotification:event];
             
             //execute action
-            [self executeUserAction:Device_Camera state:NSControlStateValueOn client:client];
+            [self executeUserAction:event];
         }
         
         //dead client
         // remove from list
         // e.x. "ClientDied 1111 [PID: 2222]"
-        else if( (YES == [event.composedMessage hasPrefix:@"ClientDied "]) &&
-                 (YES == [event.composedMessage hasSuffix:@"]"]) )
+        else if( (YES == [logEvent.composedMessage hasPrefix:@"ClientDied "]) &&
+                 (YES == [logEvent.composedMessage hasSuffix:@"]"]) )
         {
             //message (trimmed)
             NSString* message = nil;
@@ -425,11 +456,11 @@ extern os_log_t logHandle;
             NSNumber* pid = 0;
             
             //dbg msg
-            os_log_debug(logHandle, "dead client msg: %{public}@", event.composedMessage);
+            os_log_debug(logHandle, "dead client msg: %{public}@", logEvent.composedMessage);
             
             //init message
             // trim off last ']'
-            message = [event.composedMessage substringToIndex:event.composedMessage.length - 1];
+            message = [logEvent.composedMessage substringToIndex:logEvent.composedMessage.length - 1];
             
             //extract pid
             pid = @([message componentsSeparatedByString:@" "].lastObject.intValue);
@@ -438,17 +469,18 @@ extern os_log_t logHandle;
                 //sync
                 @synchronized (self) {
                 
-                for(NSInteger i = self.clients.count - 1; i >= 0; i--)
+                //iterate over and remove
+                for(NSInteger i = self.videoClients.count - 1; i >= 0; i--)
                 {
                     //no match?
-                    if(pid != ((Client*)self.clients[i]).pid)
+                    if(pid != ((Client*)self.videoClients[i]).pid)
                     {
                         //skip
                         continue;
                     }
                     
                     //remove
-                    [self.clients removeObjectAtIndex:i];
+                    [self.videoClients removeObjectAtIndex:i];
                         
                     //dbg msg
                     os_log_debug(logHandle, "removed client at index %ld", (long)i);
@@ -459,12 +491,15 @@ extern os_log_t logHandle;
         }
         
         //camera off
-        else if(YES == [event.composedMessage containsString:@"Post event kCameraStreamStop"])
+        else if(YES == [logEvent.composedMessage containsString:@"Post event kCameraStreamStop"])
         {
             //dbg msg
-            os_log_debug(logHandle, "camera off msg: %{public}@", event.composedMessage);
+            os_log_debug(logHandle, "camera off msg: %{public}@", logEvent.composedMessage);
             
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                
+                //event
+                Event* event = nil;
                 
                 //all camera's off?
                 if(YES != [self isACameraOn])
@@ -472,14 +507,17 @@ extern os_log_t logHandle;
                     //set state
                     self.cameraState = NSControlStateValueOff;
                     
+                    //init event
+                    event = [[Event alloc] init:nil device:Device_Camera state:self.cameraState];
+                    
                     //show inactive notifcations?
                     if(YES != [NSUserDefaults.standardUserDefaults boolForKey:PREF_DISABLE_INACTIVE])
                     {
                         //show notification
-                        [self generateNotification:Device_Camera state:NSControlStateValueOff client:nil];
+                        [self generateNotification:event];
                         
                         //execute action
-                        [self executeUserAction:Device_Camera state:NSControlStateValueOff client:nil];
+                        [self executeUserAction:event];
                     }
                     else
                     {
@@ -528,7 +566,7 @@ extern os_log_t logHandle;
     if(0 != builtInMic)
     {
         //start (device) monitor
-        [self watchAudio:builtInMic];
+        [self watchAudioDevice:builtInMic];
     }
     //error :/
     else
@@ -539,7 +577,7 @@ extern os_log_t logHandle;
     
     //start audio-related log monitoring
     // looking for tccd access msgs from coreaudio
-    [self.audioLogMonitor start:[NSPredicate predicateWithFormat:@"process == 'coreaudiod' && subsystem == 'com.apple.TCC' && category == 'access'"] level:Log_Level_Info callback:^(OSLogEvent* event) {
+    [self.audioLogMonitor start:[NSPredicate predicateWithFormat:@"process == 'coreaudiod' && subsystem == 'com.apple.TCC' && category == 'access'"] level:Log_Level_Info callback:^(OSLogEvent* logEvent) {
         
         //inc
         msgCount++;
@@ -548,7 +586,7 @@ extern os_log_t logHandle;
         if(@available(macOS 10.16, *))
         {
             //tcc request
-            if(YES == [event.composedMessage containsString:@"function=TCCAccessRequest, service=kTCCServiceMicrophone"])
+            if(YES == [logEvent.composedMessage containsString:@"function=TCCAccessRequest, service=kTCCServiceMicrophone"])
             {
                 //client
                 Client* client = nil;
@@ -560,10 +598,10 @@ extern os_log_t logHandle;
                 NSTextCheckingResult* match = nil;
                 
                 //dbg msg
-                os_log_debug(logHandle, "new tcc access msg: %{public}@", event.composedMessage);
+                os_log_debug(logHandle, "new tcc access msg: %{public}@", logEvent.composedMessage);
                 
                 //match/extract pid
-                match = [regex firstMatchInString:event.composedMessage options:0 range:NSMakeRange(0, event.composedMessage.length)];
+                match = [regex firstMatchInString:logEvent.composedMessage options:0 range:NSMakeRange(0, logEvent.composedMessage.length)];
                 
                 //no match?
                 if( (nil == match) ||
@@ -575,7 +613,7 @@ extern os_log_t logHandle;
                 }
                 
                 //extract pid
-                pid = @([[event.composedMessage substringWithRange:[match rangeAtIndex:1]] intValue]);
+                pid = @([[logEvent.composedMessage substringWithRange:[match rangeAtIndex:1]] intValue]);
                 if(nil == pid)
                 {
                     //ignore
@@ -590,18 +628,21 @@ extern os_log_t logHandle;
                 client.name = getProcessName(client.path);
                 
                 //dbg msg
-                os_log_debug(logHandle, "new client: %{public}@", client);
+                os_log_debug(logHandle, "new (audio) client: %{public}@", client);
                 
                 //add client
                 [self.audioClients addObject:client];
+                
+                //done
+                return;
             }
         }
         //macOS 10.15
         else
-        {            
+        {
             //tcc request
-            if( (YES == [event.composedMessage containsString:@"TCCAccessRequest"]) &&
-                (YES == [event.composedMessage containsString:@"kTCCServiceMicrophone"]) )
+            if( (YES == [logEvent.composedMessage containsString:@"TCCAccessRequest"]) &&
+                (YES == [logEvent.composedMessage containsString:@"kTCCServiceMicrophone"]) )
             {
                 //client
                 Client* client = nil;
@@ -619,10 +660,10 @@ extern os_log_t logHandle;
                 NSTextCheckingResult* match = nil;
                 
                 //dbg msg
-                os_log_debug(logHandle, "new tcc access msg: %{public}@", event.composedMessage);
+                os_log_debug(logHandle, "new tcc access msg: %{public}@", logEvent.composedMessage);
                 
                 //match/extract pid
-                match = [regex firstMatchInString:event.composedMessage options:0 range:NSMakeRange(0, event.composedMessage.length)];
+                match = [regex firstMatchInString:logEvent.composedMessage options:0 range:NSMakeRange(0, logEvent.composedMessage.length)];
                 
                 //no match?
                 if( (nil == match) ||
@@ -633,7 +674,7 @@ extern os_log_t logHandle;
                 }
                 
                 //extract token
-                token = [event.composedMessage substringWithRange:[match rangeAtIndex:0]];
+                token = [logEvent.composedMessage substringWithRange:[match rangeAtIndex:0]];
                 if(token.length < 46) return;
                 
                 //extract pid
@@ -651,16 +692,23 @@ extern os_log_t logHandle;
                 client.name = getProcessName(client.path);
                 
                 //dbg msg
-                os_log_debug(logHandle, "new client: %{public}@", client);
+                os_log_debug(logHandle, "new (audio) client: %{public}@", client);
                 
                 //add client
                 [self.audioClients addObject:client];
+                
+                //done
+                return;
             }
         }
        
         //tcc auth response
-        // check that a) auth ok b) msg is right after request
-        if(YES == [event.composedMessage containsString:@"synchronous reply"])
+        // check that a) auth ok b) msg is right after new request
+        //            c) mic is still on d) process is still alive
+        // then trigger notification
+        if( (YES == [logEvent.composedMessage containsString:@"RECV: synchronous reply"]) ||
+            (YES == [logEvent.composedMessage containsString:@"Received synchronous reply"]) )
+            
         {
             //client
             __block Client* client = nil;
@@ -669,11 +717,11 @@ extern os_log_t logHandle;
             BOOL isAuthorized = NO;
             
             //dbg msg
-            os_log_debug(logHandle, "new client tccd response : %{public}@", event.composedMessage);
+            os_log_debug(logHandle, "new client tccd response : %{public}@", logEvent.composedMessage);
             
-            // look for:
-            //"result" => <bool: 0x1fcca5e70>: true
-            for(NSString* response in [event.composedMessage componentsSeparatedByString:@"\n"])
+            //look for:
+            // "result" => <bool: xxx>: true
+            for(NSString* response in [logEvent.composedMessage componentsSeparatedByString:@"\n"])
             {
                 //no match?
                 if( (YES != [response hasSuffix:@"true"]) ||
@@ -700,12 +748,18 @@ extern os_log_t logHandle;
                 //ignore
                 return;
             }
-            
+        
             //is mic (really) on?
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                 
+                //event
+                Event* event = nil;
+                
+                //set mic state
+                self.microphoneState = [self isMicOn];
+                
                 //make sure mic is on
-                if(YES != [self isMicOn])
+                if(YES != self.microphoneState)
                 {
                     //dbg msg
                     os_log_debug(logHandle, "mic is not on...");
@@ -713,22 +767,53 @@ extern os_log_t logHandle;
                     //ignore
                     return;
                 }
+                
+                //make sure process is still alive
+                if(YES != isProcessAlive(client.pid.intValue))
+                {
+                    //dbg msg
+                    os_log_debug(logHandle, "%@ is no longer alive, so ignoring", client.name);
+                    
+                    //ignore
+                    return;
+                }
             
                 //more than one client?
-                // only use candiate client if it's the foreground
-                if( (0 != self.audioClients.count) &&
-                    (YES != [NSWorkspace.sharedWorkspace.frontmostApplication.executableURL.path isEqualToString:client.path]) )
+                // only use candiate client if:
+                // a) it's the foreground and b) the last event was from a different client
+                if(1 != self.audioClients.count)
                 {
-                    //reset
-                    client = nil;
+                    //dbg msg
+                    os_log_debug(logHandle, "more than one audio client (total: %lu)", (unsigned long)self.audioClients.count);
+                    
+                    //TODO: rem
+                    os_log_debug(logHandle, "last client: %{public}@ vs. this client: %{public}@", self.lastMicEvent.client, client.path);
+                    
+                    //not foreground?
+                    if(YES != [NSWorkspace.sharedWorkspace.frontmostApplication.executableURL.path isEqualToString:client.path])
+                    {
+                        //reset
+                        client = nil;
+                    }
+                    
+                    //last event was same client?
+                    else if( (self.lastMicEvent.client.pid == client.pid) &&
+                             (YES == [self.lastMicEvent.client.path isEqualToString:client.path]) )
+                    {
+                        //reset
+                        client = nil;
+                    }
                 }
+               
+                //init event
+                event = [[Event alloc] init:client device:Device_Microphone state:self.microphoneState];
                     
                 //show notification
-                [self generateNotification:Device_Microphone state:NSControlStateValueOn client:client];
+                [self generateNotification:event];
                     
                 //execute action
-                [self executeUserAction:Device_Microphone state:NSControlStateValueOn client:client];
-                
+                [self executeUserAction:event];
+            
             });
         }
     }];
@@ -878,8 +963,8 @@ bail:
 }
     
 //register for audio notifcations
-// ...only care about mic deactivation request
--(BOOL)watchAudio:(AudioObjectID)builtInMic
+// ...only care about mic deactivation events
+-(BOOL)watchAudioDevice:(AudioObjectID)builtInMic
 {
     //ret var
     BOOL bRegistered = NO;
@@ -909,28 +994,17 @@ bail:
         //state
         NSInteger state = -1;
         
+        //event
+        Event* event = nil;
+        
         //get state
         state = [self getMicState:builtInMic];
         
         //dbg msg
         os_log_debug(logHandle, "built in mic changed state to %ld", (long)state);
         
-        //ingore if event is too soon
-        // macOS seems to toggle mic on/off on an off event :|
-        if( (nil != self.lastMicEvent) &&
-            ([[NSDate date] timeIntervalSinceDate:self.lastMicEvent] < 0.5f) )
-        {
-            //dbg msg
-            os_log_debug(logHandle, "ignoring mic event, as it happened <0.5s ");
-            
-            //update
-            weakSelf.lastMicEvent = [NSDate date];
-            
-            return;
-        }
-           
-        //update
-        weakSelf.lastMicEvent = [NSDate date];
+        //init event
+        event = [[Event alloc] init:nil device:Device_Microphone state:state];
         
         //mic off?
         if(NSControlStateValueOff == state)
@@ -938,11 +1012,22 @@ bail:
             //dbg msg
             os_log_debug(logHandle, "built in mic turned to off");
             
+            //sync
+            @synchronized (weakSelf) {
+                    
+                //remove
+                [weakSelf.audioClients removeAllObjects];
+                
+                //dbg msg
+                os_log_debug(logHandle, "removed all (audio) clients");
+             
+            }//sync
+            
             //show notification
-            [weakSelf generateNotification:Device_Microphone state:NSControlStateValueOff client:nil];
+            [weakSelf generateNotification:event];
                 
             //execute action
-            [weakSelf executeUserAction:Device_Microphone state:NSControlStateValueOn client:nil];
+            [weakSelf executeUserAction:event];
         }
     };
     
@@ -1096,7 +1181,7 @@ bail:
 }
 
 //build and display notification
--(void)generateNotification:(AVDevice)device state:(NSControlStateValue)state client:(Client*)client
+-(void)generateNotification:(Event*)event
 {
     //notification content
     UNMutableNotificationContent* content = nil;
@@ -1110,19 +1195,37 @@ bail:
     //title
     NSMutableString* title = nil;
     
+    //(new) mic event?
+    if(Device_Microphone == event.device)
+    {
+        //from same client?
+        // ignore if last event *just* occurred
+        // ...macOS sometimes toggles mic on/off when turning off :/
+        if( (self.lastMicEvent.client.pid == event.client.pid) &&
+            ([[NSDate date] timeIntervalSinceDate:self.lastMicEvent.timestamp] < 0.5f) )
+        {
+            //dbg msg
+            os_log_debug(logHandle, "ignoring mic event, as it happened <0.5s ");
+            return;
+        }
+
+        //update
+        self.lastMicEvent = event;
+    }
+
     //client?
     // check if allowed
-    if(nil != client)
+    if(nil != event.client)
     {
         //match is simply: device and path
         for(NSDictionary* allowedItem in [NSUserDefaults.standardUserDefaults objectForKey:PREFS_ALLOWED_ITEMS])
         {
             //match?
-            if( (allowedItem[EVENT_DEVICE] == (NSNumber*)@(device)) &&
-                (YES == [allowedItem[EVENT_PROCESS_PATH] isEqualToString:client.path]) )
+            if( (allowedItem[EVENT_DEVICE] == (NSNumber*)@(event.device)) &&
+                (YES == [allowedItem[EVENT_PROCESS_PATH] isEqualToString:event.client.path]) )
             {
                 //dbg msg
-                os_log_debug(logHandle, "%{public}@ is allowed to access %d, so no notification will be shown", client.path, device);
+                os_log_debug(logHandle, "%{public}@ is allowed to access %d, so no notification will be shown", event.client.path, event.device);
                 
                 //done
                 goto bail;
@@ -1134,26 +1237,26 @@ bail:
     title = [NSMutableString string];
 
     //set device
-    (Device_Camera == device) ? [title appendString:@"Video Device"] : [title appendString:@"Audio Device"];
+    (Device_Camera == event.device) ? [title appendString:@"Video Device"] : [title appendString:@"Audio Device"];
     
     //set status
-    (NSControlStateValueOn == state) ? [title appendString:@" became active!"] : [title appendString:@" became inactive."];
+    (NSControlStateValueOn == event.state) ? [title appendString:@" became active!"] : [title appendString:@" became inactive."];
     
     //set title
     content.title = title;
     
     //have client?
     // use as body
-    if(nil != client)
+    if(nil != event.client)
     {
         //set body
-        content.body = [NSString stringWithFormat:@"Process: %@ (%@)", getProcessName(client.path), client.pid];
+        content.body = [NSString stringWithFormat:@"Process: %@ (%@)", getProcessName(event.client.path), event.client.pid];
         
         //set category
         content.categoryIdentifier = @BUNDLE_ID;
         
         //set user info
-        content.userInfo = @{EVENT_DEVICE:@(device), EVENT_PROCESS_ID:client.pid, EVENT_PROCESS_PATH:client.path};
+        content.userInfo = @{EVENT_DEVICE:@(event.device), EVENT_PROCESS_ID:event.client.pid, EVENT_PROCESS_PATH:event.client.path};
     }
     
     //init request
@@ -1168,16 +1271,15 @@ bail:
             //err msg
             os_log_error(logHandle, "ERROR failed to deliver notification (error: %@)", error);
         }
-        
     }];
-    
+
 bail:
 
     return;
 }
 
 //execute user action
--(BOOL)executeUserAction:(AVDevice)device state:(NSControlStateValue)state client:(Client*)client
+-(BOOL)executeUserAction:(Event*)event
 {
     //flag
     BOOL wasExecuted = NO;
@@ -1220,18 +1322,18 @@ bail:
         
         //add device
         [args addObject:@"-device"];
-        (Device_Camera == device) ? [args addObject:@"camera"] : [args addObject:@"microphone"];
+        (Device_Camera == event.device) ? [args addObject:@"camera"] : [args addObject:@"microphone"];
         
         //add event
         [args addObject:@"-event"];
-        (NSControlStateValueOn == state) ? [args addObject:@"on"] : [args addObject:@"off"];
+        (NSControlStateValueOn == event.state) ? [args addObject:@"on"] : [args addObject:@"off"];
         
         //add process
-        if(nil != client)
+        if(nil != event.client)
         {
             //add
             [args addObject:@"-process"];
-            [args addObject:client.pid.stringValue];
+            [args addObject:event.client.pid.stringValue];
         }
     }
     

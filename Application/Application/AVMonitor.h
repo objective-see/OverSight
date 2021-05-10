@@ -15,7 +15,9 @@
 #import <Foundation/Foundation.h>
 #import <CoreMediaIO/CMIOHardware.h>
 
+#import "Event.h"
 #import "LogMonitor.h"
+
 
 @interface AVMonitor : NSObject <UNUserNotificationCenterDelegate>
 
@@ -26,7 +28,7 @@
 @property(nonatomic, retain)LogMonitor* audioLogMonitor;
 
 //clients
-@property(nonatomic, retain)NSMutableArray* clients;
+@property(nonatomic, retain)NSMutableArray* videoClients;
 
 //audio clients
 @property(nonatomic, retain)NSMutableArray* audioClients;
@@ -41,7 +43,7 @@
 @property NSControlStateValue microphoneState;
 
 //last microphone state
-@property(nonatomic, retain)NSDate* lastMicEvent;
+@property(nonatomic, retain)Event* lastMicEvent;
 
 /* METHODS */
 

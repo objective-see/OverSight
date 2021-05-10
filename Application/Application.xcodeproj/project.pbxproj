@@ -33,6 +33,7 @@
 		CDC6098E263CB7EB006D1332 /* LogMonitor.m in Sources */ = {isa = PBXBuildFile; fileRef = CDC6098D263CB7EB006D1332 /* LogMonitor.m */; };
 		CDC60991263CBD36006D1332 /* AVMonitor.m in Sources */ = {isa = PBXBuildFile; fileRef = CDC60990263CBD36006D1332 /* AVMonitor.m */; };
 		CDC60994263CBEE7006D1332 /* Client.m in Sources */ = {isa = PBXBuildFile; fileRef = CDC60993263CBEE7006D1332 /* Client.m */; };
+		CDCBF0DE26499DFF001D9F9A /* Event.m in Sources */ = {isa = PBXBuildFile; fileRef = CDCBF0DD26499DFF001D9F9A /* Event.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -94,6 +95,8 @@
 		CDC60990263CBD36006D1332 /* AVMonitor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AVMonitor.m; sourceTree = "<group>"; };
 		CDC60992263CBEE7006D1332 /* Client.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Client.h; sourceTree = "<group>"; };
 		CDC60993263CBEE7006D1332 /* Client.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Client.m; sourceTree = "<group>"; };
+		CDCBF0DC26499DFF001D9F9A /* Event.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Event.h; sourceTree = "<group>"; };
+		CDCBF0DD26499DFF001D9F9A /* Event.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Event.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -158,6 +161,8 @@
 				7D3B75001F13354900568828 /* Base.lproj */,
 				CDC60992263CBEE7006D1332 /* Client.h */,
 				CDC60993263CBEE7006D1332 /* Client.m */,
+				CDCBF0DC26499DFF001D9F9A /* Event.h */,
+				CDCBF0DD26499DFF001D9F9A /* Event.m */,
 				7D7755F11F02E05B00D0017D /* Info.plist */,
 				CDC6098C263CB7EB006D1332 /* LogMonitor.h */,
 				CDC6098D263CB7EB006D1332 /* LogMonitor.m */,
@@ -304,6 +309,7 @@
 				CD2F8008244551AC009C3D77 /* NSApplicationKeyEvents.m in Sources */,
 				7D5C5F521F200B9200C0E94A /* utilities.m in Sources */,
 				CD8FD5D623BAE2D200EFE0FB /* PrefsWindowController.m in Sources */,
+				CDCBF0DE26499DFF001D9F9A /* Event.m in Sources */,
 				CDC6098E263CB7EB006D1332 /* LogMonitor.m in Sources */,
 				CD8FD5F823C05AD900EFE0FB /* RulesWindowController.m in Sources */,
 				7D7755E81F02E05B00D0017D /* AppDelegate.m in Sources */,
@@ -448,12 +454,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = NO;
 				CODE_SIGN_IDENTITY = "Developer ID Application";
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 2.0.0;
 				DEVELOPMENT_TEAM = VBG97UB4TA;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build/Mac";
+				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				INFOPLIST_FILE = Application/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(LD_RUNPATH_SEARCH_PATHS_$(IS_MACCATALYST)) @executable_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = "";
@@ -470,12 +478,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = NO;
 				CODE_SIGN_IDENTITY = "Developer ID Application";
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 2.0.0;
 				DEVELOPMENT_TEAM = VBG97UB4TA;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build/Mac";
+				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				INFOPLIST_FILE = Application/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(LD_RUNPATH_SEARCH_PATHS_$(IS_MACCATALYST)) @executable_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = "";
