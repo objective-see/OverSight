@@ -280,7 +280,6 @@ extern os_log_t logHandle;
     return;
 }
 
-//TODO: log info mode ...more info?
 //on Intel systems
 // monitor for video events via 'VDCAssistant'
 -(void)monitorIntel
@@ -512,7 +511,17 @@ extern os_log_t logHandle;
     NSRegularExpression* regex = nil;
     
     //init regex
-    regex = [NSRegularExpression regularExpressionWithPattern:@"pid:(\\d*)," options:0 error:nil];
+    //macOS 10.16 (11)
+    if(@available(macOS 10.16, *))
+    {
+        //init
+        regex = [NSRegularExpression regularExpressionWithPattern:@"pid:(\\d*)," options:0 error:nil];
+    }
+    //macOS 10.15
+    else
+    {
+        regex = [NSRegularExpression regularExpressionWithPattern:@"0x([a-fA-F0-9]){20,}" options:0 error:nil];
+    }
     
     //find built-in mic
     builtInMic = [self findBuiltInMic];
@@ -535,78 +544,155 @@ extern os_log_t logHandle;
         //inc
         msgCount++;
         
-        //tcc request
-        if(YES == [event.composedMessage containsString:@"function=TCCAccessRequest, service=kTCCServiceMicrophone"])
+        //macOS 10.16 (11)
+        if(@available(macOS 10.16, *))
         {
-            //client
-            Client* client = nil;
-            
-            //pid
-            NSNumber* pid = nil;
-            
-            //match
-            NSTextCheckingResult* match = nil;
-            
-            //dbg msg
-            os_log_debug(logHandle, "new tcc access msg: %{public}@", event.composedMessage);
-            
-            //match/extract pid
-            match = [regex firstMatchInString:event.composedMessage options:0 range:NSMakeRange(0, event.composedMessage.length)];
-            
-            //no match?
-            if( (nil == match) ||
-                (NSNotFound == match.range.location) ||
-                (match.numberOfRanges < 2) )
+            //tcc request
+            if(YES == [event.composedMessage containsString:@"function=TCCAccessRequest, service=kTCCServiceMicrophone"])
             {
-                //ignore
-                return;
+                //client
+                Client* client = nil;
+                
+                //pid
+                NSNumber* pid = nil;
+                
+                //match
+                NSTextCheckingResult* match = nil;
+                
+                //dbg msg
+                os_log_debug(logHandle, "new tcc access msg: %{public}@", event.composedMessage);
+                
+                //match/extract pid
+                match = [regex firstMatchInString:event.composedMessage options:0 range:NSMakeRange(0, event.composedMessage.length)];
+                
+                //no match?
+                if( (nil == match) ||
+                    (NSNotFound == match.range.location) ||
+                    (match.numberOfRanges < 2) )
+                {
+                    //ignore
+                    return;
+                }
+                
+                //extract pid
+                pid = @([[event.composedMessage substringWithRange:[match rangeAtIndex:1]] intValue]);
+                if(nil == pid)
+                {
+                    //ignore
+                    return;
+                }
+                
+                //init client
+                client = [[Client alloc] init];
+                client.msgCount = msgCount;
+                client.pid = pid;
+                client.path = getProcessPath(pid.intValue);
+                client.name = getProcessName(client.path);
+                
+                //dbg msg
+                os_log_debug(logHandle, "new client: %{public}@", client);
+                
+                //add client
+                [self.audioClients addObject:client];
             }
-            
-            //extract pid
-            pid = @([[event.composedMessage substringWithRange:[match rangeAtIndex:1]] intValue]);
-            if(nil == pid)
-            {
-                //ignore
-                return;
-            }
-            
-            //init client
-            client = [[Client alloc] init];
-            client.msgCount = msgCount;
-            client.pid = pid;
-            client.path = getProcessPath(pid.intValue);
-            client.name = getProcessName(client.path);
-            
-            //dbg msg
-            os_log_debug(logHandle, "new client: %{public}@", client);
-            
-            //add client
-            [self.audioClients addObject:client];
         }
-        
-        //auth ok msg
-        else if(YES == [event.composedMessage containsString:@"RECV: synchronous reply"])
+        //macOS 10.15
+        else
+        {            
+            //tcc request
+            if( (YES == [event.composedMessage containsString:@"TCCAccessRequest"]) &&
+                (YES == [event.composedMessage containsString:@"kTCCServiceMicrophone"]) )
+            {
+                //client
+                Client* client = nil;
+                
+                //token
+                NSString* token = nil;
+                
+                //pid substring
+                NSString* substring = nil;
+                
+                //pid
+                unsigned int pid = 0;
+                
+                //match
+                NSTextCheckingResult* match = nil;
+                
+                //dbg msg
+                os_log_debug(logHandle, "new tcc access msg: %{public}@", event.composedMessage);
+                
+                //match/extract pid
+                match = [regex firstMatchInString:event.composedMessage options:0 range:NSMakeRange(0, event.composedMessage.length)];
+                
+                //no match?
+                if( (nil == match) ||
+                    (NSNotFound == match.range.location) )
+                {
+                    //ignore
+                    return;
+                }
+                
+                //extract token
+                token = [event.composedMessage substringWithRange:[match rangeAtIndex:0]];
+                if(token.length < 46) return;
+                
+                //extract pid
+                substring = [token substringWithRange:NSMakeRange(42, 4)];
+                
+                //convert to int
+                sscanf(substring.UTF8String, "%x", &pid);
+                if(0 == pid) return;
+    
+                //init client
+                client = [[Client alloc] init];
+                client.msgCount = msgCount;
+                client.pid = @(htons(pid));
+                client.path = getProcessPath(client.pid.intValue);
+                client.name = getProcessName(client.path);
+                
+                //dbg msg
+                os_log_debug(logHandle, "new client: %{public}@", client);
+                
+                //add client
+                [self.audioClients addObject:client];
+            }
+        }
+       
+        //tcc auth response
+        // check that a) auth ok b) msg is right after request
+        if(YES == [event.composedMessage containsString:@"synchronous reply"])
         {
             //client
             __block Client* client = nil;
             
-            //(split) response
-            NSArray* response = nil;
+            //flag
+            BOOL isAuthorized = NO;
             
             //dbg msg
             os_log_debug(logHandle, "new client tccd response : %{public}@", event.composedMessage);
             
-            //response
-            response = [event.composedMessage componentsSeparatedByString:@"\n"];
-            if( (response.count < 2) ||
-                (YES != [response[1] hasSuffix:@"2"]) ||
-                (YES != [response[1] containsString:@"auth_value"]) )
+            // look for:
+            //"result" => <bool: 0x1fcca5e70>: true
+            for(NSString* response in [event.composedMessage componentsSeparatedByString:@"\n"])
             {
-                //ignore
-                return;
-            }
+                //no match?
+                if( (YES != [response hasSuffix:@"true"]) ||
+                    (YES != [response containsString:@"\"result\""]) )
+                {
+                    continue;
+                }
+            
+                //match
+                isAuthorized = YES;
                 
-            //get last client
+                //done
+                break;
+            }
+        
+            //not auth'd?
+            if(YES != isAuthorized) return;
+            
+            //auth, so get last client
             // check that it the one in the *last* msg
             client = self.audioClients.lastObject;
             if(client.msgCount != msgCount-1)
@@ -656,42 +742,20 @@ extern os_log_t logHandle;
     //flag
     BOOL cameraOn = NO;
     
-    //selector for getting device id
-    SEL methodSelector = nil;
-    
     //device's connection id
     unsigned int connectionID = 0;
     
     //dbg msg
     os_log_debug(logHandle, "checking if any camera is active");
     
-    //init selector
-    methodSelector = NSSelectorFromString(@"connectionID");
-            
     //are any cameras currently on?
     for(AVCaptureDevice* currentCamera in [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo])
     {
         //dbg msg
         os_log_debug(logHandle, "device: %{public}@/%{public}@", currentCamera.manufacturer, currentCamera.localizedName);
         
-        //sanity check
-        // make sure is has private 'connectionID' iVar
-        if(YES != [currentCamera respondsToSelector:methodSelector])
-        {
-            //skip
-            continue;
-        }
-        
-        //ignore leak warning
-        // we know what we're doing via this 'performSelector'
-        #pragma clang diagnostic push
-        #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-        
-        //grab connection ID
-        connectionID = (unsigned int)[currentCamera performSelector:methodSelector withObject:nil];
-        
-        //restore
-        #pragma clang diagnostic pop
+        //get id
+        connectionID = [self getAVObjectID:currentCamera];
         
         //get state
         // is (any) camera on?
@@ -718,44 +782,72 @@ bail:
 {
     //mic
     AudioObjectID builtInMic = 0;
-
-    //selector for getting device id
-    SEL methodSelector = nil;
-
-    //init selector
-    methodSelector = NSSelectorFromString(@"connectionID");
- 
+    
     //look for mic that belongs to apple
     for(AVCaptureDevice* currentMic in [AVCaptureDevice devicesWithMediaType:AVMediaTypeAudio])
     {
         //dbg msg
         os_log_debug(logHandle, "device: %{public}@/%{public}@", currentMic.manufacturer, currentMic.localizedName);
         
-        //sanity check
-        if(YES != [currentMic respondsToSelector:methodSelector]) continue;
-        
         //check if apple
         // also check input source
         if( (YES == [currentMic.manufacturer isEqualToString:@"Apple Inc."]) &&
             (YES == [[[currentMic activeInputSource] inputSourceID] isEqualToString:@"imic"]) )
         {
-            //ignore leak warning
-            #pragma clang diagnostic push
-            #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-            
-            //grab connection ID
-            builtInMic = (unsigned int)[currentMic performSelector:methodSelector withObject:nil];
-            
-            //restore
-            #pragma clang diagnostic pop
-            
+            //grab ID
+            builtInMic = [self getAVObjectID:currentMic];
+     
             //done
             break;
         }
     }
     
-    return builtInMic;
+    //not found?
+    // grab default
+    if(0 == builtInMic)
+    {
+        //get mic / id
+        builtInMic = [self getAVObjectID:[AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeAudio]];
+        
+        //dbg msg
+        os_log_debug(logHandle, "Apple mic not found, defaulting to default (id: %d)", builtInMic);
+    }
     
+    return builtInMic;
+}
+
+//get av object's ID
+-(UInt32)getAVObjectID:(AVCaptureDevice*)audioObject
+{
+    //object id
+    AudioObjectID objectID = 0;
+    
+    //selector for getting device id
+    SEL methodSelector = nil;
+
+    //init selector
+    methodSelector = NSSelectorFromString(@"connectionID");
+    
+    //sanity check
+    if(YES != [audioObject respondsToSelector:methodSelector])
+    {
+        //bail
+        goto bail;
+    }
+    
+    //ignore leak warning
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+    
+    //grab connection ID
+    objectID = (unsigned int)[audioObject performSelector:methodSelector withObject:nil];
+    
+    //restore
+    #pragma clang diagnostic pop
+    
+bail:
+    
+    return objectID;
 }
 
 //is built-in mic on?
@@ -864,6 +956,9 @@ bail:
         //bail
         goto bail;
     }
+    
+    //dbg msg
+    os_log_debug(logHandle, "monitoring %d for audio changes", builtInMic);
 
     //happy
     bRegistered = YES;
