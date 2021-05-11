@@ -1218,7 +1218,8 @@ bail:
         }
         
         //or, was a 2x off?
-        if( (NSControlStateValueOff == event.state) &&
+        if( (nil != self.lastMicEvent) &&
+            (NSControlStateValueOff == event.state) &&
             (NSControlStateValueOff == self.lastMicEvent.state) )
         {
             //dbg msg
