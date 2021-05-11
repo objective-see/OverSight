@@ -196,7 +196,7 @@
                         <rect key="frame" x="304" y="165" width="500" height="200"/>
                         <subviews>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" setsMaxLayoutWidthAtFirstLayout="YES" translatesAutoresizingMaskIntoConstraints="NO" id="m0M-KX-7D6" userLabel="loading data">
-                                <rect key="frame" x="18" y="87" width="464" height="25"/>
+                                <rect key="frame" x="89" y="92" width="322" height="15"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" allowsUndo="NO" sendsActionOnEndEditing="YES" alignment="center" title="Currently, there are no allowed items..." id="Wjb-RO-P6A">
                                     <font key="font" size="13" name="Menlo-Bold"/>

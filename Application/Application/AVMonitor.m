@@ -50,6 +50,9 @@ extern os_log_t logHandle;
     self = [super init];
     if(nil != self)
     {
+        //init camera state
+        self.cameraState = -1;
+        
         //init video log monitor
         self.videoLogMonitor = [[LogMonitor alloc] init];
         
@@ -187,15 +190,11 @@ extern os_log_t logHandle;
                 event = [[Event alloc] init:client device:Device_Camera state:self.cameraState];
                 
                 //camera already on?
-                // show notifcation for new client
+                // handle event for new client
                 if(NSControlStateValueOn == self.cameraState)
                 {
-                    //show notification
-                    if(YES == [self generateNotification:event])
-                    {
-                        //execute action
-                        [self executeUserAction:event];
-                    }
+                    //handle event
+                    [self handleEvent:event];
                 }
                 
                 //will handle when "on" camera msg is delivered
@@ -229,12 +228,8 @@ extern os_log_t logHandle;
             //init event
             event = [[Event alloc] init:client device:Device_Camera state:self.cameraState];
             
-            //show notification
-            if(YES == [self generateNotification:event])
-            {
-                //execute action
-                [self executeUserAction:event];
-            }
+            //handle event
+            [self handleEvent:event];
         }
         
         //dead client
@@ -287,12 +282,8 @@ extern os_log_t logHandle;
             //init event
             event = [[Event alloc] init:nil device:Device_Camera state:self.cameraState];
             
-            //show notification
-            if(YES == [self generateNotification:event])
-            {
-                //execute action
-                [self executeUserAction:event];
-            }
+            //handle event
+            [self handleEvent:event];
             
             //sync
             @synchronized (self) {
@@ -441,13 +432,8 @@ extern os_log_t logHandle;
             //init event
             event = [[Event alloc] init:client device:Device_Camera state:self.cameraState];
             
-            //show notification
-            // ok if client is (still) nil...
-            if(YES == [self generateNotification:event])
-            {
-                //execute action
-                [self executeUserAction:event];
-            }
+            //handle event
+            [self handleEvent:event];
         }
         
         //dead client
@@ -517,12 +503,8 @@ extern os_log_t logHandle;
                     //init event
                     event = [[Event alloc] init:nil device:Device_Camera state:self.cameraState];
                     
-                    //show notification
-                    if(YES == [self generateNotification:event])
-                    {
-                        //execute action
-                        [self executeUserAction:event];
-                    }
+                    //handle event
+                    [self handleEvent:event];
                 }
             });
         }
@@ -807,11 +789,8 @@ extern os_log_t logHandle;
                 //init event
                 event = [[Event alloc] init:client device:Device_Microphone state:self.microphoneState];
                     
-                //show notification
-                [self generateNotification:event];
-                    
-                //execute action
-                [self executeUserAction:event];
+                //handle event
+                [self handleEvent:event];
             
             });
         }
@@ -1022,12 +1001,8 @@ bail:
              
             }//sync
             
-            //show notification
-            if(YES == [weakSelf generateNotification:event])
-            {
-                //execute action
-                [weakSelf executeUserAction:event];
-            }
+            //handle event
+            [weakSelf handleEvent:event];
         }
     };
     
@@ -1180,12 +1155,127 @@ bail:
     return isRunning;
 }
 
-//build and display notification
--(BOOL)generateNotification:(Event*)event
+//should an event be shown?
+-(NSUInteger)shouldShowNotification:(Event*)event
 {
-    //flag
-    BOOL wasDelivered = NO;
+    //result
+    NSUInteger result = NOTIFICATION_ERROR;
     
+    //inactive alerting off?
+    // ignore if event is an inactive/off
+    if( (NSControlStateValueOff == event.state) &&
+        (YES == [NSUserDefaults.standardUserDefaults boolForKey:PREF_DISABLE_INACTIVE]))
+    {
+        //set result
+        result = NOTIFICATION_SKIPPED;
+        
+        //dbg msg
+        os_log_debug(logHandle, "disable inactive alerts set, so ignoring inactive/off event");
+            
+        //bail
+        goto bail;
+    }
+    
+    //(new) mic event?
+    // need extra logic, since macOS sometimes toggles / delivers 2x event, etc...
+    if(Device_Microphone == event.device)
+    {
+        //from same client?
+        // ignore if last event *just* occurred
+        if( (self.lastMicEvent.client.pid == event.client.pid) &&
+            ([[NSDate date] timeIntervalSinceDate:self.lastMicEvent.timestamp] < 0.5f) )
+        {
+            //set result
+            result = NOTIFICATION_SPURIOUS;
+            
+            //dbg msg
+            os_log_debug(logHandle, "ignoring mic event, as it happened <0.5s ");
+            
+            //bail
+            goto bail;
+        }
+        
+        //or, was a 2x off?
+        if( (nil != self.lastMicEvent) &&
+            (NSControlStateValueOff == event.state) &&
+            (NSControlStateValueOff == self.lastMicEvent.state) )
+        {
+            //set result
+            result = NOTIFICATION_SPURIOUS;
+            
+            //dbg msg
+            os_log_debug(logHandle, "ignoring mic event, as it was a 2x off");
+            
+            //bail
+            goto bail;
+        }
+
+        //update
+        self.lastMicEvent = event;
+    }
+    
+    //client provided?
+    // check if its allowed
+    if(nil != event.client)
+    {
+        //match is simply: device and path
+        for(NSDictionary* allowedItem in [NSUserDefaults.standardUserDefaults objectForKey:PREFS_ALLOWED_ITEMS])
+        {
+            //match?
+            if( ([allowedItem[EVENT_DEVICE] intValue] == event.device) &&
+                (YES == [allowedItem[EVENT_PROCESS_PATH] isEqualToString:event.client.path]) )
+            {
+                //set result
+                result = NOTIFICATION_SKIPPED;
+                
+                //dbg msg
+                os_log_debug(logHandle, "%{public}@ is allowed to access %d, so no notification will be shown", event.client.path, event.device);
+                
+                //done
+                goto bail;
+            }
+        }
+    }
+    
+    //set result
+    result = NOTIFICATION_DELIVER;
+    
+bail:
+    
+    return result;
+}
+
+//handle an event
+// show alert / exec user action
+-(void)handleEvent:(Event*)event
+{
+    //result
+    NSUInteger result = NOTIFICATION_ERROR;
+    
+    //should show?
+    result = [self shouldShowNotification:event];
+    if(NOTIFICATION_DELIVER == result)
+    {
+        //deliver
+        [self showNotification:event];
+    }
+    
+    //should (also) exec user action?
+    if( (NOTIFICATION_ERROR != result) &&
+        (NOTIFICATION_SPURIOUS != result) )
+    {
+        //exec
+        [self executeUserAction:event];
+    }
+    
+bail:
+    
+    return;
+}
+
+//build and display notification
+-(void)showNotification:(Event*)event
+{
     //notification content
     UNMutableNotificationContent* content = nil;
     
@@ -1197,71 +1287,6 @@ bail:
     
     //title
     NSMutableString* title = nil;
-    
-    //inactive disabled?
-    // ignore if event is an off
-    if(YES == [NSUserDefaults.standardUserDefaults boolForKey:PREF_DISABLE_INACTIVE])
-    {
-        //dbg msg
-        os_log_debug(logHandle, "user has set preference to ingore 'inactive' notifications");
-        
-        //off?
-        // ignore...
-        if(NSControlStateValueOff == event.state)
-        {
-            //dbg msg
-            os_log_debug(logHandle, "...so ignoring inactive/off event");
-            goto bail;
-        }
-    }
-    
-    //(new) mic event?
-    if(Device_Microphone == event.device)
-    {
-        //from same client?
-        // ignore if last event *just* occurred
-        // ...macOS sometimes toggles mic on/off when turning off :/
-        if( (self.lastMicEvent.client.pid == event.client.pid) &&
-            ([[NSDate date] timeIntervalSinceDate:self.lastMicEvent.timestamp] < 0.5f) )
-        {
-            //dbg msg
-            os_log_debug(logHandle, "ignoring mic event, as it happened <0.5s ");
-            return wasDelivered;
-        }
-        
-        //or, was a 2x off?
-        if( (nil != self.lastMicEvent) &&
-            (NSControlStateValueOff == event.state) &&
-            (NSControlStateValueOff == self.lastMicEvent.state) )
-        {
-            //dbg msg
-            os_log_debug(logHandle, "ignoring mic event, as it was a 2x off");
-            return wasDelivered;
-        }
-
-        //update
-        self.lastMicEvent = event;
-    }
-
-    //client?
-    // check if allowed
-    if(nil != event.client)
-    {
-        //match is simply: device and path
-        for(NSDictionary* allowedItem in [NSUserDefaults.standardUserDefaults objectForKey:PREFS_ALLOWED_ITEMS])
-        {
-            //match?
-            if( (allowedItem[EVENT_DEVICE] == (NSNumber*)@(event.device)) &&
-                (YES == [allowedItem[EVENT_PROCESS_PATH] isEqualToString:event.client.path]) )
-            {
-                //dbg msg
-                os_log_debug(logHandle, "%{public}@ is allowed to access %d, so no notification will be shown", event.client.path, event.device);
-                
-                //done
-                goto bail;
-            }
-        }
-    }
     
     //set (default) category
     content.categoryIdentifier = CATEGORY_CLOSE;
@@ -1305,13 +1330,10 @@ bail:
             os_log_error(logHandle, "ERROR failed to deliver notification (error: %@)", error);
         }
     }];
-    
-    //happy
-    wasDelivered = YES;
 
 bail:
 
-    return wasDelivered;
+    return;
 }
 
 //execute user action

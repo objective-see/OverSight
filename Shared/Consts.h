@@ -149,7 +149,6 @@
 //menu: 'quit'
 #define MENU_ITEM_QUIT 1
 
-
 //app name
 #define APP_NAME @"OverSight.app"
 
@@ -229,6 +228,11 @@
 #define EVENT_DEVICE_STATUS @"status"
 #define EVENT_PROCESS_ID @"processID"
 #define EVENT_PROCESS_PATH @"processPath"
+
+#define NOTIFICATION_ERROR -1
+#define NOTIFICATION_SPURIOUS 0
+#define NOTIFICATION_SKIPPED 1
+#define NOTIFICATION_DELIVER 2
 
 //av devices
 typedef enum {Device_Camera, Device_Microphone} AVDevice;
