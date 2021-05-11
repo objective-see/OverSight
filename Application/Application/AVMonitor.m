@@ -179,10 +179,11 @@ extern os_log_t logHandle;
                 if(NSControlStateValueOn == self.cameraState)
                 {
                     //show notification
-                    [self generateNotification:event];
-                    
-                    //execute action
-                    [self executeUserAction:event];
+                    if(YES == [self generateNotification:event])
+                    {
+                        //execute action
+                        [self executeUserAction:event];
+                    }
                 }
                 
                 //will handle when "on" camera msg is delivered
@@ -217,10 +218,11 @@ extern os_log_t logHandle;
             event = [[Event alloc] init:client device:Device_Camera state:self.cameraState];
             
             //show notification
-            [self generateNotification:event];
-            
-            //execute action
-            [self executeUserAction:event];
+            if(YES == [self generateNotification:event])
+            {
+                //execute action
+                [self executeUserAction:event];
+            }
         }
         
         //dead client
@@ -273,19 +275,11 @@ extern os_log_t logHandle;
             //init event
             event = [[Event alloc] init:nil device:Device_Camera state:self.cameraState];
             
-            //show inactive notifcations?
-            if(YES != [NSUserDefaults.standardUserDefaults boolForKey:PREF_DISABLE_INACTIVE])
+            //show notification
+            if(YES == [self generateNotification:event])
             {
-                //show notification
-                [self generateNotification:event];
-                
                 //execute action
                 [self executeUserAction:event];
-            }
-            else
-            {
-                //dbg msg
-                os_log_debug(logHandle, "user has set preference to ingore 'inactive' notifications");
             }
             
             //sync
@@ -437,10 +431,11 @@ extern os_log_t logHandle;
             
             //show notification
             // ok if client is (still) nil...
-            [self generateNotification:event];
-            
-            //execute action
-            [self executeUserAction:event];
+            if(YES == [self generateNotification:event])
+            {
+                //execute action
+                [self executeUserAction:event];
+            }
         }
         
         //dead client
@@ -510,19 +505,11 @@ extern os_log_t logHandle;
                     //init event
                     event = [[Event alloc] init:nil device:Device_Camera state:self.cameraState];
                     
-                    //show inactive notifcations?
-                    if(YES != [NSUserDefaults.standardUserDefaults boolForKey:PREF_DISABLE_INACTIVE])
+                    //show notification
+                    if(YES == [self generateNotification:event])
                     {
-                        //show notification
-                        [self generateNotification:event];
-                        
                         //execute action
                         [self executeUserAction:event];
-                    }
-                    else
-                    {
-                        //dbg msg
-                        os_log_debug(logHandle, "user has set preference to ingore 'inactive' notifications");
                     }
                 }
             });
@@ -1024,10 +1011,11 @@ bail:
             }//sync
             
             //show notification
-            [weakSelf generateNotification:event];
-                
-            //execute action
-            [weakSelf executeUserAction:event];
+            if(YES == [weakSelf generateNotification:event])
+            {
+                //execute action
+                [weakSelf executeUserAction:event];
+            }
         }
     };
     
@@ -1181,8 +1169,11 @@ bail:
 }
 
 //build and display notification
--(void)generateNotification:(Event*)event
+-(BOOL)generateNotification:(Event*)event
 {
+    //flag
+    BOOL wasDelivered = NO;
+    
     //notification content
     UNMutableNotificationContent* content = nil;
     
@@ -1195,6 +1186,23 @@ bail:
     //title
     NSMutableString* title = nil;
     
+    //inactive disabled?
+    // ignore if event is an off
+    if(YES == [NSUserDefaults.standardUserDefaults boolForKey:PREF_DISABLE_INACTIVE])
+    {
+        //dbg msg
+        os_log_debug(logHandle, "user has set preference to ingore 'inactive' notifications");
+        
+        //off?
+        // ignore...
+        if(NSControlStateValueOff == event.state)
+        {
+            //dbg msg
+            os_log_debug(logHandle, "...so ignoring inactive/off event");
+            goto bail;
+        }
+    }
+    
     //(new) mic event?
     if(Device_Microphone == event.device)
     {
@@ -1206,7 +1214,16 @@ bail:
         {
             //dbg msg
             os_log_debug(logHandle, "ignoring mic event, as it happened <0.5s ");
-            return;
+            return wasDelivered;
+        }
+        
+        //or, was a 2x off?
+        if( (NSControlStateValueOff == event.state) &&
+            (NSControlStateValueOff == self.lastMicEvent.state) )
+        {
+            //dbg msg
+            os_log_debug(logHandle, "ignoring mic event, as it was a 2x off");
+            return wasDelivered;
         }
 
         //update
@@ -1272,10 +1289,13 @@ bail:
             os_log_error(logHandle, "ERROR failed to deliver notification (error: %@)", error);
         }
     }];
+    
+    //happy
+    wasDelivered = YES;
 
 bail:
 
-    return;
+    return wasDelivered;
 }
 
 //execute user action
