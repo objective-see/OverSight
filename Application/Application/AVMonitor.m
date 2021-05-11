@@ -767,9 +767,6 @@ extern os_log_t logHandle;
                     //dbg msg
                     os_log_debug(logHandle, "more than one audio client (total: %lu)", (unsigned long)self.audioClients.count);
                     
-                    //TODO: rem
-                    os_log_debug(logHandle, "last client: %{public}@ vs. this client: %{public}@", self.lastMicEvent.client, client.path);
-                    
                     //not foreground?
                     if(YES != [NSWorkspace.sharedWorkspace.frontmostApplication.executableURL.path isEqualToString:client.path])
                     {
