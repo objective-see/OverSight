@@ -28,6 +28,9 @@ extern os_log_t logHandle;
 //init
 -(id)init
 {
+    //action: ok
+    UNNotificationAction *ok = nil;
+    
     //action: allow
     UNNotificationAction *allow = nil;
     
@@ -37,8 +40,11 @@ extern os_log_t logHandle;
     //action: block
     UNNotificationAction *block = nil;
     
-    //category
-    UNNotificationCategory* category = nil;
+    //close category
+    UNNotificationCategory* closeCategory = nil;
+    
+    //action category
+    UNNotificationCategory* actionCategory = nil;
     
     //super
     self = [super init];
@@ -89,6 +95,12 @@ extern os_log_t logHandle;
             }
         }];
         
+        //init ok action
+        ok = [UNNotificationAction actionWithIdentifier:@"Ok" title:@"Ok" options:UNNotificationActionOptionNone];
+        
+        //init close category
+        closeCategory = [UNNotificationCategory categoryWithIdentifier:CATEGORY_CLOSE actions:@[ok] intentIdentifiers:@[] options:0];
+        
         //init allow action
         allow = [UNNotificationAction actionWithIdentifier:@"Allow" title:@"Allow (Once)" options:UNNotificationActionOptionNone];
         
@@ -99,10 +111,10 @@ extern os_log_t logHandle;
         block = [UNNotificationAction actionWithIdentifier:@"Block" title:@"Block" options:UNNotificationActionOptionNone];
         
         //init category
-        category = [UNNotificationCategory categoryWithIdentifier:@BUNDLE_ID actions:@[allow, allowAlways, block] intentIdentifiers:@[] options:UNNotificationCategoryOptionCustomDismissAction];
+        actionCategory = [UNNotificationCategory categoryWithIdentifier:CATEGORY_ACTION actions:@[allow, allowAlways, block] intentIdentifiers:@[] options:UNNotificationCategoryOptionCustomDismissAction];
         
         //set categories
-        [UNUserNotificationCenter.currentNotificationCenter setNotificationCategories:[NSSet setWithObject:category]];
+        [UNUserNotificationCenter.currentNotificationCenter setNotificationCategories:[NSSet setWithObjects:closeCategory, actionCategory, nil]];
         
         //any active cameras
         // only call on intel, since broken on M1 :/
@@ -1251,6 +1263,9 @@ bail:
         }
     }
     
+    //set (default) category
+    content.categoryIdentifier = CATEGORY_CLOSE;
+    
     //alloc title
     title = [NSMutableString string];
 
@@ -1271,7 +1286,7 @@ bail:
         content.body = [NSString stringWithFormat:@"Process: %@ (%@)", getProcessName(event.client.path), event.client.pid];
         
         //set category
-        content.categoryIdentifier = @BUNDLE_ID;
+        content.categoryIdentifier = CATEGORY_ACTION;
         
         //set user info
         content.userInfo = @{EVENT_DEVICE:@(event.device), EVENT_PROCESS_ID:event.client.pid, EVENT_PROCESS_PATH:event.client.path};
@@ -1418,18 +1433,32 @@ bail:
     
     //get process name
     processName = getProcessName(processPath);
+    
+    //close?
+    // nothing to do
+    if(YES == [response.notification.request.content.categoryIdentifier isEqualToString:CATEGORY_CLOSE])
+    {
+        //dbg msg
+        os_log_debug(logHandle, "user clicked 'Ok'");
+        
+        //done
+        goto bail;
+    }
         
     //allow?
     // really nothing to do
-    if(YES == [response.actionIdentifier isEqualToString:@"Allow"])
+    else if(YES == [response.actionIdentifier isEqualToString:@"Allow"])
     {
         //dbg msg
         os_log_debug(logHandle, "user clicked 'Allow'");
+        
+        //done
+        goto bail;
     }
     
     //always allow?
     // added to 'allowed' items
-    else if(YES == [response.actionIdentifier isEqualToString:@"AllowAlways"])
+    if(YES == [response.actionIdentifier isEqualToString:@"AllowAlways"])
     {
         //dbg msg
         os_log_debug(logHandle, "user clicked 'Allow Always'");
@@ -1454,11 +1483,14 @@ bail:
         
         //broadcast
         [[NSNotificationCenter defaultCenter] postNotificationName:RULES_CHANGED object:nil userInfo:nil];
+        
+        //done
+        goto bail;
     }
     
     //block?
     // kill process
-    else if(YES == [response.actionIdentifier isEqualToString:@"Block"])
+    if(YES == [response.actionIdentifier isEqualToString:@"Block"])
     {
         //dbg msg
         os_log_debug(logHandle, "user clicked 'Block'");

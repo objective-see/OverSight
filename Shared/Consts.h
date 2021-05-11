@@ -70,6 +70,12 @@
 //error(s) url
 #define ERRORS_URL @"https://objective-see.com/errors.html"
 
+//close category
+#define CATEGORY_CLOSE @"close"
+
+//action category
+#define CATEGORY_ACTION @"action"
+
 //support us button tag
 #define BUTTON_SUPPORT_US 100
 
