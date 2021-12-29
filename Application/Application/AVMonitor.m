@@ -208,7 +208,7 @@ extern os_log_t logHandle;
         
         //camera on
         // show alert!
-        else if(YES == [logEvent.composedMessage isEqualToString:@"StartStream : StartStream: Powering ON camera"])
+        else if(YES == [logEvent.composedMessage isEqualToString:@"StartStream: Powering ON camera"])
         {
             //event
             Event* event = nil;
