@@ -46,7 +46,7 @@ extern os_log_t logHandle;
     parent = getRealParent(getpid());
     
     //dbg msg(s)
-    os_log_debug(logHandle, "(real) parent: %@", parent);
+    os_log_debug(logHandle, "(real) parent: %{public}@", parent);
     
     //set auto launched flag (i.e. login item)
     autoLaunched = [parent[@"CFBundleIdentifier"] isEqualToString:@"com.apple.loginwindow"];
@@ -292,7 +292,7 @@ bail:
     
     //dbg msg(s)
     os_log_debug(logHandle, "setting app's activation policy");
-    os_log_debug(logHandle, "windows: %@", NSApp.windows);
+    os_log_debug(logHandle, "windows: %{public}@", NSApp.windows);
     
     //find any visible windows
     for(NSWindow* window in NSApp.windows)
