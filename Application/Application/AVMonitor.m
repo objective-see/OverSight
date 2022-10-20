@@ -180,8 +180,8 @@ extern os_log_t logHandle;
                 //init client
                 client = [[Client alloc] init];
                 client.pid = pid;
-                client.path = getProcessPath(pid.intValue);
-                client.name = getProcessName(client.path);
+                client.path = valueForStringItem(getProcessPath(pid.intValue));
+                client.name = valueForStringItem(getProcessName(client.path));
                 
                 //dbg msg
                 os_log_debug(logHandle, "new (video) client: %{public}@", client);
@@ -340,8 +340,8 @@ extern os_log_t logHandle;
                 client = [[Client alloc] init];
                 client.msgCount = msgCount;
                 client.pid = pid;
-                client.path = getProcessPath(pid.intValue);
-                client.name = getProcessName(client.path);
+                client.path = valueForStringItem(getProcessPath(pid.intValue));
+                client.name = valueForStringItem(getProcessName(client.path));
                 
                 //dbg msg
                 os_log_debug(logHandle, "new (video) client: %{public}@", client);
@@ -669,8 +669,8 @@ extern os_log_t logHandle;
                 client = [[Client alloc] init];
                 client.msgCount = msgCount;
                 client.pid = @(htons(pid));
-                client.path = getProcessPath(client.pid.intValue);
-                client.name = getProcessName(client.path);
+                client.path = valueForStringItem(getProcessPath(client.pid.intValue));
+                client.name = valueForStringItem(getProcessName(client.path));
                 
                 //dbg msg
                 os_log_debug(logHandle, "new (audio) client: %{public}@", client);
@@ -1305,7 +1305,7 @@ bail:
     if(nil != event.client)
     {
         //set body
-        content.body = [NSString stringWithFormat:@"Process: %@ (%@)", getProcessName(event.client.path), event.client.pid];
+        content.body = [NSString stringWithFormat:@"Process: %@ (%@)", event.client.name, (0 != event.client.pid.intValue) ? event.client.pid : @"pid: unknown"];
         
         //set category
         content.categoryIdentifier = CATEGORY_ACTION;
@@ -1451,7 +1451,7 @@ bail:
     processID = response.notification.request.content.userInfo[EVENT_PROCESS_ID];
     
     //get process name
-    processName = getProcessName(processPath);
+    processName = valueForStringItem(getProcessName(processPath));
     
     //close?
     // nothing to do
