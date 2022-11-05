@@ -441,6 +441,9 @@ bail:
     //path to preferences dir
     NSString* prefsDirectory = nil;
     
+    //preferences file
+    NSString* preferences = nil;
+    
     //path to login item
     NSURL* loginItem = nil;
 
@@ -522,14 +525,25 @@ bail:
     }
     
     //full?
-    // delete prefs / allowed items
+    // delete preferences
     if(YES == full)
     {
-        //dbg msg
-        os_log_debug(logHandle, "removing preferences/allowed items");
+        //init prefs file
+        preferences = [NSHomeDirectory() stringByAppendingPathComponent:PREFERENCES];
         
-        //delete prefs via defaults
-        execTask(DEFAULTS, @[@"delete", @BUNDLE_ID], YES, NO);
+        //dbg msg
+        os_log_debug(logHandle, "deleting preferences");
+    
+        //delete preferences file
+        // and if this fails, reset
+        if(YES != [NSFileManager.defaultManager removeItemAtPath:preferences error:nil])
+        {
+            //dbg msg
+            os_log_debug(logHandle, "deleting failed, will reset preferences");
+            
+            //reset
+            [NSUserDefaults.standardUserDefaults removePersistentDomainForName:@BUNDLE_ID];
+        }
     }
     
     //always remove application

@@ -47,6 +47,9 @@
 //path to action
 @property (weak) IBOutlet NSTextField *executePath;
 
+//browse button
+@property (weak) IBOutlet NSButton *browseButton;
+
 //execute args button
 @property (weak) IBOutlet NSButton *executeArgsButton;
 

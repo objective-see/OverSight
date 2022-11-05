@@ -70,6 +70,15 @@
 //error(s) url
 #define ERRORS_URL @"https://objective-see.com/errors.html"
 
+//os major
+#define SUPPORTED_OS_MAJOR @"OSMajor"
+
+//os minor
+#define SUPPORTED_OS_MINOR @"OSMinor"
+
+//latest version
+#define LATEST_VERSION @"version"
+
 //close category
 #define CATEGORY_CLOSE @"close"
 
@@ -109,6 +118,9 @@
 
 //add rule, allow
 #define BUTTON_ALLOW 1
+
+//preferences file
+#define PREFERENCES @"/Library/Preferences/com.objective-see.oversight.plist"
 
 //prefs
 // disabled status
@@ -198,9 +210,6 @@
 //path to launchctl
 #define LAUNCHCTL @"/bin/launchctl"
 
-//path to defaults
-#define DEFAULTS @"/usr/bin/defaults"
-
 //path to kill all
 #define KILL_ALL @"/usr/bin/killall"
 
@@ -236,6 +245,9 @@
 
 //av devices
 typedef enum {Device_Camera, Device_Microphone} AVDevice;
+
+//updates
+typedef enum {Update_Error, Update_None, Update_NotSupported, Update_Available} UpdateStatus;
 
 //log levels
 typedef enum {Log_Level_Default, Log_Level_Info, Log_Level_Debug} LogLevels;

@@ -371,21 +371,28 @@ bail:
     switch (result)
     {
         //error
-        case -1:
+        case Update_Error:
             
             //err msg
             os_log_error(logHandle, "ERROR: update check failed");
             break;
             
         //no updates
-        case 0:
+        case Update_None:
             
             //dbg msg
             os_log_debug(logHandle, "no updates available");
             break;
             
+        //this version of macOS, not supported
+        case Update_NotSupported:
+            
+            //dbg msg
+            os_log_debug(logHandle, "update available, but not for this version of macOS");
+            break;
+             
         //new version
-        case 1:
+        case Update_Available:
             
             //dbg msg
             os_log_debug(logHandle, "a new version (%@) is available", newVersion);

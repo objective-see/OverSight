@@ -97,9 +97,9 @@ extern os_log_t logHandle;
             
             break;
             
-        //modes
+        //actions
         case TOOLBAR_ACTION:
-            
+        {
             //set view
             view = self.actionView;
             
@@ -112,7 +112,7 @@ extern os_log_t logHandle;
                 //set
                 self.executePath.stringValue = [NSUserDefaults.standardUserDefaults objectForKey:PREF_EXECUTE_PATH];
             }
-               
+            
             //set state of 'execute action' to match
             self.executePath.enabled = [NSUserDefaults.standardUserDefaults boolForKey:PREF_EXECUTE_ACTION];
             
@@ -121,9 +121,19 @@ extern os_log_t logHandle;
             
             //set state of 'execute action' to match
             self.executeArgsButton.enabled = [NSUserDefaults.standardUserDefaults boolForKey:PREF_EXECUTE_ACTION];
-        
-            break;
             
+            //make 'Browse' button first responder
+            // calling this without a timeout, sometimes fails :/
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (100 * NSEC_PER_MSEC)), dispatch_get_main_queue(),
+            ^{
+                
+                //set first responder
+                [self.window makeFirstResponder:self.browseButton];
+                
+            });
+            
+            break;
+        }
             
         //update
         case TOOLBAR_UPDATE:
@@ -150,26 +160,6 @@ extern os_log_t logHandle;
     
 bail:
     
-    return;
-}
-
-//automatically called when 'enter' is hit
-// save values that were entered in text field
--(void)controlTextDidEndEditing:(NSNotification *)notification
-{
-    //execute path?
-    if([notification object] != self.executePath)
-    {
-        //bail
-        goto bail;
-    }
-    
-    //save & sync
-    [NSUserDefaults.standardUserDefaults setObject:self.executePath.stringValue forKey:PREF_EXECUTE_PATH];
-    [NSUserDefaults.standardUserDefaults synchronize];
-        
-bail:
-
     return;
 }
 
@@ -237,6 +227,15 @@ bail:
             //set path field state to match
             self.executeArgsButton.enabled = state;
             
+            //enabled, but no path?
+            // launch 'browse' pane for user to select
+            if( (NSControlStateValueOn == state) &&
+                (0 == self.executePath.stringValue.length) )
+            {
+                //show 'browse'
+                [self browseButtonHandler:nil];
+            }
+            
             break;
         }
             
@@ -277,6 +276,7 @@ bail:
     return;
 }
 
+//TODO: supported OS
 //'check for update' button handler
 -(IBAction)check4Update:(id)sender
 {
@@ -308,7 +308,7 @@ bail:
 }
 
 //process update response
-// error, no update, update/new version
+// error, no update, update not compatible, update/new version
 -(void)updateResponse:(NSInteger)result newVersion:(NSString*)newVersion
 {
     //re-enable button
@@ -320,15 +320,15 @@ bail:
     switch(result)
     {
         //error
-        case -1:
+        case Update_Error:
             
             //set label
-            self.updateLabel.stringValue = @"error: update check failed";
+            self.updateLabel.stringValue = @"Error: update check failed";
             
             break;
             
         //no updates
-        case 0:
+        case Update_None:
             
             //dbg msg
             os_log_debug(logHandle, "no updates available");
@@ -337,10 +337,20 @@ bail:
             self.updateLabel.stringValue = [NSString stringWithFormat:@"Installed version (%@),\r\nis the latest.", getAppVersion()];
             
             break;
-         
             
+        //this version of macOS, not supported
+        case Update_NotSupported:
+            
+            //dbg msg
+            os_log_debug(logHandle, "update available, but not for this version of macOS");
+            
+            //set label
+            self.updateLabel.stringValue = [NSString stringWithFormat:@"Update available, but isn't supported on macOS %ld.%ld", NSProcessInfo.processInfo.operatingSystemVersion.majorVersion, NSProcessInfo.processInfo.operatingSystemVersion.minorVersion];
+            
+            break;
+         
         //new version
-        case 1:
+        case Update_Available:
             
             //dbg msg
             os_log_debug(logHandle, "a new version (%@) is available", newVersion);
@@ -387,6 +397,56 @@ bail:
          
      });
     });
+    
+    return;
+}
+
+//'browse' button handler
+//  open a panel for user to select file
+-(IBAction)browseButtonHandler:(id)sender
+{
+    //'browse' panel
+    NSOpenPanel *panel = nil;
+    
+    //response to 'browse' panel
+    NSInteger response = 0;
+    
+    //init panel
+    panel = [NSOpenPanel openPanel];
+    
+    //allow files
+    panel.canChooseFiles = YES;
+
+    //don't allow directories
+    panel.canChooseDirectories = NO;
+    
+    //disable multiple selections
+    panel.allowsMultipleSelection = NO;
+    
+    //can open app bundles
+    panel.treatsFilePackagesAsDirectories = YES;
+    
+    //start in user's home directory
+    panel.directoryURL = [NSURL fileURLWithPath:NSHomeDirectory()];
+    
+    //show it
+    response = [panel runModal];
+    
+    //ignore cancel
+    if(NSModalResponseCancel == response)
+    {
+        //bail
+        goto bail;
+    }
+    
+    //set path in ui
+    self.executePath.stringValue = panel.URL.path;
+    
+    //save path & sync
+    [NSUserDefaults.standardUserDefaults setObject:self.executePath.stringValue forKey:PREF_EXECUTE_PATH];
+    [NSUserDefaults.standardUserDefaults synchronize];
+    
+bail:
     
     return;
 }
