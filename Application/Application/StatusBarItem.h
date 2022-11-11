@@ -29,6 +29,9 @@
 //init
 -(id)init:(NSMenu*)menu;
 
+//update status item menu
+-(void)setActiveDevices:(NSArray*)activeDevices;
+
 //remove status item
 -(void)removeStatusItem;
 

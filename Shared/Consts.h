@@ -62,13 +62,13 @@
 #define SIGNING_AUTH @"Developer ID Application: Objective-See, LLC (VBG97UB4TA)"
 
 //product version url
-#define PRODUCT_VERSIONS_URL @"https://objective-see.com/products.json"
+#define PRODUCT_VERSIONS_URL @"https://objective-see.org/products.json"
 
 //product url
-#define PRODUCT_URL @"https://objective-see.com/products/oversight.html"
+#define PRODUCT_URL @"https://objective-see.org/products/oversight.html"
 
 //error(s) url
-#define ERRORS_URL @"https://objective-see.com/errors.html"
+#define ERRORS_URL @"https://objective-see.org/errors.html"
 
 //os major
 #define SUPPORTED_OS_MAJOR @"OSMajor"
@@ -135,6 +135,10 @@
 #define PREF_NO_ICON_MODE @"noIconMode"
 
 //prefs
+// no external devices mode
+#define PREF_NO_EXTERNAL_DEVICES_MODE @"noExternalDevicesMode"
+
+//prefs
 // update mode
 #define PREF_NO_UPDATE_MODE @"noupdateMode"
 
@@ -142,7 +146,7 @@
 #define PREFS_ALLOWED_ITEMS @"allowedItems"
 
 //general error URL
-#define FATAL_ERROR_URL @"https://objective-see.com/errors.html"
+#define FATAL_ERROR_URL @"https://objective-see.org/errors.html"
 
 //key for exit code
 #define EXIT_CODE @"exitCode"
@@ -176,6 +180,9 @@
 
 //cmdline flag to uninstall
 #define ACTION_UNINSTALL @"-uninstall"
+
+//uninstall via UI
+#define CMD_UNINSTALL_VIA_UI @"-uninstallViaUI"
 
 //flag to uninstall
 #define ACTION_UNINSTALL_FLAG 0

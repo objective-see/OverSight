@@ -14,6 +14,7 @@
 #import <CoreMedia/CoreMedia.h>
 #import <Foundation/Foundation.h>
 #import <CoreMediaIO/CMIOHardware.h>
+#import <AVFoundation/AVCaptureDevice.h>
 
 #import "Event.h"
 #import "LogMonitor.h"
@@ -21,34 +22,53 @@
 
 @interface AVMonitor : NSObject <UNUserNotificationCenterDelegate>
 
-//video log monitor
-@property(nonatomic, retain)LogMonitor* videoLogMonitor;
+//log monitor
+@property(nonatomic, retain)LogMonitor* logMonitor;
 
-//audio log monitor
-@property(nonatomic, retain)LogMonitor* audioLogMonitor;
+//camera attributions
+@property(nonatomic, retain)NSMutableArray* cameraAttributions;
 
-//clients
-@property(nonatomic, retain)NSMutableArray* videoClients;
+//audio attributions
+@property(nonatomic, retain)NSMutableArray* audioAttributions;
 
-//audio clients
-@property(nonatomic, retain)NSMutableArray* audioClients;
+//built in mic
+@property(nonatomic, retain)AVCaptureDevice* builtInMic;
 
-//audio (mic) callback
-@property(nonatomic, copy)AudioObjectPropertyListenerBlock listenerBlock;
+//built in camera
+@property(nonatomic, retain)AVCaptureDevice* builtInCamera;
 
-//camera state
-@property NSControlStateValue cameraState;
+//inital mic state
+@property NSControlStateValue initialMicState;
 
-//microphone state
-@property NSControlStateValue microphoneState;
+//initial camera state
+@property NSControlStateValue initialCameraState;
 
-//last microphone state
-@property(nonatomic, retain)Event* lastMicEvent;
+//audio listeners
+@property(nonatomic, retain)NSMutableDictionary* audioListeners;
+
+//per device events
+@property(nonatomic, retain)NSMutableDictionary* deviceEvents;
+
+//audio event queue
+@property(nonatomic, retain)dispatch_queue_t audioEventQueue;
+
+//audio event timer
+@property(nonatomic, retain)dispatch_source_t audioEventTimer;
+
+//camera event queue
+@property(nonatomic, retain)dispatch_queue_t cameraEventQueue;
+
+//camera event timer
+@property(nonatomic, retain)dispatch_source_t cameraEventTimer;
+
 
 /* METHODS */
 
 //start
 -(void)start;
+
+//enumerate active devices
+-(NSMutableArray*)enumerateActiveDevices;
 
 //stop
 -(void)stop;

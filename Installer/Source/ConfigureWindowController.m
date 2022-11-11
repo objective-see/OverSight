@@ -78,12 +78,32 @@ extern os_log_t logHandle;
     [self window].title = [NSString stringWithFormat:@"version %@", getAppVersion()];
     
     //init status msg
-    [self.statusMsg setStringValue:@"...protects your webcam and microphone!"];
+    [self.statusMsg setStringValue:@"...protects your webcam & microphone!"];
     
+    //uninstall via app?
+    // just enable uinstall button
+    if(YES == [NSProcessInfo.processInfo.arguments containsObject:CMD_UNINSTALL_VIA_UI])
+    {
+        //enable uninstall
+        self.uninstallButton.enabled = YES;
+        
+        //disable install
+        self.installButton.enabled = NO;
+        
+        //make uninstall button first responder
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (100 * NSEC_PER_MSEC)), dispatch_get_main_queue(), ^{
+            
+            //set first responder
+            [self.window makeFirstResponder:self.uninstallButton];
+            
+        });
+        
+    }
+
     //app already installed?
     // enable 'uninstall' button
     // change 'install' button to say 'upgrade'
-    if(YES == isInstalled)
+    else if(YES == isInstalled)
     {
         //enable 'uninstall'
         self.uninstallButton.enabled = YES;

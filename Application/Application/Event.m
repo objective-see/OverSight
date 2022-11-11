@@ -11,7 +11,7 @@
 @implementation Event
 
 //init
--(id)init:(Client*)client device:(int)device state:(NSControlStateValue)state
+-(id)init:(Client*)client device:(AVCaptureDevice*)device deviceType:(int)deviceType state:(NSControlStateValue)state
 {
     //super
     self = [super init];
@@ -23,6 +23,9 @@
         //set device
         self.device = device;
         
+        //set device type
+        self.deviceType = deviceType;
+        
         //set state
         self.state = state;
         
@@ -32,7 +35,5 @@
     
     return self;
 }
-
-
 
 @end

@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="18122" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="21225" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="18122"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="21225"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="NSApplication">
@@ -53,7 +52,7 @@
                     </menu>
                 </menuItem>
             </items>
-            <point key="canvasLocation" x="67" y="135"/>
+            <point key="canvasLocation" x="-168" y="153"/>
         </menu>
         <menu id="2P0-OI-hGc">
             <items>
@@ -61,22 +60,29 @@
                     <modifierMask key="keyEquivalentModifierMask"/>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="WQ3-qz-mIN"/>
-                <menuItem title="Disable" tag="101" id="p8u-9L-hFY">
+                <menuItem title="Active Devices" tag="101" id="HRl-aW-6nn">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                </menuItem>
+                <menuItem isSeparatorItem="YES" id="arN-5E-2Bv"/>
+                <menuItem title="Disable" tag="102" id="p8u-9L-hFY">
                     <modifierMask key="keyEquivalentModifierMask"/>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="Y5x-j1-ofU"/>
                 <menuItem title="Preferences..." tag="103" id="Zao-2v-WyJ">
                     <modifierMask key="keyEquivalentModifierMask"/>
                 </menuItem>
-                <menuItem title="Allowed Items..." tag="102" id="i2A-ax-9ff">
+                <menuItem title="Allowed Items..." tag="104" id="i2A-ax-9ff">
                     <modifierMask key="keyEquivalentModifierMask"/>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="xGL-in-U11"/>
-                <menuItem title="Quit OverSight" tag="104" id="FkZ-L3-H8o">
+                <menuItem title="Quit OverSight" tag="105" id="FkZ-L3-H8o">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                </menuItem>
+                <menuItem title="Uninstall OverSight..." tag="106" id="amL-48-7OW">
                     <modifierMask key="keyEquivalentModifierMask"/>
                 </menuItem>
             </items>
-            <point key="canvasLocation" x="55" y="10"/>
+            <point key="canvasLocation" x="55" y="-1.5"/>
         </menu>
     </objects>
 </document>

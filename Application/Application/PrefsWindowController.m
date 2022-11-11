@@ -23,7 +23,6 @@ extern os_log_t logHandle;
 
 @synthesize toolbar;
 @synthesize modesView;
-@synthesize rulesView;
 @synthesize actionView;
 @synthesize updateView;
 @synthesize updateWindowController;
@@ -34,17 +33,20 @@ extern os_log_t logHandle;
 //'no-icon mode' button
 #define BUTTON_NO_ICON_MODE 2
 
+//no external devices mode
+#define BUTTON_NO_EXTERNAL_DEVICES_MODE 3
+
 //'disable inactive' button
-#define BUTTON_DISABLE_INACTIVE_MODE 3
+#define BUTTON_DISABLE_INACTIVE_MODE 4
 
 //action
-#define BUTTON_EXECUTE_ACTION 4
+#define BUTTON_EXECUTE_ACTION 5
 
 //args for action
-#define BUTTON_EXECUTE_ACTION_ARGS 5
+#define BUTTON_EXECUTE_ACTION_ARGS 6
 
 //'update mode' button
-#define BUTTON_NO_UPDATE_MODE 6
+#define BUTTON_NO_UPDATE_MODE 7
 
 //init 'general' view
 // add it, and make it selected
@@ -58,6 +60,7 @@ extern os_log_t logHandle;
     
     //set rules prefs as default
     [self.toolbar setSelectedItemIdentifier:TOOLBAR_MODES_ID];
+
     
     return;
 }
@@ -91,6 +94,9 @@ extern os_log_t logHandle;
             
             //no icon
             ((NSButton*)[view viewWithTag:BUTTON_NO_ICON_MODE]).state = [NSUserDefaults.standardUserDefaults boolForKey:PREF_NO_ICON_MODE];
+            
+            //no external device monitoring
+            ((NSButton*)[view viewWithTag:BUTTON_NO_EXTERNAL_DEVICES_MODE]).state = [NSUserDefaults.standardUserDefaults boolForKey:PREF_NO_EXTERNAL_DEVICES_MODE];
             
             //disable inactive alerts
             ((NSButton*)[view viewWithTag:BUTTON_DISABLE_INACTIVE_MODE]).state = [NSUserDefaults.standardUserDefaults boolForKey:PREF_DISABLE_INACTIVE];
@@ -205,6 +211,14 @@ bail:
             
             break;
         }
+            
+        //no icon mode
+        case BUTTON_NO_EXTERNAL_DEVICES_MODE:
+        {
+            //set
+            [NSUserDefaults.standardUserDefaults setBool:state forKey:PREF_NO_EXTERNAL_DEVICES_MODE];
+            break;
+        }
         
         //disable inactive mode
         case BUTTON_DISABLE_INACTIVE_MODE:
@@ -234,6 +248,18 @@ bail:
             {
                 //show 'browse'
                 [self browseButtonHandler:nil];
+            }
+            
+            //disabled?
+            // reset path
+            if(NSControlStateValueOff == state)
+            {
+                //reset
+                self.executePath.stringValue = @"";
+                
+                //save path & sync
+                [NSUserDefaults.standardUserDefaults setObject:nil forKey:PREF_EXECUTE_PATH];
+                [NSUserDefaults.standardUserDefaults synchronize];
             }
             
             break;
@@ -276,7 +302,6 @@ bail:
     return;
 }
 
-//TODO: supported OS
 //'check for update' button handler
 -(IBAction)check4Update:(id)sender
 {
@@ -378,7 +403,6 @@ bail:
             break;
     }
     
-    
     return;
 }
 
@@ -395,7 +419,8 @@ bail:
             //set activation policy
             [((AppDelegate*)[[NSApplication sharedApplication] delegate]) setActivationPolicy];
          
-     });
+       });
+        
     });
     
     return;
@@ -432,9 +457,17 @@ bail:
     //show it
     response = [panel runModal];
     
-    //ignore cancel
+    //cancel?
+    // uncheck if path is blank
     if(NSModalResponseCancel == response)
     {
+        //blank?
+        if(0 == self.executePath.stringValue.length)
+        {
+            //uncheck
+            self.executePathButton.state = NSControlStateValueOff;
+        }
+        
         //bail
         goto bail;
     }

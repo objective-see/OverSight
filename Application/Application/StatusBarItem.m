@@ -22,12 +22,17 @@ extern os_log_t logHandle;
 enum menuItems
 {
     status = 100,
+    devices,
     toggle,
-    rules,
     prefs,
+    rules,
     quit,
+    uninstall,
     end
 };
+
+//tag for active device
+#define TAG_ACTIVE_DEVICE 1000
 
 @implementation StatusBarItem
 
@@ -96,6 +101,96 @@ enum menuItems
         //set target
         [self.statusItem.menu itemWithTag:i].target = self;
     }
+    
+    return;
+}
+
+//update status item menu
+-(void)setActiveDevices:(NSArray*)activeDevices
+{
+    //active menu item
+    NSMenuItem* activeDeviceMenuItem = nil;
+    
+    //start index
+    NSInteger menuIndex = -1;
+    
+    //string for device name/emoji
+    NSMutableString* deviceDetails = nil;
+    
+    //get menu item
+    activeDeviceMenuItem = [self.statusItem.menu itemWithTag:devices];
+    
+    //get menu item index start
+    menuIndex = [self.statusItem.menu indexOfItemWithTag:devices];
+    
+    //iterate over menu
+    // remove all (prev) active devices
+    for(NSInteger i = self.statusItem.menu.itemArray.count-1; i>= 0; --i)
+    {
+        //remove active devices
+        if(TAG_ACTIVE_DEVICE == [[self.statusItem.menu itemAtIndex:i] tag])
+        {
+            //remove
+            [self.statusItem.menu removeItemAtIndex:i];
+        }
+    }
+    
+    //no active devices?
+    // set title and then bail
+    if(0 == activeDevices.count)
+    {
+        //set title
+        activeDeviceMenuItem.title = @"No Active Devices";
+        
+        //gone
+        goto bail;
+    }
+    
+    //set title
+    activeDeviceMenuItem.title = @"Active Devices:";
+    
+    //inc
+    menuIndex++;
+    
+    //add each
+    for(AVCaptureDevice* activeDevice in activeDevices)
+    {
+        //menu item
+        NSMenuItem* item = nil;
+        
+        //init string for name/etc
+        deviceDetails = [NSMutableString string];
+        
+        //mic?
+        if(YES == [activeDevice isKindOfClass:NSClassFromString(@"AVCaptureHALDevice")])
+        {
+            //add
+            [deviceDetails appendString:@"  🎙️ "];
+        }
+        //camera
+        else
+        {
+            //add
+            [deviceDetails appendString:@"  📸 "];
+        }
+
+        //add name
+        [deviceDetails appendString:activeDevice.localizedName];
+        
+        //init item
+        item = [[NSMenuItem alloc] initWithTitle:deviceDetails action:nil keyEquivalent:@""];
+        
+        //set tag
+        item.tag = TAG_ACTIVE_DEVICE;
+        
+        //add item to menu
+        [self.statusItem.menu insertItem:item atIndex:menuIndex];
+        
+        //inc
+        menuIndex++;
+    }
+    
+bail:
     
     return;
 }
@@ -245,6 +340,59 @@ enum menuItems
             [NSApp terminate:self];
             
             break;
+            
+        //uninstall
+        case uninstall:
+        {
+            //uninstaller path
+            NSURL* uninstaller = nil;
+            
+            //config options
+            NSWorkspaceOpenConfiguration* configuration = nil;
+            
+            //init path to uninstaller
+            uninstaller = [NSBundle.mainBundle URLForResource:@"OverSight Installer" withExtension:@".app"];
+            if(nil == uninstaller)
+            {
+                //err msg
+                os_log_debug(logHandle, "failed to find uninstaller");
+                
+                //bail
+                goto bail;
+            }
+            
+            //init configuration
+            configuration = [[NSWorkspaceOpenConfiguration alloc] init];
+            
+            //set args
+            configuration.arguments = @[CMD_UNINSTALL_VIA_UI];
+        
+            //dbg msg
+            os_log_debug(logHandle, "launching uninstaller %{public}@", uninstaller);
+            
+            @try
+            {
+                
+            //launch (in)/(un)installer
+            [NSWorkspace.sharedWorkspace openApplicationAtURL:uninstaller configuration:configuration completionHandler:^(NSRunningApplication * _Nullable app, NSError * _Nullable error) {
+                
+                //dbg msg
+                os_log_debug(logHandle, "launched uninstaller: %{public}@ (error: %{public}@)", app, error);
+                
+            }];
+                
+            }
+            @catch(NSException *exception)
+            {
+                //err msg
+                os_log_debug(logHandle, "failed to launch task (%{public}@)", exception);
+                
+                //bail
+                goto bail;
+            }
+            
+            break;
+        }
             
         default:
             

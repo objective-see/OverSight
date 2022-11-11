@@ -33,28 +33,28 @@
 @property(nonatomic, retain)NSDictionary* preferences;
 
 //toolbar
-@property (weak) IBOutlet NSToolbar *toolbar;
-
-//rules prefs view
-@property (weak) IBOutlet NSView *rulesView;
+@property (weak) IBOutlet NSToolbar* toolbar;
 
 //modes view
-@property (strong) IBOutlet NSView *modesView;
+@property (strong) IBOutlet NSView* modesView;
 
 //action view
-@property (strong) IBOutlet NSView *actionView;
+@property (strong) IBOutlet NSView* actionView;
+
+//execute path button
+@property (weak) IBOutlet NSButton* executePathButton;
 
 //path to action
-@property (weak) IBOutlet NSTextField *executePath;
+@property (weak) IBOutlet NSSearchField* executePath;
 
 //browse button
-@property (weak) IBOutlet NSButton *browseButton;
+@property (weak) IBOutlet NSButton* browseButton;
 
 //execute args button
-@property (weak) IBOutlet NSButton *executeArgsButton;
+@property (weak) IBOutlet NSButton* executeArgsButton;
 
 //update view
-@property (weak) IBOutlet NSView *updateView;
+@property (weak) IBOutlet NSView* updateView;
 
 //update button
 @property (weak) IBOutlet NSButton *updateButton;
