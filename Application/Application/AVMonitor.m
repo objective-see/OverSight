@@ -158,6 +158,20 @@ extern os_log_t logHandle;
     //start log monitor
     [self startLogMonitor];
     
+    //watch all input audio (mic) devices
+    for(AVCaptureDevice* audioDevice in [AVCaptureDevice devicesWithMediaType:AVMediaTypeAudio])
+    {
+       //start (device) monitor
+       [self watchAudioDevice:audioDevice];
+    }
+       
+    //watch all input video (cam) devices
+    for(AVCaptureDevice* videoDevice in [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo])
+    {
+       //start (device) monitor
+       [self watchVideoDevice:videoDevice];
+    }
+    
     return;
 }
 
@@ -555,6 +569,146 @@ extern os_log_t logHandle;
     return;
 }
 
+//register for audio changes
+-(BOOL)watchAudioDevice:(AVCaptureDevice*)device
+{
+    //ret var
+    BOOL bRegistered = NO;
+    
+    //status var
+    OSStatus status = -1;
+    
+    //device ID
+    AudioObjectID deviceID = 0;
+    
+    //property struct
+    AudioObjectPropertyAddress propertyStruct = {0};
+    
+    //init property struct's selector
+    propertyStruct.mSelector = kAudioDevicePropertyDeviceIsRunningSomewhere;
+    
+    //init property struct's scope
+    propertyStruct.mScope = kAudioObjectPropertyScopeGlobal;
+    
+    //init property struct's element
+    propertyStruct.mElement = kAudioObjectPropertyElementMaster;
+    
+    //get device ID
+    deviceID = [self getAVObjectID:device];
+    
+    //block
+    // invoked when audio changes
+    AudioObjectPropertyListenerBlock listenerBlock = ^(UInt32 inNumberAddresses, const AudioObjectPropertyAddress *inAddresses)
+    {
+        //state
+        NSInteger state = -1;
+    
+        //get state
+        state = [self getMicState:device];
+        
+        //dbg msg
+        os_log_debug(logHandle, "Mic: %{public}@ changed state to %ld", device.localizedName, (long)state);
+        
+        //save last mic off
+        if(NSControlStateValueOff == state)
+        {
+            //save
+            self.lastMicOff = device;
+        }
+    };
+    
+    //add property listener for audio changes
+    status = AudioObjectAddPropertyListenerBlock(deviceID, &propertyStruct, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), listenerBlock);
+    if(noErr != status)
+    {
+        //err msg
+        os_log_error(logHandle, "ERROR: AudioObjectAddPropertyListenerBlock() failed with %d", status);
+        
+        //bail
+        goto bail;
+    }
+    
+    //dbg msg
+    os_log_debug(logHandle, "monitoring %{public}@ for audio changes", device.localizedName);
+
+    //happy
+    bRegistered = YES;
+    
+bail:
+    
+    return bRegistered;
+}
+
+//register for video changes
+-(BOOL)watchVideoDevice:(AVCaptureDevice*)device
+{
+    //ret var
+    BOOL bRegistered = NO;
+    
+    //status var
+    OSStatus status = -1;
+    
+    CMIOObjectID deviceID = 0;
+    
+    //property struct
+    CMIOObjectPropertyAddress propertyStruct = {0};
+    
+    //init property struct's selector
+    propertyStruct.mSelector = kAudioDevicePropertyDeviceIsRunningSomewhere;
+    
+    //init property struct's scope
+    propertyStruct.mScope = kAudioObjectPropertyScopeGlobal;
+    
+    //init property struct's element
+    propertyStruct.mElement = kAudioObjectPropertyElementMaster;
+    
+    //get device ID
+    deviceID = [self getAVObjectID:device];
+    
+    //block
+    // invoked when video changes
+    CMIOObjectPropertyListenerBlock listenerBlock = ^(UInt32 inNumberAddresses, const CMIOObjectPropertyAddress addresses[])
+    {
+        //state
+        NSInteger state = -1;
+    
+        //get state
+        state = [self getCameraState:device];
+        
+        //dbg msg
+        os_log_debug(logHandle, "Camera: %{public}@ changed state to %ld", device.localizedName, (long)state);
+        
+        //save last camera off
+        if(NSControlStateValueOff == state)
+        {
+            //save
+            self.lastCameraOff = device;
+        }
+    };
+    
+    //register (add) property block listener
+    status = CMIOObjectAddPropertyListenerBlock(deviceID, &propertyStruct, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), listenerBlock);
+    if(noErr != status)
+    {
+        //err msg
+        os_log_error(logHandle, "ERROR: CMIOObjectAddPropertyListenerBlock() failed with %d", status);
+        
+        //bail
+        goto bail;
+    }
+    
+    //dbg msg
+    os_log_debug(logHandle, "monitoring %{public}@ for video changes", device.localizedName);
+    
+    //happy
+    bRegistered = YES;
+    
+//bail
+bail:
+    
+    return bRegistered;
+}
+
 //enumerate active devices
 -(NSMutableArray*)enumerateActiveDevices
 {
@@ -816,9 +970,6 @@ bail:
     //extract its last event
     deviceLastEvent = self.deviceEvents[deviceID];
     
-    //save this event, now as last
-    self.deviceEvents[deviceID] = event;
-    
     //inactive alerting off?
     // ignore if event is an inactive/off
     if( (NSControlStateValueOff == event.state) &&
@@ -835,20 +986,68 @@ bail:
     }
     
     //no external devices mode?
-    // note: only for activation event (as we don't have device for inactivation events)
-    if( (NSControlStateValueOn == event.state) &&
-        (YES == [NSUserDefaults.standardUserDefaults boolForKey:PREF_NO_EXTERNAL_DEVICES_MODE]) &&
-        (YES != [self.builtInMic.uniqueID isEqualToString:event.device.uniqueID]) && (YES != [self.builtInCamera.uniqueID isEqualToString:event.device.uniqueID]) )
+    if(YES == [NSUserDefaults.standardUserDefaults boolForKey:PREF_NO_EXTERNAL_DEVICES_MODE])
     {
-        //set result
-        result = NOTIFICATION_SKIPPED;
+        //on?
+        // we have the device directly
+        if(NSControlStateValueOn == event.state)
+        {
+            //external device?
+            // don't show notification
+            if( (YES != [self.builtInMic.uniqueID isEqualToString:event.device.uniqueID]) &&
+               (YES != [self.builtInCamera.uniqueID isEqualToString:event.device.uniqueID]) )
+            {
+                //set result
+                result = NOTIFICATION_SKIPPED;
+                
+                //dbg msg
+                os_log_debug(logHandle, "ingore external devices is set, so ignoring external device 'on' event");
+                
+                //bail
+                goto bail;
+            }
+        }
         
-        //dbg msg
-        os_log_debug(logHandle, "ingore external devices activation is set, so ignoring external device event");
+        //off
+        // check last device that turned off
+        else
+        {
+            //wait
+            // since logging event might come thru first
+            [NSThread sleepForTimeInterval:1.0f];
             
-        //bail
-        goto bail;
-    }
+            //mic
+            // check last mic off device
+            if( (event.deviceType = Device_Microphone) &&
+                (YES != [self.builtInMic.uniqueID isEqualToString:self.lastMicOff.uniqueID]) )
+            {
+                //set result
+                result = NOTIFICATION_SKIPPED;
+                
+                //dbg msg
+                os_log_debug(logHandle, "ingore external devices is set, so ignoring external mic 'off' event");
+                
+                //bail
+                goto bail;
+            }
+            
+            //camera
+            // check last camera off device
+            if( (event.deviceType = Device_Camera) &&
+                (YES != [self.builtInMic.uniqueID isEqualToString:self.lastCameraOff.uniqueID]) )
+            {
+                //set result
+                result = NOTIFICATION_SKIPPED;
+                
+                //dbg msg
+                os_log_debug(logHandle, "ingore external devices is set, so ignoring external camera 'off' event");
+                
+                //bail
+                goto bail;
+            }
+        }
+        
+    } //PREF_NO_EXTERNAL_DEVICES_MODE
     
     //(new) mic event?
     // need extra logic, since macOS sometimes toggles / delivers 2x events :/
@@ -869,7 +1068,7 @@ bail:
         
         //ignore if device's last event was same state
         if( (deviceLastEvent.state == event.state) &&
-            ([event.timestamp timeIntervalSinceDate:deviceLastEvent.timestamp] < 1.0f) )
+            ([event.timestamp timeIntervalSinceDate:deviceLastEvent.timestamp] < 2.0f) )
         {
             //set result
             result = NOTIFICATION_SPURIOUS;
@@ -880,45 +1079,6 @@ bail:
             //bail
             goto bail;
         }
-            
-        
-            
-        /*
-        //from same device?
-        // ignore if last event *just* occurred
-        
-            ([self getAVObjectID:event.device] ==  [self getAVObjectID:self.lastMicEvent.device]) )
-        {
-            
-            
-            //dbg msg
-            os_log_debug(logHandle, "ignoring mic event, as it happened <0.5s ");
-            
-            //bail
-            goto bail;
-        }
-        
-        
-        //was a 2x off/on for same device
-        if( (nil != self.lastMicEvent) &&
-            (event.state == self.lastMicEvent.state) &&
-            ([self getAVObjectID:event.device] == [self getAVObjectID:self.lastMicEvent.device]) )
-            
-        {
-            //set result
-            result = NOTIFICATION_SPURIOUS;
-            
-            //dbg msg
-            os_log_debug(logHandle, "ignoring mic event for %{public}@ as it was a 2x", event.device.localizedName);
-            
-            //bail
-            goto bail;
-        }
-
-        //update
-        self.lastMicEvent = event;
-         
-    */
     }
 
     //client provided?
@@ -957,12 +1117,13 @@ bail:
 -(void)handleEvent:(Event*)event
 {
     //result
-    NSUInteger result = NOTIFICATION_ERROR;
+    __block NSUInteger result = NOTIFICATION_ERROR;
     
     //should show?
     @synchronized (self) {
         
-        result = [self shouldShowNotification:event];
+       //show?
+       result = [self shouldShowNotification:event];
     }
     
     if(NOTIFICATION_DELIVER == result)
@@ -1157,7 +1318,7 @@ bail:
     int error = 0;
     
     //dbg msg
-    os_log_debug(logHandle, "user response to notification: %{public}@", response);
+    //os_log_debug(logHandle, "user response to notification: %{public}@", response);
     
     //extract device
     device = response.notification.request.content.userInfo[EVENT_DEVICE];

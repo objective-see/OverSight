@@ -43,6 +43,12 @@
 //initial camera state
 @property NSControlStateValue initialCameraState;
 
+//last mic off
+@property(nonatomic, retain)AVCaptureDevice* lastMicOff;
+
+//last camera off
+@property(nonatomic, retain)AVCaptureDevice* lastCameraOff;
+
 //audio listeners
 @property(nonatomic, retain)NSMutableDictionary* audioListeners;
 
