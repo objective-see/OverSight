@@ -143,9 +143,9 @@
                     </connections>
                 </button>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" preferredMaxLayoutWidth="262" translatesAutoresizingMaskIntoConstraints="NO" id="Enr-tn-mwG">
-                    <rect key="frame" x="72" y="201" width="318" height="15"/>
+                    <rect key="frame" x="72" y="201" width="177" height="15"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Ignore External Device 'Activate' Alerts" id="a5n-tt-65v">
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Ignore External Device" id="a5n-tt-65v">
                         <font key="font" size="13" name="Menlo-Bold"/>
                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -154,7 +154,7 @@
                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" allowsCharacterPickerTouchBarItem="YES" preferredMaxLayoutWidth="471" translatesAutoresizingMaskIntoConstraints="NO" id="AAL-QY-azK">
                     <rect key="frame" x="72" y="184" width="522" height="15"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Do not show an alert when external devices are activated." id="SYJ-Qv-cRq">
+                    <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Do not show an alert when external devices trigger an event." id="SYJ-Qv-cRq">
                         <font key="font" size="13" name="Menlo-Regular"/>
                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
