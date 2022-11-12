@@ -52,6 +52,9 @@
 //audio listeners
 @property(nonatomic, retain)NSMutableDictionary* audioListeners;
 
+//camera listeners
+@property(nonatomic, retain)NSMutableDictionary* cameraListeners;
+
 //per device events
 @property(nonatomic, retain)NSMutableDictionary* deviceEvents;
 

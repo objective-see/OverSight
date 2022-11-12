@@ -56,8 +56,11 @@ extern os_log_t logHandle;
         //init camera attributions
         self.cameraAttributions = [NSMutableArray array];
         
-        //init audio listener
+        //init audio listeners
         self.audioListeners = [NSMutableDictionary dictionary];
+        
+        //init video listeners
+        self.cameraListeners = [NSMutableDictionary dictionary];
         
         //set up delegate
         UNUserNotificationCenter.currentNotificationCenter.delegate = self;
@@ -232,7 +235,7 @@ extern os_log_t logHandle;
                 continue;
             }
             
-            //cameraAttributionsList list?
+            //cameraAttributions list?
             if(YES == [line hasPrefix:@"cameraAttributions = "])
             {
                 //set flag
@@ -628,6 +631,9 @@ extern os_log_t logHandle;
         goto bail;
     }
     
+    //save
+    self.audioListeners[device.uniqueID] = listenerBlock;
+    
     //dbg msg
     os_log_debug(logHandle, "monitoring %{public}@ for audio changes", device.localizedName);
 
@@ -648,6 +654,7 @@ bail:
     //status var
     OSStatus status = -1;
     
+    //device id
     CMIOObjectID deviceID = 0;
     
     //property struct
@@ -697,13 +704,15 @@ bail:
         goto bail;
     }
     
+    //save
+    self.cameraListeners[device.uniqueID] = listenerBlock;
+    
     //dbg msg
     os_log_debug(logHandle, "monitoring %{public}@ for video changes", device.localizedName);
     
     //happy
     bRegistered = YES;
     
-//bail
 bail:
     
     return bRegistered;
@@ -995,7 +1004,7 @@ bail:
             //external device?
             // don't show notification
             if( (YES != [self.builtInMic.uniqueID isEqualToString:event.device.uniqueID]) &&
-               (YES != [self.builtInCamera.uniqueID isEqualToString:event.device.uniqueID]) )
+                (YES != [self.builtInCamera.uniqueID isEqualToString:event.device.uniqueID]) )
             {
                 //set result
                 result = NOTIFICATION_SKIPPED;
@@ -1012,13 +1021,10 @@ bail:
         // check last device that turned off
         else
         {
-            //wait
-            // since logging event might come thru first
-            [NSThread sleepForTimeInterval:1.0f];
-            
             //mic
             // check last mic off device
-            if( (event.deviceType = Device_Microphone) &&
+            if( (Device_Microphone == event.deviceType) &&
+                (nil != self.lastMicOff) &&
                 (YES != [self.builtInMic.uniqueID isEqualToString:self.lastMicOff.uniqueID]) )
             {
                 //set result
@@ -1033,8 +1039,9 @@ bail:
             
             //camera
             // check last camera off device
-            if( (event.deviceType = Device_Camera) &&
-                (YES != [self.builtInMic.uniqueID isEqualToString:self.lastCameraOff.uniqueID]) )
+            if( (Device_Camera == event.deviceType) &&
+                (nil != self.lastCameraOff) &&
+                (YES != [self.builtInCamera.uniqueID isEqualToString:self.lastCameraOff.uniqueID]) )
             {
                 //set result
                 result = NOTIFICATION_SKIPPED;
@@ -1288,10 +1295,123 @@ bail:
 //stop monitor
 -(void)stop
 {
+    //dbg msg
+    os_log_debug(logHandle, "stopping log monitor");
+
     //stop log monitoring
     [self.logMonitor stop];
     
+    //dbg msg
+    os_log_debug(logHandle, "stopping audio monitor(s)");
+    
+    //watch all input audio (mic) devices
+    for(AVCaptureDevice* audioDevice in [AVCaptureDevice devicesWithMediaType:AVMediaTypeAudio])
+    {
+       //stop (device) monitor
+       [self unwatchAudioDevice:audioDevice];
+    }
+       
+    //dbg msg
+    os_log_debug(logHandle, "stopping video monitor(s)");
+    
+    //watch all input video (cam) devices
+    for(AVCaptureDevice* videoDevice in [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo])
+    {
+       //start (device) monitor
+       [self unwatchVideoDevice:videoDevice];
+    }
+    
+    //dbg msg
+    os_log_debug(logHandle, "all stopped...");
+    
     return;
+}
+
+//stop audio monitor
+-(void)unwatchAudioDevice:(AVCaptureDevice*)device
+{
+    //status
+    OSStatus status = -1;
+    
+    //device ID
+    AudioObjectID deviceID = 0;
+
+    //property struct
+    AudioObjectPropertyAddress propertyStruct = {0};
+    
+    //get device ID
+    deviceID = [self getAVObjectID:device];
+    
+    //init property struct's selector
+    propertyStruct.mSelector = kAudioDevicePropertyDeviceIsRunningSomewhere;
+    
+    //init property struct's scope
+    propertyStruct.mScope = kAudioObjectPropertyScopeGlobal;
+    
+    //init property struct's element
+    propertyStruct.mElement = kAudioObjectPropertyElementMaster;
+    
+    //remove
+    status = AudioObjectRemovePropertyListenerBlock(deviceID, &propertyStruct, dispatch_get_main_queue(), self.audioListeners[device.uniqueID]);
+    if(noErr != status)
+    {
+        //err msg
+        os_log_error(logHandle, "ERROR: 'AudioObjectRemovePropertyListenerBlock' failed with %d", status);
+        
+        //bail
+        goto bail;
+    }
+    
+    //unset listener block
+    self.audioListeners[device.uniqueID] = nil;
+    
+bail:
+    
+    return;
+}
+
+//stop video monitor
+-(void)unwatchVideoDevice:(AVCaptureDevice*)device
+{
+    //status
+    OSStatus status = -1;
+    
+    //device id
+    CMIOObjectID deviceID = 0;
+    
+    //property struct
+    CMIOObjectPropertyAddress propertyStruct = {0};
+    
+    //get device ID
+    deviceID = [self getAVObjectID:device];
+    
+    //init property struct's selector
+    propertyStruct.mSelector = kAudioDevicePropertyDeviceIsRunningSomewhere;
+    
+    //init property struct's scope
+    propertyStruct.mScope = kAudioObjectPropertyScopeGlobal;
+    
+    //init property struct's element
+    propertyStruct.mElement = kAudioObjectPropertyElementMaster;
+    
+    //remove
+    status = CMIOObjectRemovePropertyListenerBlock(deviceID, &propertyStruct, dispatch_get_main_queue(), self.cameraListeners[device.uniqueID]);
+    if(noErr != status)
+    {
+        //err msg
+        os_log_error(logHandle, "ERROR: 'AudioObjectRemovePropertyListenerBlock' failed with %d", status);
+        
+        //bail
+        goto bail;
+    }
+    
+    //unset listener block
+    self.cameraListeners[device.uniqueID] = nil;
+    
+bail:
+    
+    return;
+    
 }
 
 # pragma mark UNNotificationCenter Delegate Methods

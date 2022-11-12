@@ -94,7 +94,7 @@
                     </connections>
                 </button>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" preferredMaxLayoutWidth="156" translatesAutoresizingMaskIntoConstraints="NO" id="xbe-1S-lpy">
-                    <rect key="frame" x="72" y="326" width="114" height="15"/>
+                    <rect key="frame" x="72" y="327" width="114" height="15"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Start at Login" id="JVI-Or-h0u">
                         <font key="font" size="13" name="Menlo-Bold"/>
@@ -103,7 +103,7 @@
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" allowsCharacterPickerTouchBarItem="YES" preferredMaxLayoutWidth="471" translatesAutoresizingMaskIntoConstraints="NO" id="tFB-E4-zbp">
-                    <rect key="frame" x="72" y="309" width="475" height="15"/>
+                    <rect key="frame" x="72" y="310" width="475" height="15"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Automatically (re)start each time you login." id="E0T-Ug-P8f">
                         <font key="font" size="13" name="Menlo-Regular"/>
@@ -123,7 +123,7 @@
                     </connections>
                 </button>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" preferredMaxLayoutWidth="156" translatesAutoresizingMaskIntoConstraints="NO" id="Kjh-jc-STu">
-                    <rect key="frame" x="72" y="264" width="98" height="15"/>
+                    <rect key="frame" x="72" y="265" width="98" height="15"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="No Icon Mode" id="4EN-j2-enV">
                         <font key="font" size="13" name="Menlo-Bold"/>
@@ -143,7 +143,7 @@
                     </connections>
                 </button>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" preferredMaxLayoutWidth="262" translatesAutoresizingMaskIntoConstraints="NO" id="Enr-tn-mwG">
-                    <rect key="frame" x="72" y="201" width="177" height="15"/>
+                    <rect key="frame" x="72" y="202" width="177" height="15"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Ignore External Device" id="a5n-tt-65v">
                         <font key="font" size="13" name="Menlo-Bold"/>
@@ -152,7 +152,7 @@
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" allowsCharacterPickerTouchBarItem="YES" preferredMaxLayoutWidth="471" translatesAutoresizingMaskIntoConstraints="NO" id="AAL-QY-azK">
-                    <rect key="frame" x="72" y="184" width="522" height="15"/>
+                    <rect key="frame" x="72" y="185" width="522" height="15"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Do not show an alert when external devices trigger an event." id="SYJ-Qv-cRq">
                         <font key="font" size="13" name="Menlo-Regular"/>
@@ -172,7 +172,7 @@
                     </connections>
                 </button>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" preferredMaxLayoutWidth="262" translatesAutoresizingMaskIntoConstraints="NO" id="K3U-Od-Xdy">
-                    <rect key="frame" x="72" y="149" width="200" height="15"/>
+                    <rect key="frame" x="72" y="150" width="200" height="15"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Disable 'Inactive' Alerts" id="Gsa-fn-iag">
                         <font key="font" size="13" name="Menlo-Bold"/>
@@ -181,7 +181,7 @@
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" allowsCharacterPickerTouchBarItem="YES" preferredMaxLayoutWidth="471" translatesAutoresizingMaskIntoConstraints="NO" id="5xo-jp-5qA">
-                    <rect key="frame" x="72" y="132" width="522" height="15"/>
+                    <rect key="frame" x="72" y="133" width="522" height="15"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Do not show an alert when the camera/microphone is deactivated.  " id="1A2-j2-kqG">
                         <font key="font" size="13" name="Menlo-Regular"/>
@@ -201,7 +201,7 @@
                     </connections>
                 </button>
                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" allowsCharacterPickerTouchBarItem="YES" preferredMaxLayoutWidth="471" translatesAutoresizingMaskIntoConstraints="NO" id="xaO-g8-rdS">
-                    <rect key="frame" x="72" y="247" width="475" height="15"/>
+                    <rect key="frame" x="72" y="248" width="475" height="15"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Run without showing an icon in the status menu bar." id="SG5-YM-BoV">
                         <font key="font" size="13" name="Menlo-Regular"/>
