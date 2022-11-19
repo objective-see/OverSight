@@ -367,7 +367,7 @@ bail:
         case Update_NotSupported:
             
             //dbg msg
-            os_log_debug(logHandle, "update available, but not for this version of macOS");
+            os_log_debug(logHandle, "update available, but not for this version of macOS.");
             
             //set label
             self.updateLabel.stringValue = [NSString stringWithFormat:@"Update available, but isn't supported on macOS %ld.%ld", NSProcessInfo.processInfo.operatingSystemVersion.majorVersion, NSProcessInfo.processInfo.operatingSystemVersion.minorVersion];
