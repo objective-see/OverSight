@@ -140,7 +140,7 @@ extern os_log_t logHandle;
         //dbg msg
         os_log_debug(logHandle, "built-in mic: %{public}@ (device ID: %d)", self.builtInMic.localizedName, [self getAVObjectID:self.builtInMic]);
         
-        //find build-in camera
+        //find built-in camera
         self.builtInCamera = [self findBuiltInCamera];
         
         //dbg msg
