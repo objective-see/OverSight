@@ -852,10 +852,11 @@ bail:
         goto bail;
     }
     
-    //ignore leak warning
+    //ignore warning
     #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wpointer-to-int-cast"
     #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-    
+
     //grab connection ID
     objectID = (UInt32)[device performSelector:methodSelector withObject:nil];
     

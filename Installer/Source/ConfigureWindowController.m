@@ -161,10 +161,10 @@ extern os_log_t logHandle;
     
     //app path
     NSURL* appPath = nil;
-    
-    //error
-    NSError* error = nil;
 
+    //app config
+    NSWorkspaceOpenConfiguration* configuration = nil;
+    
     //grab tag
     action = ((NSButton*)sender).tag;
     
@@ -235,21 +235,47 @@ extern os_log_t logHandle;
                 //init app path
                 appPath = [NSURL fileURLWithPath:[@"/Applications" stringByAppendingPathComponent:APP_NAME]];
                 
-                //dbg msg
-                os_log_debug(logHandle, "now launching: %{public}@", appPath);
+                //alloc configuration
+                configuration = [[NSWorkspaceOpenConfiguration alloc] init];
                 
+                //set args
+                configuration.arguments = @[INITIAL_LAUNCH];
+                
+                //unset recent
+                configuration.addsToRecentItems = NO;
+                
+                //dbg msg
+                os_log_debug(logHandle, "now launching: %{public}@", appPath.path);
+                                
                 //launch it
-                if(nil == [[NSWorkspace sharedWorkspace] launchApplicationAtURL:appPath options:0 configuration:@{NSWorkspaceLaunchConfigurationArguments:@[INITIAL_LAUNCH]} error:&error])
+                [NSWorkspace.sharedWorkspace openApplicationAtURL:appPath configuration:configuration completionHandler:^(NSRunningApplication * _Nullable application, NSError * _Nullable error)
                 {
-                    //err msg
-                    os_log_error(logHandle, "ERROR: failed to launch %{public}@ (error: %{public}@)", appPath, error);
-                }
+                    #pragma unused(application)
+                    
+                    //error?
+                    if(nil != error)
+                    {
+                        //err msg
+                        os_log_error(logHandle, "ERROR: failed to launch %{public}@ (error: %{public}@)", appPath, error);
+                    }
+                    
+                    //close window
+                    // triggers cleanup logic
+                    dispatch_sync(dispatch_get_main_queue(),
+                    ^{
+                        [self.window close];
+                    });
+                    
+                }];
             }
-            
-            //close window
-            // triggers cleanup logic
-            [self.window close];
-            
+           
+            else
+            {
+                //close window
+                // triggers cleanup logic
+                [self.window close];
+            }
+           
             break;
         }
         
@@ -300,7 +326,7 @@ extern os_log_t logHandle;
     
     //open URL
     // invokes user's default browser
-    [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:ERRORS_URL]];
+    [NSWorkspace.sharedWorkspace openURL:[NSURL URLWithString:ERRORS_URL]];
     
     return;
 }
@@ -561,8 +587,12 @@ bail:
         //exit on main thread
         dispatch_async(dispatch_get_main_queue(),
         ^{
-           //exit
-           [NSApp terminate:self];
+            
+            //dbg msg
+            os_log_debug(logHandle, "%{public}@ exiting...", [NSProcessInfo.processInfo.arguments.firstObject lastPathComponent]);
+            
+            //exit
+            [NSApp terminate:self];
         });
     });
 

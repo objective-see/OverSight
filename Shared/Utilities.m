@@ -24,6 +24,7 @@
 #import <Foundation/Foundation.h>
 #import <CommonCrypto/CommonDigest.h>
 #import <SystemConfiguration/SystemConfiguration.h>
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 /* GLOBALS */
 
@@ -888,8 +889,8 @@ NSImage* getIconForProcess(NSString* path)
     if(YES != [NSFileManager.defaultManager fileExistsAtPath:path])
     {
         //set icon to system 'application' icon
-        icon = [NSWorkspace.sharedWorkspace iconForFileType: NSFileTypeForHFSTypeCode(kGenericApplicationIcon)];
-        
+        icon = [NSWorkspace.sharedWorkspace iconForContentType:[UTType typeWithFilenameExtension:@"app"]];
+                
         //set size to 64 @2x
         [icon setSize:NSMakeSize(128, 128)];
    
@@ -946,8 +947,8 @@ NSImage* getIconForProcess(NSString* path)
         if(nil == documentIcon)
         {
             //load
-            documentIcon = [[NSWorkspace sharedWorkspace] iconForFileType:
-                            NSFileTypeForHFSTypeCode(kGenericDocumentIcon)];
+            documentIcon = [NSWorkspace.sharedWorkspace iconForContentType:[UTType typeWithFilenameExtension:@"txt"]];
+            
         }
         
         //if 'iconForFile' method doesn't find and icon, it returns the system 'document' icon
@@ -955,8 +956,7 @@ NSImage* getIconForProcess(NSString* path)
         if(YES == [icon isEqual:documentIcon])
         {
             //set icon to system 'application' icon
-            icon = [[NSWorkspace sharedWorkspace]
-                    iconForFileType: NSFileTypeForHFSTypeCode(kGenericApplicationIcon)];
+            icon = [NSWorkspace.sharedWorkspace iconForContentType:[UTType typeWithFilenameExtension:@"app"]];
         }
         
         //'iconForFileType' returns small icons

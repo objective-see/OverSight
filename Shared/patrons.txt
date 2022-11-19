@@ -2,4 +2,4 @@ Patrons (2^6+):
 Jan Koum, Nick, Shain Singh, Christian Blümlein, Rocky Zadok, Cane Juice, M S
 
 Friends of Objective-See:
-Kandji, Jamf, Mosyle, CleanMyMac X, Kolide, Fleet, Palo Alto Networks, SmugMug, Guardian Mobile Firewall, iVerify, Halo Privacy
+Kandji, Jamf, Mosyle, CleanMyMac X, Kolide, Fleet, Palo Alto Networks, Sophos, SmugMug, Guardian Mobile Firewall, iVerify, Halo Privacy
