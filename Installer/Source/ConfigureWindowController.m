@@ -23,11 +23,8 @@ extern os_log_t logHandle;
 @implementation ConfigureWindowController
 
 @synthesize statusMsg;
-@synthesize fdaMessage;
 @synthesize configureObj;
-@synthesize diskAccessView;
 @synthesize moreInfoButton;
-@synthesize fdaActivityIndicator;
 @synthesize appActivationObserver;
 
 //automatically called when nib is loaded

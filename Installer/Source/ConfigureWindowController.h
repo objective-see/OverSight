@@ -35,23 +35,6 @@
 //spinner
 @property (weak, nonatomic) IBOutlet NSProgressIndicator *activityIndicator;
 
-/* FULL DISK ACCESS */
-
-//full disk access view
-@property (strong, nonatomic) IBOutlet NSView *diskAccessView;
-
-//disk access view's button
-@property (weak, nonatomic) IBOutlet NSButton *diskAccessButton;
-
-//spinner for 'waiting for FDA' message
-@property (weak, nonatomic) IBOutlet NSProgressIndicator *fdaActivityIndicator;
-
-//'waiting for FDA' message
-@property (weak, nonatomic) IBOutlet NSTextField *fdaMessage;
-
-//issues button
-@property (weak, nonatomic) IBOutlet NSButton *issuesButton;
-
 /* SUPPORT US */
 
 //support us view

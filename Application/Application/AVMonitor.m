@@ -1075,20 +1075,21 @@ bail:
             result = NOTIFICATION_SPURIOUS;
             
             //dbg msg
-            os_log_debug(logHandle, "ignoring mic event, as it happened <0.5s ");
+            os_log_debug(logHandle, "ignoring mic event, as it happened <0.5s ago");
             
             //bail
             goto bail;
         }
         
         //ignore if mic's last event was same state
-        if(deviceLastEvent.state == event.state)
+        if( (deviceLastEvent.state == event.state) &&
+            ([event.timestamp timeIntervalSinceDate:deviceLastEvent.timestamp] < 2.0f) )
         {
             //set result
             result = NOTIFICATION_SPURIOUS;
             
             //dbg msg
-            os_log_debug(logHandle, "ignoring mic event as it was same state as last (%ld)", (long)event.state);
+            os_log_debug(logHandle, "ignoring mic event as it was same state as last (%ld), and happened <2.0s ago", (long)event.state);
             
             //bail
             goto bail;
