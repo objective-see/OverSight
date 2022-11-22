@@ -80,6 +80,9 @@ extern os_log_t logHandle;
                 {
                     //show alert
                     showAlert(@"ERROR: OverSight not authorized to display notifications!", @"Please authorize via the \"Notifications\" pane (in System Preferences).");
+                    
+                    //open `System Preferences` notifications pane
+                    [NSWorkspace.sharedWorkspace openURL:[NSURL URLWithString:@"x-apple.systempreferences:com.apple.preference.notifications"]];
                 }
                 //bg thread
                 // show alert on main thread
@@ -90,6 +93,10 @@ extern os_log_t logHandle;
                     ^{
                         //show alert
                         showAlert(@"ERROR: OverSight not authorized to display notifications!", @"Please authorize via the \"Notifications\" pane (in System Preferences).");
+                        
+                        //open `System Preferences` notifications pane
+                        [NSWorkspace.sharedWorkspace openURL:[NSURL URLWithString:@"x-apple.systempreferences:com.apple.preference.notifications"]];
+                        
                     });
                 }
             }
