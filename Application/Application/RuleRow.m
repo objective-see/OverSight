@@ -32,13 +32,8 @@
         //init color
         selectionColor = [NSColor systemGrayColor];
         
-        //on 10.14+
-        // set to transparent
-        if (@available(macOS 10.14, *)) {
-            
-            //set color
-            selectionColor = [NSColor unemphasizedSelectedContentBackgroundColor];
-        }
+        //set to transparent
+        selectionColor = [NSColor unemphasizedSelectedContentBackgroundColor];
         
         //set stroke
         [selectionColor setStroke];

@@ -910,7 +910,7 @@ bail:
 }
 
 //check if a specified video is active
-// note: on M1 this always says 'on' (smh apple)
+// note: on M1 this sometimes always says 'on' (smh apple)
 -(UInt32)getCameraState:(AVCaptureDevice*)device
 {
     //status var
@@ -1061,7 +1061,7 @@ bail:
     // need extra logic, since macOS sometimes toggles / delivers 2x events :/
     if(Device_Microphone == event.deviceType)
     {
-        //ignore if device's last event was <0.5
+        //ignore if mic's last event was <0.5
         if([event.timestamp timeIntervalSinceDate:deviceLastEvent.timestamp] < 0.5f)
         {
             //set result
@@ -1074,15 +1074,14 @@ bail:
             goto bail;
         }
         
-        //ignore if device's last event was same state
-        if( (deviceLastEvent.state == event.state) &&
-            ([event.timestamp timeIntervalSinceDate:deviceLastEvent.timestamp] < 2.0f) )
+        //ignore if mic's last event was same state
+        if(deviceLastEvent.state == event.state)
         {
             //set result
             result = NOTIFICATION_SPURIOUS;
             
             //dbg msg
-            os_log_debug(logHandle, "ignoring mic event, as it happened <1.0 and is same state (%ld)", (long)event.state);
+            os_log_debug(logHandle, "ignoring mic event as it was same state as last (%ld)", (long)event.state);
             
             //bail
             goto bail;
@@ -1117,6 +1116,9 @@ bail:
     
 bail:
     
+    //(always) update last event
+    self.deviceEvents[deviceID] = event;
+    
     return result;
 }
 
@@ -1134,6 +1136,7 @@ bail:
        result = [self shouldShowNotification:event];
     }
     
+    //deliver/show user?
     if(NOTIFICATION_DELIVER == result)
     {
         //deliver
