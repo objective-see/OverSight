@@ -408,10 +408,20 @@ bail:
 }
 
 //get name of logged in user
-NSString* getConsoleUser()
+uid_t getConsoleUserID()
 {
-    //copy/return user
-    return CFBridgingRelease(SCDynamicStoreCopyConsoleUser(NULL, NULL, NULL));
+    //uid
+    uid_t userID = 0;
+    
+    //copy logged in user
+    if(NULL == CFBridgingRelease(SCDynamicStoreCopyConsoleUser(NULL, &userID, NULL)))
+    {
+        //error?
+        // defer to current user
+        userID = getuid();
+    }
+    
+    return userID;
 }
 
 //get process name
@@ -1679,8 +1689,8 @@ BOOL hasAdminPrivileges()
     //admin group
     struct group* adminGroup = NULL;
     
-    //get password entry for current user
-    pwentry = getpwuid(getuid());
+    //get password entry for console user
+    pwentry = getpwuid(getConsoleUserID());
     
     //get admin group
     adminGroup = getgrnam("admin");

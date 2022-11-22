@@ -198,7 +198,7 @@
 				CD86B6E923A5BBE7003F6BA4 /* configure.sh */,
 			);
 			name = Script;
-			path = Configure/Script;
+			path = Source/Script;
 			sourceTree = "<group>";
 		};
 		CD73DA9C20049158001FFC84 /* Shared */ = {

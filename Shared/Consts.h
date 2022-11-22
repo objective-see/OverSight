@@ -208,6 +208,9 @@
 //support us
 #define ACTION_SUPPORT 5
 
+//path to chmod
+#define CHMOD @"/bin/chmod"
+
 //path to xattr
 #define XATTR @"/usr/bin/xattr"
 

@@ -475,6 +475,9 @@ bail:
     //set path in ui
     self.executePath.stringValue = panel.URL.path;
     
+    //ensure its executable
+    execTask(CHMOD, @[@"+x", panel.URL.path], YES, NO);
+    
     //save path & sync
     [NSUserDefaults.standardUserDefaults setObject:self.executePath.stringValue forKey:PREF_EXECUTE_PATH];
     [NSUserDefaults.standardUserDefaults synchronize];
