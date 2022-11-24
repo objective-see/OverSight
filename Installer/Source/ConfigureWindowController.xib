@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="21225" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="21507" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="21225"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="21507"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="ConfigureWindowController">
             <connections>
                 <outlet property="activityIndicator" destination="b1w-5W-ayX" id="P5e-PO-Ozi"/>
+                <outlet property="gotoSupportViewButton" destination="8I9-ag-g5s" id="7ej-Ft-edA"/>
                 <outlet property="installButton" destination="553-2y-kvm" id="nxf-wO-EI3"/>
                 <outlet property="moreInfoButton" destination="QWu-qZ-Za2" id="8kC-Ga-5oJ"/>
+                <outlet property="notificationsView" destination="DoQ-oR-CLI" id="F1Y-Mo-2E6"/>
                 <outlet property="statusMsg" destination="SpB-Xc-WlB" id="jlm-ke-XfM"/>
                 <outlet property="supportButton" destination="pM7-Wp-KdU" id="fez-2X-gLE"/>
                 <outlet property="supportView" destination="bkk-rY-ALC" id="3xt-YX-akQ"/>
@@ -95,6 +97,49 @@
             </connections>
             <point key="canvasLocation" x="216.5" y="-225.5"/>
         </window>
+        <customView id="DoQ-oR-CLI" userLabel="Notifications">
+            <rect key="frame" x="0.0" y="0.0" width="812" height="500"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+            <subviews>
+                <box fixedFrame="YES" boxType="custom" borderType="none" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="4k7-qq-cJd">
+                    <rect key="frame" x="0.0" y="0.0" width="812" height="48"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <view key="contentView" id="lkA-o8-ZEW">
+                        <rect key="frame" x="0.0" y="0.0" width="812" height="48"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" tag="3" translatesAutoresizingMaskIntoConstraints="NO" id="8I9-ag-g5s">
+                                <rect key="frame" x="718" y="7" width="81" height="32"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="push" title="Next »" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="DHG-bQ-JvA">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" size="13" name="Menlo-Bold"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="configureButtonHandler:" target="-2" id="6Tl-Ce-fBS"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                    </view>
+                    <color key="fillColor" red="0.52700018810000004" green="0.69087679930000001" blue="0.21211786799999999" alpha="0.99595620600000001" colorSpace="custom" customColorSpace="sRGB"/>
+                </box>
+                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" preferredMaxLayoutWidth="660" translatesAutoresizingMaskIntoConstraints="NO" id="06L-aW-Qeu">
+                    <rect key="frame" x="93" y="370" width="615" height="110"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="center" title="If prompted, please allow OverSight to show notifications, setting the style to &quot;Alerts&quot;" id="8dX-bb-vf1">
+                        <font key="font" size="32" name="AvenirNextCondensed-Regular"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wmq-9S-jMi">
+                    <rect key="frame" x="41" y="39" width="731" height="359"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="Notifications" id="tTt-LO-Ecg"/>
+                </imageView>
+            </subviews>
+            <point key="canvasLocation" x="686" y="1393"/>
+        </customView>
         <customView id="bkk-rY-ALC" userLabel="Support">
             <rect key="frame" x="0.0" y="0.0" width="812" height="500"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -117,7 +162,7 @@
                                     <action selector="configureButtonHandler:" target="-2" id="Ipm-LG-LXx"/>
                                 </connections>
                             </button>
-                            <button verticalHuggingPriority="750" fixedFrame="YES" tag="5" translatesAutoresizingMaskIntoConstraints="NO" id="pM7-Wp-KdU">
+                            <button verticalHuggingPriority="750" fixedFrame="YES" tag="4" translatesAutoresizingMaskIntoConstraints="NO" id="pM7-Wp-KdU">
                                 <rect key="frame" x="718" y="7" width="81" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <buttonCell key="cell" type="push" title="Yes!" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="E5X-AO-6V1">
@@ -228,6 +273,7 @@
         <image name="FriendsSophos" width="518" height="137"/>
         <image name="Icon" width="512" height="512"/>
         <image name="Love" width="256" height="256"/>
+        <image name="Notifications" width="1430" height="607"/>
         <image name="OverSight" width="1301" height="227"/>
     </resources>
 </document>

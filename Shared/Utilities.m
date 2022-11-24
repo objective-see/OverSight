@@ -1590,56 +1590,9 @@ BOOL isDarkMode()
     return [[[NSUserDefaults standardUserDefaults] stringForKey:@"AppleInterfaceStyle"] isEqualToString:@"Dark"];
 }
 
-//running on M1?
-BOOL AppleSilicon(void)
-{
-    //flag
-    BOOL isAppleSilicon = NO;
-    
-    //type
-    cpu_type_t type = -1;
-    
-    //size
-    size_t size = 0;
-    
-    //mib
-    int mib[CTL_MAXNAME] = {0};
-    
-    //length
-    size_t length = CTL_MAXNAME;
-    
-    //get mib for 'proc_cputype'
-    if(noErr != sysctlnametomib("sysctl.proc_cputype", mib, &length))
-    {
-        //bail
-        goto bail;
-    }
-    
-    //add pid
-    mib[length] = getpid();
-    
-    //inc length
-    length++;
-    
-    //init size
-    size = sizeof(cpu_type_t);
-    
-    //get CPU type
-    if(noErr != sysctl(mib, (u_int)length, &type, &size, 0, 0))
-    {
-        //bail
-        goto bail;
-    }
-    
-    isAppleSilicon = (CPU_TYPE_ARM64 == type);
-    
-bail:
-    
-    return isAppleSilicon;
-}
 
 //show an alert
-NSModalResponse showAlert(NSString* messageText, NSString* informativeText)
+NSModalResponse showAlert(NSString* messageText, NSString* informativeText, NSString* buttonTitle)
 {
     //alert
     NSAlert* alert = nil;
@@ -1664,7 +1617,7 @@ NSModalResponse showAlert(NSString* messageText, NSString* informativeText)
     }
     
     //add button
-    [alert addButtonWithTitle:@"OK"];
+    [alert addButtonWithTitle:buttonTitle];
     
     //make app active
     [NSApp activateIgnoringOtherApps:YES];
@@ -1675,9 +1628,8 @@ NSModalResponse showAlert(NSString* messageText, NSString* informativeText)
     return response;
 }
 
-
 //checks if user has admin privs
-// ->based off http://stackoverflow.com/questions/30000443/asking-for-admin-privileges-for-only-standard-accounts
+// based off http://stackoverflow.com/questions/30000443/asking-for-admin-privileges-for-only-standard-accounts
 BOOL hasAdminPrivileges()
 {
     //flag

@@ -95,9 +95,86 @@ extern os_log_t logHandle;
             [self check4Update];
        });
     }
+
+    //can show notifications?
+    [self checkNotificationState];
     
 bail:
         
+    return;
+}
+
+//can show notifications?
+-(void)checkNotificationState
+{
+    //notification style
+    __block NSString* style = nil;
+    
+    //request authorization to allow notifications
+    // can always invoke this, as if user has already approved, this won't trigger any (secondary) prompt
+    [UNUserNotificationCenter.currentNotificationCenter requestAuthorizationWithOptions:(UNAuthorizationOptionAlert) completionHandler:^(BOOL granted, NSError * _Nullable error)
+    {
+        //dbg msg
+        os_log_debug(logHandle, "permission to display notifications granted? %d (error: %@)", granted, error);
+    
+        //not granted/error
+        if( (nil != error) ||
+            (YES != granted) )
+        {
+            //on main thread
+            // show alert / open system preferences
+            dispatch_async(dispatch_get_main_queue(), ^{
+                
+                //show alert
+                showAlert(@"ERROR: OverSight is not authorized to display notifications.", @"Please authorize (style: \"Alerts\") via the Notifications pane in System Preferences.", @"Open System Preferences...");
+                
+                //open `System Preferences` notifications pane
+                [NSWorkspace.sharedWorkspace openURL:[NSURL URLWithString:@"x-apple.systempreferences:com.apple.preference.notifications?com.objective-see.oversight"]];
+                
+            });
+        }
+        
+        //granted?
+        // on first run, ask nicely to have "alert" style set
+        else if( (YES == granted) &&
+                 (YES == [NSProcessInfo.processInfo.arguments containsObject:INITIAL_LAUNCH]) )
+        {
+            //get settings
+            [UNUserNotificationCenter.currentNotificationCenter getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings * _Nonnull settings)
+             {
+                //enabled / alert style?
+                if( (UNAlertStyleAlert != settings.alertStyle) ||
+                    (UNNotificationSettingEnabled != settings.alertSetting) )
+                {
+                    //set style: none
+                    if(UNAlertStyleNone == settings.alertStyle)
+                    {
+                        //set
+                        style = @"\"None\"";
+                    }
+                    //set style: banners
+                    else if(UNAlertStyleBanner == settings.alertStyle)
+                    {
+                        //set
+                        style = @"\"Banners\"";
+                    }
+                     
+                    //on main thread
+                    // show alert / open system preferences
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        
+                        //show alert
+                        showAlert([NSString stringWithFormat:@"OverSight notification mode set to %@.", style], @"Please change to \"Alerts\" via the Notifications pane in System Preferences.", @"Open System Preferences...");
+                        
+                        //open `System Preferences` notifications pane
+                        [NSWorkspace.sharedWorkspace openURL:[NSURL URLWithString:@"x-apple.systempreferences:com.apple.preference.notifications?com.objective-see.oversight"]];
+                        
+                    });
+                }
+            }];
+        }
+    }];
+
     return;
 }
 

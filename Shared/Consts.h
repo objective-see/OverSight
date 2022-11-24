@@ -202,11 +202,14 @@
 //button title: next
 #define ACTION_NEXT @"Next »"
 
+//show info about notifications
+#define ACTION_SHOW_NOTIFICATIONS 2
+
 //show friends
-#define ACTION_SHOW_SUPPORT 4
+#define ACTION_SHOW_SUPPORT 3
 
 //support us
-#define ACTION_SUPPORT 5
+#define ACTION_SUPPORT 4
 
 //path to chmod
 #define CHMOD @"/bin/chmod"

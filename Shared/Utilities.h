@@ -34,7 +34,6 @@ NSString* getAppVersion(void);
 //get (true) parent
 NSDictionary* getRealParent(pid_t pid);
 
-
 //extract value from plist
 // takes optional wait time...
 id getValueFromPlist(NSString* plistFile, NSString* key, BOOL insensitive, float maxWait);
@@ -125,12 +124,10 @@ NSString* valueForStringItem(NSString* item);
 // thanks: http://lapcatsoftware.com/articles/detect-app-translocation.html
 BOOL isTranslocated(NSString* path);
 
-//running on M1?
-BOOL AppleSilicon(void);
-
 //show an alert
-NSModalResponse showAlert(NSString* messageText, NSString* informativeText);
+NSModalResponse showAlert(NSString* messageText, NSString* informativeText, NSString* buttonTitle);
 
+//does console user have admin privs?
 BOOL hasAdminPrivileges(void);
 
 #endif

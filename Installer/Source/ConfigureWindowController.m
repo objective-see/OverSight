@@ -196,6 +196,21 @@ extern os_log_t logHandle;
             
             break;
         }
+            
+        //show 'support' view
+        case ACTION_SHOW_NOTIFICATIONS:
+        {
+            //dbg msg
+            os_log_debug(logHandle, "showing 'notifcations' view");
+            
+            //show view
+            [self showView:self.notificationsView firstResponder:self.gotoSupportViewButton];
+            
+            //unset window title
+            self.window.title = @"";
+            
+            break;
+        }
         
         //show 'support' view
         case ACTION_SHOW_SUPPORT:
@@ -508,7 +523,7 @@ extern os_log_t logHandle;
         self.installButton.title = ACTION_NEXT;
         
         //set tag
-        self.installButton.tag = ACTION_SHOW_SUPPORT;
+        self.installButton.tag = ACTION_SHOW_NOTIFICATIONS;
     }
     //otherwise
     // set button and tag for close/exit

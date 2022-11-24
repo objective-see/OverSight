@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
     if(YES != hasAdminPrivileges())
     {
         //show alert
-        showAlert(@"ERROR: Insuffient Privileges.", @"OverSight can only be installed / run on accounts with administrative privileges");
+        showAlert(@"ERROR: Insuffient Privileges.", @"OverSight can only be installed / run on accounts with administrative privileges", @"Exit");
         
         //bail
         goto bail;

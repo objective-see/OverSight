@@ -65,43 +65,6 @@ extern os_log_t logHandle;
         //set up delegate
         UNUserNotificationCenter.currentNotificationCenter.delegate = self;
         
-        //ask for notificaitons
-        [UNUserNotificationCenter.currentNotificationCenter requestAuthorizationWithOptions:(UNAuthorizationOptionAlert) completionHandler:^(BOOL granted, NSError * _Nullable error)
-        {
-            //dbg msg
-            os_log_debug(logHandle, "permission to display notifications granted? %d (error: %@)", granted, error);
-            
-            //not granted/error
-            if( (nil != error) ||
-                (YES != granted) )
-            {
-                //main thread?
-                if(YES == NSThread.isMainThread)
-                {
-                    //show alert
-                    showAlert(@"ERROR: OverSight not authorized to display notifications!", @"Please authorize via the \"Notifications\" pane (in System Preferences).");
-                    
-                    //open `System Preferences` notifications pane
-                    [NSWorkspace.sharedWorkspace openURL:[NSURL URLWithString:@"x-apple.systempreferences:com.apple.preference.notifications"]];
-                }
-                //bg thread
-                // show alert on main thread
-                else
-                {
-                    //on main thread
-                    dispatch_async(dispatch_get_main_queue(),
-                    ^{
-                        //show alert
-                        showAlert(@"ERROR: OverSight not authorized to display notifications!", @"Please authorize via the \"Notifications\" pane (in System Preferences).");
-                        
-                        //open `System Preferences` notifications pane
-                        [NSWorkspace.sharedWorkspace openURL:[NSURL URLWithString:@"x-apple.systempreferences:com.apple.preference.notifications"]];
-                        
-                    });
-                }
-            }
-        }];
-        
         //init ok action
         ok = [UNNotificationAction actionWithIdentifier:@"Ok" title:@"Ok" options:UNNotificationActionOptionNone];
         
@@ -1225,7 +1188,7 @@ bail:
     request = [UNNotificationRequest requestWithIdentifier:NSUUID.UUID.UUIDString content:content trigger:NULL];
     
     //send notification
-    [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request withCompletionHandler:^(NSError *_Nullable error)
+    [UNUserNotificationCenter.currentNotificationCenter addNotificationRequest:request withCompletionHandler:^(NSError *_Nullable error)
     {
         //error?
         if(nil != error)
@@ -1428,8 +1391,15 @@ bail:
 
 # pragma mark UNNotificationCenter Delegate Methods
 
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler {
+    
+    completionHandler(UNNotificationPresentationOptionAlert);
+    
+    return;
+}
+
 //handle user response to notification
-- (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler {
+-(void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler {
     
     //allowed items
     NSMutableArray* allowedItems = nil;
@@ -1533,7 +1503,7 @@ bail:
             os_log_error(logHandle, "ERROR: failed to kill %@ (%@)", processName, processID);
     
             //show an alert
-            showAlert([NSString stringWithFormat:@"ERROR: failed to block %@ (%@)", processName, processID], [NSString stringWithFormat:@"system error code: %d", error]);
+            showAlert([NSString stringWithFormat:@"ERROR: failed to terminate %@ (%@)", processName, processID], [NSString stringWithFormat:@"system error code: %d", error], @"OK");
             
             //bail
             goto bail;

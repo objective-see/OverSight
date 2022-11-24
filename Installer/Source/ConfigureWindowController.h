@@ -35,6 +35,14 @@
 //spinner
 @property (weak, nonatomic) IBOutlet NSProgressIndicator *activityIndicator;
 
+/* INFO ABOUT NOTIFICATIONS */
+
+//notifications view
+@property (strong, nonatomic) IBOutlet NSView *notificationsView;
+
+//support us
+@property (weak, nonatomic) IBOutlet NSButton *gotoSupportViewButton;
+
 /* SUPPORT US */
 
 //support us view
