@@ -195,7 +195,7 @@ bail:
             toggleLoginItem([NSURL fileURLWithPath:NSBundle.mainBundle.bundlePath], state);
             
             //set
-            [NSUserDefaults.standardUserDefaults setBool:state forKey:PREF_PASSIVE_MODE];
+            [NSUserDefaults.standardUserDefaults setBool:state forKey:PREF_AUTOSTART_MODE];
             
             break;
         }

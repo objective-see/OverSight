@@ -127,10 +127,6 @@
 #define PREF_IS_DISABLED @"disabled"
 
 //prefs
-// passive mode
-#define PREF_PASSIVE_MODE @"passiveMode"
-
-//prefs
 // icon mode
 #define PREF_NO_ICON_MODE @"noIconMode"
 
