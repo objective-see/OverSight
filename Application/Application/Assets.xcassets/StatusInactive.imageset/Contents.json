@@ -2,7 +2,13 @@
   "images" : [
     {
       "filename" : "inactive.png",
-      "idiom" : "mac"
+      "idiom" : "mac",
+      "scale" : "1x"
+    },
+    {
+      "filename" : "inactive@2x.png",
+      "idiom" : "mac",
+      "scale" : "2x"
     }
   ],
   "info" : {
