@@ -222,7 +222,7 @@ extern os_log_t logHandle;
             }
             
             //audit token of item?
-            if(YES == [line hasPrefix:@"auditToken = "])
+            if(YES == [line containsString:@"<BSAuditToken:"])
             {
                 //pid extraction regex
                 NSRegularExpression* regex = nil;
