@@ -34,7 +34,6 @@
 		CDC60991263CBD36006D1332 /* AVMonitor.m in Sources */ = {isa = PBXBuildFile; fileRef = CDC60990263CBD36006D1332 /* AVMonitor.m */; };
 		CDC60994263CBEE7006D1332 /* Client.m in Sources */ = {isa = PBXBuildFile; fileRef = CDC60993263CBEE7006D1332 /* Client.m */; };
 		CDCBF0DE26499DFF001D9F9A /* Event.m in Sources */ = {isa = PBXBuildFile; fileRef = CDCBF0DD26499DFF001D9F9A /* Event.m */; };
-		CDE09AF729198BA800561CFF /* OverSight Installer.app in Resources */ = {isa = PBXBuildFile; fileRef = CDE09AF629198BA800561CFF /* OverSight Installer.app */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -98,7 +97,6 @@
 		CDC60993263CBEE7006D1332 /* Client.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Client.m; sourceTree = "<group>"; };
 		CDCBF0DC26499DFF001D9F9A /* Event.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Event.h; sourceTree = "<group>"; };
 		CDCBF0DD26499DFF001D9F9A /* Event.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Event.m; sourceTree = "<group>"; };
-		CDE09AF629198BA800561CFF /* OverSight Installer.app */ = {isa = PBXFileReference; lastKnownFileType = wrapper.application; path = "OverSight Installer.app"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -218,7 +216,6 @@
 		CDE09AF12919829000561CFF /* Uninstaller */ = {
 			isa = PBXGroup;
 			children = (
-				CDE09AF629198BA800561CFF /* OverSight Installer.app */,
 			);
 			path = Uninstaller;
 			sourceTree = "<group>";
@@ -296,7 +293,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				CD8FD5D523BAE2D200EFE0FB /* Preferences.xib in Resources */,
-				CDE09AF729198BA800561CFF /* OverSight Installer.app in Resources */,
 				CD6836682391DB6F00CF19C1 /* security.plist in Resources */,
 				CD2F800C24455333009C3D77 /* AboutWindow.xib in Resources */,
 				7D16D6951F64E43300DB3161 /* UpdateWindow.xib in Resources */,
