@@ -30,6 +30,7 @@
 		CD8FD5F823C05AD900EFE0FB /* RulesWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8FD5F323C05AD800EFE0FB /* RulesWindowController.m */; };
 		CD8FD5FA23C05AD900EFE0FB /* Rules.xib in Resources */ = {isa = PBXBuildFile; fileRef = CD8FD5F523C05AD900EFE0FB /* Rules.xib */; };
 		CDA88A792537CE2400C469BF /* Sentry.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = CD21501B20AD2EE000CEF17B /* Sentry.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		CDB009A429483A4300945F07 /* OverSight Installer.app in Resources */ = {isa = PBXBuildFile; fileRef = CDB009A329483A4300945F07 /* OverSight Installer.app */; };
 		CDC6098E263CB7EB006D1332 /* LogMonitor.m in Sources */ = {isa = PBXBuildFile; fileRef = CDC6098D263CB7EB006D1332 /* LogMonitor.m */; };
 		CDC60991263CBD36006D1332 /* AVMonitor.m in Sources */ = {isa = PBXBuildFile; fileRef = CDC60990263CBD36006D1332 /* AVMonitor.m */; };
 		CDC60994263CBEE7006D1332 /* Client.m in Sources */ = {isa = PBXBuildFile; fileRef = CDC60993263CBEE7006D1332 /* Client.m */; };
@@ -89,6 +90,7 @@
 		CD8FD5F223C05AD800EFE0FB /* RuleRowCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RuleRowCell.m; sourceTree = "<group>"; };
 		CD8FD5F323C05AD800EFE0FB /* RulesWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RulesWindowController.m; sourceTree = "<group>"; };
 		CD8FD5F523C05AD900EFE0FB /* Rules.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = Rules.xib; sourceTree = "<group>"; };
+		CDB009A329483A4300945F07 /* OverSight Installer.app */ = {isa = PBXFileReference; lastKnownFileType = wrapper.application; path = "OverSight Installer.app"; sourceTree = "<group>"; };
 		CDC6098C263CB7EB006D1332 /* LogMonitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogMonitor.h; sourceTree = "<group>"; };
 		CDC6098D263CB7EB006D1332 /* LogMonitor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LogMonitor.m; sourceTree = "<group>"; };
 		CDC6098F263CBD36006D1332 /* AVMonitor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AVMonitor.h; sourceTree = "<group>"; };
@@ -216,6 +218,7 @@
 		CDE09AF12919829000561CFF /* Uninstaller */ = {
 			isa = PBXGroup;
 			children = (
+				CDB009A329483A4300945F07 /* OverSight Installer.app */,
 			);
 			path = Uninstaller;
 			sourceTree = "<group>";
@@ -293,6 +296,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CD8FD5D523BAE2D200EFE0FB /* Preferences.xib in Resources */,
+				CDB009A429483A4300945F07 /* OverSight Installer.app in Resources */,
 				CD6836682391DB6F00CF19C1 /* security.plist in Resources */,
 				CD2F800C24455333009C3D77 /* AboutWindow.xib in Resources */,
 				7D16D6951F64E43300DB3161 /* UpdateWindow.xib in Resources */,
@@ -465,7 +469,7 @@
 				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = NO;
 				CODE_SIGN_IDENTITY = "Developer ID Application";
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 2.1.3;
+				CURRENT_PROJECT_VERSION = 2.1.4;
 				DEVELOPMENT_TEAM = VBG97UB4TA;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build/Mac";
@@ -476,7 +480,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(LD_RUNPATH_SEARCH_PATHS_$(IS_MACCATALYST)) @executable_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = "";
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
-				MARKETING_VERSION = 2.1.3;
+				MARKETING_VERSION = 2.1.4;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.objective-see.oversight";
 				PRODUCT_NAME = OverSight;
@@ -491,7 +495,7 @@
 				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = NO;
 				CODE_SIGN_IDENTITY = "Developer ID Application";
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 2.1.3;
+				CURRENT_PROJECT_VERSION = 2.1.4;
 				DEVELOPMENT_TEAM = VBG97UB4TA;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build/Mac";
@@ -502,7 +506,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(LD_RUNPATH_SEARCH_PATHS_$(IS_MACCATALYST)) @executable_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = "";
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
-				MARKETING_VERSION = 2.1.3;
+				MARKETING_VERSION = 2.1.4;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.objective-see.oversight";
 				PRODUCT_NAME = OverSight;

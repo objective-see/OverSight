@@ -1493,6 +1493,20 @@ bail:
     //get process name
     processName = valueForStringItem(getProcessName(processPath));
     
+    //default action
+    // set/save for logic in 'applicationShouldHandleReopen' ...which gets called :|
+    if(YES == [response.actionIdentifier isEqualToString:@"com.apple.UNNotificationDefaultActionIdentifier"])
+    {
+        //dbg msg
+        os_log_debug(logHandle, "user click triggered 'com.apple.UNNotificationDefaultActionIdentifier'");
+        
+        //save
+        self.lastNotificationDefaultAction = [NSDate date];
+        
+        //done
+        goto bail;
+    }
+
     //close?
     // nothing to do
     if(YES == [response.notification.request.content.categoryIdentifier isEqualToString:CATEGORY_CLOSE])

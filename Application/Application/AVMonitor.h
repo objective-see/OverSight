@@ -70,6 +70,8 @@
 //camera event timer
 @property(nonatomic, retain)dispatch_source_t cameraEventTimer;
 
+//last alert (default) interaction
+@property(nonatomic, retain)NSDate* lastNotificationDefaultAction;
 
 /* METHODS */
 

@@ -184,10 +184,13 @@ bail:
 {
     //dbg msg
     os_log_debug(logHandle, "method '%s' invoked from (hasVisibleWindows: %d)", __PRETTY_FUNCTION__, hasVisibleWindows);
-    
+
     //no visible window(s)
-    // default to show preferences
-    if(YES != hasVisibleWindows)
+    // and not invoked via notification
+    // default to show preferences window
+    if( (YES != hasVisibleWindows) &&
+        (nil != avMonitor.lastNotificationDefaultAction) &&
+        (fabs([avMonitor.lastNotificationDefaultAction timeIntervalSinceNow]) > 1) )
     {
         //show prefs
         [self showPreferences:nil];
