@@ -1303,7 +1303,7 @@ bail:
         
         //add device
         [args addObject:@"-device"];
-        (Device_Camera == event.device) ? [args addObject:@"camera"] : [args addObject:@"microphone"];
+        (Device_Camera == event.deviceType) ? [args addObject:@"camera"] : [args addObject:@"microphone"];
         
         //add event
         [args addObject:@"-event"];

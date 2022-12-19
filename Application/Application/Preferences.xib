@@ -257,11 +257,11 @@
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" allowsCharacterPickerTouchBarItem="YES" preferredMaxLayoutWidth="471" translatesAutoresizingMaskIntoConstraints="NO" id="GP0-UX-66J">
-                    <rect key="frame" x="72" y="82" width="427" height="60"/>
+                    <rect key="frame" x="72" y="84" width="510" height="60"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" sendsActionOnEndEditing="YES" id="7Ah-kZ-gGe">
                         <font key="font" size="13" name="Menlo-Regular"/>
-                        <string key="title">OverSight will pass in the following arguments: -d &lt;camera|microphone&gt; -event &lt;on|off&gt; -process &lt;pid&gt;  Note: -process is only specified on activation events.</string>
+                        <string key="title">OverSight will pass in the following arguments: -device &lt;camera|microphone&gt; -event &lt;on|off&gt; -process &lt;pid&gt;  Note: -process is only specified on activation events.</string>
                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
@@ -307,7 +307,7 @@
                 <constraint firstItem="gVP-Ih-dFA" firstAttribute="top" secondItem="Jpg-nC-dWd" secondAttribute="top" constant="57" id="nxN-h0-hTd"/>
                 <constraint firstAttribute="trailing" secondItem="gVP-Ih-dFA" secondAttribute="trailing" constant="20" symbolic="YES" id="wdb-4c-5GF"/>
             </constraints>
-            <point key="canvasLocation" x="384" y="887"/>
+            <point key="canvasLocation" x="384" y="886.5"/>
         </customView>
         <customView id="1OV-sl-cSe" userLabel="Update">
             <rect key="frame" x="0.0" y="0.0" width="618" height="275"/>
