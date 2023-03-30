@@ -153,179 +153,248 @@ extern os_log_t logHandle;
 {
     //dbg msg
     os_log_debug(logHandle, "starting log monitor for AV events via w/ 'com.apple.SystemStatus'");
-
-    //start logging
-    [self.logMonitor start:[NSPredicate predicateWithFormat:@"subsystem=='com.apple.SystemStatus'"] level:Log_Level_Default callback:^(OSLogEvent* logEvent) {
     
-        //dbg msg
-        os_log_debug(logHandle, "received log message from 'com.apple.SystemStatus': %{public}@", logEvent.composedMessage);
+    //macOS 13.3
+    // use predicate: "subsystem=='com.apple.cmio'" looking for 'CMIOExtensionPropertyDeviceControlPID'
+    if (@available(macOS 13.3, *)) {
+       
+        //regex
+        NSRegularExpression* regex = nil;
         
-        //sync to process
-        @synchronized (self) {
-            
-            //flags
-            BOOL audioAttributionsList = NO;
-            BOOL cameraAttributionsList = NO;
-            
-            //new audio attributions
-            NSMutableArray* newAudioAttributions = nil;
-            
-            //new camera attributions
-            NSMutableArray* newCameraAttributions = nil;
-            
-            //only interested on "Server data changed..." msgs
-            if(YES != [logEvent.composedMessage containsString:@"Server data changed for media domain"])
-            {
-                return;
-            }
-            
-            //split on newlines
-            // ...and then parse out audio/camera attributions
-            for(NSString* __strong line in [logEvent.composedMessage componentsSeparatedByString:@"\n"])
-            {
-                //pid
-                NSNumber* pid = 0;
-                
-                //trim
-                line = [line stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-                
-                //'audioAttributions' list?
-                if( (YES == [line hasPrefix:@"audioAttributions = "]) ||
-                    (YES == [line hasPrefix:@"audioRecordingAttributions = "]) )
-                {
-                    //dbg msg
-                    os_log_debug(logHandle, "found 'audio attributions'");
-                    
-                    //set flag
-                    audioAttributionsList = YES;
-                    
-                    //init
-                    newAudioAttributions = [NSMutableArray array];
-                    
-                    //unset (other) list
-                    cameraAttributionsList = NO;
-                    
-                    //next
-                    continue;
-                }
-                
-                //'cameraAttributions' list?
-                if( (YES == [line hasPrefix:@"cameraAttributions = "]) ||
-                    (YES == [line hasPrefix:@"cameraCaptureAttributions = "]) )
-                {
-                    //dbg msg
-                    os_log_debug(logHandle, "found 'camera attributions'");
-                    
-                    //set flag
-                    cameraAttributionsList = YES;
-                    
-                    //init
-                    newCameraAttributions = [NSMutableArray array];
-                    
-                    //unset (other) list
-                    audioAttributionsList = NO;
-                    
-                    //next
-                    continue;
-                }
-                
-                //audit token of item?
-                if(YES == [line containsString:@"<BSAuditToken:"])
-                {
-                    //dbg msg
-                    os_log_debug(logHandle, "line has audit token...");
-                    
-                    //pid extraction regex
-                    NSRegularExpression* regex = nil;
-                    
-                    //match
-                    NSTextCheckingResult* match = nil;
-                    
-                    //init regex
-                    regex = [NSRegularExpression regularExpressionWithPattern:@"(?<=PID: )[0-9]*" options:0 error:nil];
-                    
-                    //match/extract pid
-                    match = [regex firstMatchInString:line options:0 range:NSMakeRange(0, line.length)];
-                    if( (nil == match) ||
-                        (NSNotFound == match.range.location))
-                    {
-                        //dbg msg
-                        os_log_debug(logHandle, "no match on regex");
-                        
-                        //ignore
-                        continue;
-                    }
-                    
-                    //extract pid
-                    pid = @([[line substringWithRange:[match rangeAtIndex:0]] intValue]);
-                    
-                    //dbg msg
-                    os_log_debug(logHandle, "pid: %@", pid);
-                    
-                    //in audio list?
-                    if(YES == audioAttributionsList)
-                    {
-                        //dbg msg
-                        os_log_debug(logHandle, "...for audio");
-                        
-                        //add
-                        [newAudioAttributions addObject:[NSNumber numberWithInt:[pid intValue]]];
-                    }
-                    //in camera list?
-                    else if(YES == cameraAttributionsList)
-                    {
-                        //dbg msg
-                        os_log_debug(logHandle, "...for camera");
-                        
-                        //add
-                        [newCameraAttributions addObject:[NSNumber numberWithInt:[pid intValue]]];
-                    }
-                    
-                    //next
-                    continue;
-                }
-            }
-            
-            //macOS 12: off events trigger the removal of the list
-            // so then we'll just pass in an empty list in that case
-            if(12 == NSProcessInfo.processInfo.operatingSystemVersion.majorVersion)
-            {
-                //nil?
-                if(nil == newAudioAttributions)
-                {
-                    //init blank
-                    newAudioAttributions = [NSMutableArray array];
-                }
-                
-                //nil?
-                if(nil == newCameraAttributions)
-                {
-                    //init blank
-                    newCameraAttributions = [NSMutableArray array];
-                }
-            }
-                    
-            //process attibutions
-            [self processAttributions:newAudioAttributions newCameraAttributions:newCameraAttributions];
-            
-        }//sync
+        //init regex
+        regex = [NSRegularExpression regularExpressionWithPattern:@"=\\s*(\\d+)\\s*;" options:0 error:nil];
         
-        //(re)enumerate active devices
-        // delayed need as device deactiavation
-        // then update status menu (on main thread)
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^
-        {
-            //update on on main thread
-            dispatch_async(dispatch_get_main_queue(), ^{
+        //start logging
+        [self.logMonitor start:[NSPredicate predicateWithFormat:@"subsystem=='com.apple.cmio'"] level:Log_Level_Debug callback:^(OSLogEvent* logEvent) {
+        
+            //match
+            NSTextCheckingResult* match = nil;
             
-                //update status menu
-                [((AppDelegate*)[[NSApplication sharedApplication] delegate]).statusBarItemController setActiveDevices:[self enumerateActiveDevices]];
+            //pid
+            NSInteger pid = 0;
+            
+            //sync to process
+            @synchronized (self) {
                 
-            });
+                //only interested on "CMIOExtensionPropertyDeviceControlPID = <pid>;" msgs
+                if(YES != [logEvent.composedMessage containsString:@"CMIOExtensionPropertyDeviceControlPID = "])
+                {
+                    return;
+                }
+                
+                //match on pid
+                match = [regex firstMatchInString:logEvent.composedMessage options:0 range:NSMakeRange(0, logEvent.composedMessage.length)];
+                if( (nil == match) ||
+                    (NSNotFound == match.range.location) )
+                {
+                    return;
+                }
+                
+                //extract/convert pid
+                pid = [[logEvent.composedMessage substringWithRange:[match rangeAtIndex:1]] integerValue];
+                if( (0 == pid) ||
+                    (-1 == pid) )
+                {
+                    return;
+                }
+                
+                //save
+                self.lastCameraClient = pid;
+        
+                //(re)enumerate active devices
+                // delayed need as device deactiavation
+                // then update status menu (on main thread)
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^
+                {
+                    //update on on main thread
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                    
+                        //update status menu
+                        [((AppDelegate*)[[NSApplication sharedApplication] delegate]).statusBarItemController setActiveDevices:[self enumerateActiveDevices]];
+                        
+                    });
+                    
+                }); //dispatch for delay
+            }
             
-        }); //dispatch for delay
-    }];
-
+        }];
+            
+    }
+    
+    //previous versions of macoS
+    // use predicate: "subsystem=='com.apple.SystemStatus'"
+    else
+    {
+            //start logging
+            [self.logMonitor start:[NSPredicate predicateWithFormat:@"subsystem=='com.apple.SystemStatus'"] level:Log_Level_Default callback:^(OSLogEvent* logEvent) {
+            
+                //sync to process
+                @synchronized (self) {
+                    
+                    //flags
+                    BOOL audioAttributionsList = NO;
+                    BOOL cameraAttributionsList = NO;
+                    
+                    //new audio attributions
+                    NSMutableArray* newAudioAttributions = nil;
+                    
+                    //new camera attributions
+                    NSMutableArray* newCameraAttributions = nil;
+                    
+                    //only interested on "Server data changed..." msgs
+                    if(YES != [logEvent.composedMessage containsString:@"Server data changed for media domain"])
+                    {
+                        return;
+                    }
+                    
+                    //split on newlines
+                    // ...and then parse out audio/camera attributions
+                    for(NSString* __strong line in [logEvent.composedMessage componentsSeparatedByString:@"\n"])
+                    {
+                        //pid
+                        NSNumber* pid = 0;
+                        
+                        //trim
+                        line = [line stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+                        
+                        //'audioAttributions' list?
+                        if( (YES == [line hasPrefix:@"audioAttributions = "]) ||
+                            (YES == [line hasPrefix:@"audioRecordingAttributions = "]) )
+                        {
+                            //dbg msg
+                            os_log_debug(logHandle, "found 'audio attributions'");
+                            
+                            //set flag
+                            audioAttributionsList = YES;
+                            
+                            //init
+                            newAudioAttributions = [NSMutableArray array];
+                            
+                            //unset (other) list
+                            cameraAttributionsList = NO;
+                            
+                            //next
+                            continue;
+                        }
+                        
+                        //'cameraAttributions' list?
+                        if( (YES == [line hasPrefix:@"cameraAttributions = "]) ||
+                            (YES == [line hasPrefix:@"cameraCaptureAttributions = "]) )
+                        {
+                            //dbg msg
+                            os_log_debug(logHandle, "found 'camera attributions'");
+                            
+                            //set flag
+                            cameraAttributionsList = YES;
+                            
+                            //init
+                            newCameraAttributions = [NSMutableArray array];
+                            
+                            //unset (other) list
+                            audioAttributionsList = NO;
+                            
+                            //next
+                            continue;
+                        }
+                        
+                        //audit token of item?
+                        if(YES == [line containsString:@"<BSAuditToken:"])
+                        {
+                            //dbg msg
+                            os_log_debug(logHandle, "line has audit token...");
+                            
+                            //pid extraction regex
+                            NSRegularExpression* regex = nil;
+                            
+                            //match
+                            NSTextCheckingResult* match = nil;
+                            
+                            //init regex
+                            regex = [NSRegularExpression regularExpressionWithPattern:@"(?<=PID: )[0-9]*" options:0 error:nil];
+                            
+                            //match/extract pid
+                            match = [regex firstMatchInString:line options:0 range:NSMakeRange(0, line.length)];
+                            if( (nil == match) ||
+                                (NSNotFound == match.range.location))
+                            {
+                                //dbg msg
+                                os_log_debug(logHandle, "no match on regex");
+                                
+                                //ignore
+                                continue;
+                            }
+                            
+                            //extract pid
+                            pid = @([[line substringWithRange:[match rangeAtIndex:0]] intValue]);
+                            
+                            //dbg msg
+                            os_log_debug(logHandle, "pid: %@", pid);
+                            
+                            //in audio list?
+                            if(YES == audioAttributionsList)
+                            {
+                                //dbg msg
+                                os_log_debug(logHandle, "...for audio");
+                                
+                                //add
+                                [newAudioAttributions addObject:[NSNumber numberWithInt:[pid intValue]]];
+                            }
+                            //in camera list?
+                            else if(YES == cameraAttributionsList)
+                            {
+                                //dbg msg
+                                os_log_debug(logHandle, "...for camera");
+                                
+                                //add
+                                [newCameraAttributions addObject:[NSNumber numberWithInt:[pid intValue]]];
+                            }
+                            
+                            //next
+                            continue;
+                        }
+                    }
+                    
+                    //macOS 12: off events trigger the removal of the list
+                    // so then we'll just pass in an empty list in that case
+                    if(12 == NSProcessInfo.processInfo.operatingSystemVersion.majorVersion)
+                    {
+                        //nil?
+                        if(nil == newAudioAttributions)
+                        {
+                            //init blank
+                            newAudioAttributions = [NSMutableArray array];
+                        }
+                        
+                        //nil?
+                        if(nil == newCameraAttributions)
+                        {
+                            //init blank
+                            newCameraAttributions = [NSMutableArray array];
+                        }
+                    }
+                            
+                    //process attibutions
+                    [self processAttributions:newAudioAttributions newCameraAttributions:newCameraAttributions];
+                    
+                }//sync
+                
+                //(re)enumerate active devices
+                // delayed need as device deactiavation
+                // then update status menu (on main thread)
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^
+                {
+                    //update on on main thread
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                    
+                        //update status menu
+                        [((AppDelegate*)[[NSApplication sharedApplication] delegate]).statusBarItemController setActiveDevices:[self enumerateActiveDevices]];
+                        
+                    });
+                    
+                }); //dispatch for delay
+            }];
+    }
+    
     return;
 }
 
@@ -502,7 +571,7 @@ extern os_log_t logHandle;
             self.cameraEventTimer = nil;
             
             //camera off?
-            // sent event
+            // send event
             if(0 == cameraDifferences.insertions.count)
             {
                 //dbg msg
@@ -626,6 +695,9 @@ extern os_log_t logHandle;
     {
         //state
         NSInteger state = -1;
+        
+        //event
+        __block Event* event = nil;
     
         //get state
         state = [self getMicState:device];
@@ -639,6 +711,69 @@ extern os_log_t logHandle;
             //save
             self.lastMicOff = device;
         }
+    
+        //macOS 13.3
+        // use this as trigger
+        if (@available(macOS 13.3, *)) {
+            
+            //dbg msg
+            os_log_debug(logHandle, "new audio event");
+            
+            //cancel prev timer
+            if(nil != self.audioEventTimer)
+            {
+                //cancel
+                dispatch_cancel(self.audioEventTimer);
+                self.audioEventTimer = nil;
+            }
+            
+            //re-init timer
+            self.audioEventTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, self.audioEventQueue);
+            dispatch_source_set_timer(self.audioEventTimer, dispatch_walltime(NULL, 0.5 * NSEC_PER_SEC), DISPATCH_TIME_FOREVER, 0.1 * NSEC_PER_SEC);
+            
+            //set handler
+            dispatch_source_set_event_handler(self.audioEventTimer, ^{
+                
+                //canel timer
+                dispatch_cancel(self.audioEventTimer);
+                self.audioEventTimer = nil;
+                
+                //audio off?
+                // send event
+                if(NSControlStateValueOff == state)
+                {
+                    //dbg msg
+                    os_log_debug(logHandle, "audio event: off");
+                    
+                    //init event
+                    // process (client) and device are nil
+                    event = [[Event alloc] init:nil device:nil deviceType:Device_Microphone state:NSControlStateValueOff];
+                    
+                    //handle event
+                    [self handleEvent:event];
+                }
+                
+                //audio on?
+                // send event
+                else if(NSControlStateValueOn == state)
+                {
+                    //dbg msg
+                    os_log_debug(logHandle, "audio event: on");
+                    
+                    //init event
+                    // devivce is nil
+                    event = [[Event alloc] init:nil device:nil deviceType:Device_Microphone state:NSControlStateValueOn];
+                            
+                    //handle event
+                    [self handleEvent:event];
+                    
+                }
+            });
+            
+            //start audio event timer
+            dispatch_resume(self.audioEventTimer);
+            
+        } //macOS 13.3
     };
     
     //add property listener for audio changes
@@ -712,6 +847,79 @@ bail:
             //save
             self.lastCameraOff = device;
         }
+        
+        //camera on?
+        // macOS 13.3, use this as trigger
+        if (@available(macOS 13.3, *)) {
+            
+            //event
+            __block Event* event = nil;
+            
+            //dbg msg
+            os_log_debug(logHandle, "new camera event");
+            
+            //camera: on
+            if(NSControlStateValueOn == state)
+            {
+                //dbg msg
+                os_log_debug(logHandle, "camera event: on");
+                
+                //cancel prev timer
+                if(nil != self.cameraEventTimer)
+                {
+                    //cancel
+                    dispatch_cancel(self.cameraEventTimer);
+                    self.cameraEventTimer = nil;
+                }
+                
+                //re-init timer
+                self.cameraEventTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, self.cameraEventQueue);
+                dispatch_source_set_timer(self.cameraEventTimer, dispatch_walltime(NULL, 1.0 * NSEC_PER_SEC), DISPATCH_TIME_FOREVER, 0.1 * NSEC_PER_SEC);
+                
+                //set handler
+                dispatch_source_set_event_handler(self.cameraEventTimer, ^{
+                    
+                    //client
+                    Client* client = nil;
+                    
+                    //init client from attribution
+                    client = [[Client alloc] init];
+                    client.pid = [NSNumber numberWithInteger:self.lastCameraClient];
+                    client.path = valueForStringItem(getProcessPath(client.pid.intValue));
+                    client.name = valueForStringItem(getProcessName(client.path));
+                    
+                    //canel timer
+                    dispatch_cancel(self.cameraEventTimer);
+                    self.cameraEventTimer = nil;
+                    
+                    //init event
+                    // with client and (active) camera
+                    event = [[Event alloc] init:client device:device deviceType:Device_Camera state:NSControlStateValueOn];
+                    
+                    //handle event
+                    [self handleEvent:event];
+                    
+                });
+                
+                //start camera timer
+                dispatch_resume(self.cameraEventTimer);
+            }
+            
+            //camera: off
+            else if(NSControlStateValueOff == state)
+            {
+                //dbg msg
+                os_log_debug(logHandle, "camera event: off");
+                
+                //init event
+                // process (client) and device are nil
+                event = [[Event alloc] init:nil device:nil deviceType:Device_Camera state:NSControlStateValueOff];
+                
+                //handle event
+                [self handleEvent:event];
+            }
+            
+        } //macOS 13.3
     };
     
     //register (add) property block listener
@@ -896,7 +1104,6 @@ bail:
     
     return objectID;
 }
-
 
 //determine if audio device is active
 -(UInt32)getMicState:(AVCaptureDevice*)device;
@@ -1086,37 +1293,39 @@ bail:
         
     } //PREF_NO_EXTERNAL_DEVICES_MODE
     
-    //(new) mic event?
-    // need extra logic, since macOS sometimes toggles / delivers 2x events :/
-    if(Device_Microphone == event.deviceType)
+    //macOS sometimes toggles / delivers 2x events for same device
+    if(deviceLastEvent.deviceType == event.deviceType)
     {
-        //ignore if mic's last event was <0.5
+        //ignore if last event was < 0.5 ago
         if([event.timestamp timeIntervalSinceDate:deviceLastEvent.timestamp] < 0.5f)
         {
             //set result
             result = NOTIFICATION_SPURIOUS;
             
             //dbg msg
-            os_log_debug(logHandle, "ignoring mic event, as it happened <0.5s ago");
+            os_log_debug(logHandle, "ignoring event, as it happened <0.5s ago");
             
             //bail
             goto bail;
         }
         
-        //ignore if mic's last event was same state
+        //ignore if last event was same state
         if( (deviceLastEvent.state == event.state) &&
             ([event.timestamp timeIntervalSinceDate:deviceLastEvent.timestamp] < 2.0f) )
         {
+            
             //set result
             result = NOTIFICATION_SPURIOUS;
             
             //dbg msg
-            os_log_debug(logHandle, "ignoring mic event as it was same state as last (%ld), and happened <2.0s ago", (long)event.state);
+            os_log_debug(logHandle, "ignoring event as it was same state as last (%ld), and happened <2.0s ago", (long)event.state);
             
             //bail
             goto bail;
         }
-    }
+        
+    } //same device
+    
 
     //client provided?
     // check if its allowed

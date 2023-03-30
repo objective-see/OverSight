@@ -43,6 +43,9 @@
 //initial camera state
 @property NSControlStateValue initialCameraState;
 
+//last (camera) pid
+@property NSInteger lastCameraClient;
+
 //last mic off
 @property(nonatomic, retain)AVCaptureDevice* lastMicOff;
 
