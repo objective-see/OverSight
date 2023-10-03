@@ -333,8 +333,11 @@ bail:
             
             break;
             
-        //prefs
+        //quit
         case quit:
+            
+            //dbg msg
+            os_log_debug(logHandle, "quitting...");
             
             //exit
             [NSApp terminate:self];

@@ -152,15 +152,88 @@ extern os_log_t logHandle;
 -(void)startLogMonitor
 {
     //dbg msg
-    os_log_debug(logHandle, "starting log monitor for AV events via w/ 'com.apple.SystemStatus'");
+    os_log_debug(logHandle, "starting log monitor for AV events");
     
-    //macOS 13.3
+    //macOS 14+
+    if(@available(macOS 14.0, *)) {
+        
+        //regex
+        NSRegularExpression* regex = nil;
+        
+        //dbg msg
+        os_log_debug(logHandle, ">= macOS 14+: Using log monitor for AV events via w/ 'added <private> endpoint <private> camera <private>'");
+        
+        //init regex
+        regex = [NSRegularExpression regularExpressionWithPattern:@"\\[\\{private\\}(\\d+)\\]" options:0 error:nil];
+        
+        //start logging
+        [self.logMonitor start:[NSPredicate predicateWithFormat:@"subsystem=='com.apple.cmio'"] level:Log_Level_Debug callback:^(OSLogEvent* logEvent) {
+        
+            //match
+            NSTextCheckingResult* match = nil;
+            
+            //pid
+            NSInteger pid = 0;
+            
+            //sync to process
+            @synchronized (self) {
+                
+                //only interested msgs that end w/:
+                // "added <private> endpoint <private> camera <private> = <pid>;"
+                if(YES != [logEvent.composedMessage hasSuffix:@"added <private> endpoint <private> camera <private>"])
+                {
+                    return;
+                }
+                
+                //match on pid
+                match = [regex firstMatchInString:logEvent.composedMessage options:0 range:NSMakeRange(0, logEvent.composedMessage.length)];
+                if( (nil == match) ||
+                    (NSNotFound == match.range.location) )
+                {
+                    return;
+                }
+                
+                //extract/convert pid
+                pid = [[logEvent.composedMessage substringWithRange:[match rangeAtIndex:1]] integerValue];
+                if( (0 == pid) ||
+                    (-1 == pid) )
+                {
+                    return;
+                }
+                
+                //save
+                self.lastCameraClient = pid;
+        
+                //(re)enumerate active devices
+                // delayed need as device deactiavation
+                // then update status menu (on main thread)
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^
+                {
+                    //update on on main thread
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                    
+                        //update status menu
+                        [((AppDelegate*)[[NSApplication sharedApplication] delegate]).statusBarItemController setActiveDevices:[self enumerateActiveDevices]];
+                        
+                    });
+                    
+                }); //dispatch for delay
+            }
+            
+        }];
+    
+    }
+    
+    //macOS 13.3+
     // use predicate: "subsystem=='com.apple.cmio'" looking for 'CMIOExtensionPropertyDeviceControlPID'
-    if (@available(macOS 13.3, *)) {
+    else if (@available(macOS 13.3, *)) {
        
         //regex
         NSRegularExpression* regex = nil;
         
+        //dbg msg
+        os_log_debug(logHandle, ">= macOS 13.3+: uUsing 'CMIOExtensionPropertyDeviceControlPID'");
+
         //init regex
         regex = [NSRegularExpression regularExpressionWithPattern:@"=\\s*(\\d+)\\s*;" options:0 error:nil];
         
@@ -225,8 +298,11 @@ extern os_log_t logHandle;
     // use predicate: "subsystem=='com.apple.SystemStatus'"
     else
     {
-            //start logging
-            [self.logMonitor start:[NSPredicate predicateWithFormat:@"subsystem=='com.apple.SystemStatus'"] level:Log_Level_Default callback:^(OSLogEvent* logEvent) {
+        //dbg msg
+        os_log_debug(logHandle, "< macOS 13.3+: Using 'com.apple.SystemStatus'");
+        
+        //start logging
+        [self.logMonitor start:[NSPredicate predicateWithFormat:@"subsystem=='com.apple.SystemStatus'"] level:Log_Level_Default callback:^(OSLogEvent* logEvent) {
             
                 //sync to process
                 @synchronized (self) {
