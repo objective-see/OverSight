@@ -1585,6 +1585,10 @@ bail:
             [args addObject:@"-process"];
             [args addObject:event.client.pid.stringValue];
         }
+        
+        //add active device count
+        [args addObject:@"-activeCount"];
+        [args addObject:[NSNumber numberWithUnsignedLong:[self enumerateActiveDevices].count]];
     }
     
     //exec user specified action
