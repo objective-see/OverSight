@@ -27,7 +27,6 @@
 		CD73DA9620046548001FFC84 /* HelperListener.m in Sources */ = {isa = PBXBuildFile; fileRef = CD73DA9220046339001FFC84 /* HelperListener.m */; };
 		CD73DA99200490B4001FFC84 /* HelperComms.m in Sources */ = {isa = PBXBuildFile; fileRef = CD73DA97200490B4001FFC84 /* HelperComms.m */; };
 		CD86B6EA23A5BBE7003F6BA4 /* configure.sh in Resources */ = {isa = PBXBuildFile; fileRef = CD86B6E923A5BBE7003F6BA4 /* configure.sh */; };
-		CDA88A752537CDE100C469BF /* Sentry.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = CD6B484220AD323E00A9BE71 /* Sentry.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		CDAAC241202255580032F2E6 /* utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAAC23F202255580032F2E6 /* utilities.m */; };
 		CDAAC243202257D70032F2E6 /* utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAAC23F202255580032F2E6 /* utilities.m */; };
 /* End PBXBuildFile section */
@@ -59,7 +58,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				CDA88A752537CDE100C469BF /* Sentry.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -91,7 +89,6 @@
 		CD2F801024465F68009C3D77 /* patrons.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = patrons.txt; path = ../../Shared/patrons.txt; sourceTree = "<group>"; };
 		CD2F8012244670B9009C3D77 /* libbsm.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libbsm.tbd; path = usr/lib/libbsm.tbd; sourceTree = SDKROOT; };
 		CD3307AD203567D400F10D71 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		CD6B484220AD323E00A9BE71 /* Sentry.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Sentry.framework; path = ../Carthage/Build/Mac/Sentry.framework; sourceTree = "<group>"; };
 		CD6CAC9120A42D5000188B0A /* main.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = main.h; sourceTree = "<group>"; };
 		CD73DA8F2004629D001FFC84 /* HelperInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HelperInterface.h; sourceTree = "<group>"; };
 		CD73DA902004629D001FFC84 /* HelperInterface.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HelperInterface.m; sourceTree = "<group>"; };
@@ -146,7 +143,6 @@
 			isa = PBXGroup;
 			children = (
 				CD2F8012244670B9009C3D77 /* libbsm.tbd */,
-				CD6B484220AD323E00A9BE71 /* Sentry.framework */,
 				1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */,
 				4BE4906310445F2F006BE471 /* Security.framework */,
 				4BE4906710445F36006BE471 /* ServiceManagement.framework */,
@@ -333,7 +329,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "#Note: To build uninstaller for app (menu)\n# 0. Delete this script and Installer.app from App's project\n# 1. Build installer\n# 2. *Copy* into App \"Uninstaller\" folder\n# 3. Re-add script, and archive for deployment\n\n#archive\n# copy in main application \nif [[ $BUILT_PRODUCTS_DIR = *\"ArchiveIntermediates\"* ]]; then\n    cp -R -f \"$PROJECT_TEMP_ROOT/UninstalledProducts/macosx/OverSight.app\" \"$BUILT_PRODUCTS_DIR/$CONTENTS_FOLDER_PATH/Resources\"\n    \n#normal build\n# delete and copy in main application \nelse\n\nrm -rf  \"$BUILT_PRODUCTS_DIR/$CONTENTS_FOLDER_PATH/Resources/OverSight.app\"\ncp -R -f \"$BUILT_PRODUCTS_DIR/OverSight.app\" \"$BUILT_PRODUCTS_DIR/$CONTENTS_FOLDER_PATH/Resources\"\n\nfi\n\n\n\n\n";
+			shellScript = "#Note: To build uninstaller for app (menu)\n# 0. Delete this script and Installer.app from App's on-disk folder \n# 1. Build Installer\n# 2. Copy into App \"Uninstaller\" folder (& proj if needed)\n# 3. Re-add script, and then build (archive) for deployment\n\n#archive\n# copy in main application \nif [[ $BUILT_PRODUCTS_DIR = *\"ArchiveIntermediates\"* ]]; then\n    cp -R -f \"$PROJECT_TEMP_ROOT/UninstalledProducts/macosx/OverSight.app\" \"$BUILT_PRODUCTS_DIR/$CONTENTS_FOLDER_PATH/Resources\"\n    \n#normal build\n# delete and copy in main application \nelse\n\nrm -rf  \"$BUILT_PRODUCTS_DIR/$CONTENTS_FOLDER_PATH/Resources/OverSight.app\"\ncp -R -f \"$BUILT_PRODUCTS_DIR/OverSight.app\" \"$BUILT_PRODUCTS_DIR/$CONTENTS_FOLDER_PATH/Resources\"\n\nfi\n\n\n\n\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -384,14 +380,14 @@
 				CODE_SIGN_ENTITLEMENTS = "";
 				CODE_SIGN_IDENTITY = "Developer ID Application";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 2.1.6;
+				CURRENT_PROJECT_VERSION = 2.1.7;
 				DEVELOPMENT_TEAM = VBG97UB4TA;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build/Mac";
 				GCC_WARN_ABOUT_MISSING_FIELD_INITIALIZERS = NO;
 				INFOPLIST_FILE = Helper/Info.plist;
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
-				MARKETING_VERSION = 2.1.6;
+				MARKETING_VERSION = 2.1.7;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CODE_SIGN_FLAGS = "";
 				OTHER_LDFLAGS = (
@@ -419,14 +415,14 @@
 				CODE_SIGN_ENTITLEMENTS = "";
 				CODE_SIGN_IDENTITY = "Developer ID Application";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 2.1.6;
+				CURRENT_PROJECT_VERSION = 2.1.7;
 				DEVELOPMENT_TEAM = VBG97UB4TA;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build/Mac";
 				GCC_WARN_ABOUT_MISSING_FIELD_INITIALIZERS = NO;
 				INFOPLIST_FILE = Helper/Info.plist;
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
-				MARKETING_VERSION = 2.1.6;
+				MARKETING_VERSION = 2.1.7;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CODE_SIGN_FLAGS = "";
 				OTHER_LDFLAGS = (
@@ -455,7 +451,7 @@
 				CODE_SIGN_IDENTITY = "Developer ID Application";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 2.1.6;
+				CURRENT_PROJECT_VERSION = 2.1.7;
 				DEVELOPMENT_TEAM = VBG97UB4TA;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build/Mac";
@@ -467,7 +463,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = "";
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
-				MARKETING_VERSION = 2.1.6;
+				MARKETING_VERSION = 2.1.7;
 				OTHER_CODE_SIGN_FLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.objective-see.oversight.installer";
 				PRODUCT_NAME = "OverSight Installer";
@@ -484,7 +480,7 @@
 				CODE_SIGN_IDENTITY = "Developer ID Application";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 2.1.6;
+				CURRENT_PROJECT_VERSION = 2.1.7;
 				DEVELOPMENT_TEAM = VBG97UB4TA;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build/Mac";
@@ -496,7 +492,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = "";
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
-				MARKETING_VERSION = 2.1.6;
+				MARKETING_VERSION = 2.1.7;
 				OTHER_CODE_SIGN_FLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.objective-see.oversight.installer";
 				PRODUCT_NAME = "OverSight Installer";

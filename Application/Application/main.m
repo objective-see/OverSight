@@ -13,8 +13,6 @@
 @import Cocoa;
 @import OSLog;
 
-@import Sentry;
-
 #import "consts.h"
 #import "utilities.h"
 
@@ -39,12 +37,6 @@ int main(int argc, const char * argv[])
     //dbg msg(s)
     os_log_debug(logHandle, "started: %{public}@ (pid: %d / uid: %d)", NSProcessInfo.processInfo.arguments.firstObject, getpid(), getuid());
     os_log_debug(logHandle, "arguments: %{public}@", NSProcessInfo.processInfo.arguments);
-    
-    //init crash reporting
-    [SentrySDK startWithConfigureOptions:^(SentryOptions *options) {
-        options.dsn = SENTRY_DSN;
-        options.debug = YES;
-    }];
     
     //upgrade allowed items?
     // convert into 'NSUserDefaults' and then exit

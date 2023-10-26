@@ -9,7 +9,6 @@
 
 @import Cocoa;
 @import OSLog;
-@import Sentry;
 
 #import "main.h"
 #import "consts.h"
@@ -29,12 +28,6 @@ int main(int argc, char *argv[])
     
     //init log
     logHandle = os_log_create(BUNDLE_ID, "installer");
-    
-    //init crash reporting
-    [SentrySDK startWithConfigureOptions:^(SentryOptions *options) {
-        options.dsn = SENTRY_DSN;
-        options.debug = YES;
-    }];
     
     //user gotta be admin
     if(YES != hasAdminPrivileges())

@@ -221,7 +221,7 @@ extern os_log_t logHandle;
             }
             
         }];
-    
+
     }
     
     //macOS 13.3+
@@ -522,7 +522,7 @@ extern os_log_t logHandle;
         if(nil != self.audioEventTimer)
         {
             //cancel
-            dispatch_cancel(self.audioEventTimer);
+            dispatch_source_cancel(self.audioEventTimer);
             self.audioEventTimer = nil;
         }
         
@@ -535,10 +535,6 @@ extern os_log_t logHandle;
             
             //active mic
             AVCaptureDevice* activeMic = nil;
-            
-            //canel timer
-            dispatch_cancel(self.audioEventTimer);
-            self.audioEventTimer = nil;
             
             //audio off?
             // sent event
@@ -628,7 +624,7 @@ extern os_log_t logHandle;
         if(nil != self.cameraEventTimer)
         {
             //cancel
-            dispatch_cancel(self.cameraEventTimer);
+            dispatch_source_cancel(self.cameraEventTimer);
             self.cameraEventTimer = nil;
         }
         
@@ -641,10 +637,6 @@ extern os_log_t logHandle;
             
             //active camera
             AVCaptureDevice* activeCamera = nil;
-            
-            //canel timer
-            dispatch_cancel(self.cameraEventTimer);
-            self.cameraEventTimer = nil;
             
             //camera off?
             // send event
@@ -799,7 +791,7 @@ extern os_log_t logHandle;
             if(nil != self.audioEventTimer)
             {
                 //cancel
-                dispatch_cancel(self.audioEventTimer);
+                dispatch_source_cancel(self.audioEventTimer);
                 self.audioEventTimer = nil;
             }
             
@@ -809,10 +801,6 @@ extern os_log_t logHandle;
             
             //set handler
             dispatch_source_set_event_handler(self.audioEventTimer, ^{
-                
-                //canel timer
-                dispatch_cancel(self.audioEventTimer);
-                self.audioEventTimer = nil;
                 
                 //audio off?
                 // send event
@@ -963,10 +951,6 @@ bail:
                     client.pid = [NSNumber numberWithInteger:self.lastCameraClient];
                     client.path = valueForStringItem(getProcessPath(client.pid.intValue));
                     client.name = valueForStringItem(getProcessName(client.path));
-                    
-                    //canel timer
-                    dispatch_cancel(self.cameraEventTimer);
-                    self.cameraEventTimer = nil;
                     
                     //init event
                     // with client and (active) camera

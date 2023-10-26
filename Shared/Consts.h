@@ -37,9 +37,6 @@
 //patreon url
 #define PATREON_URL @"https://www.patreon.com/join/objective_see"
 
-//sentry crash reporting URL
-#define SENTRY_DSN @"https://729ac84fd0014ea1aa48ca46386546b6@o130950.ingest.sentry.io/5745525"
-
 //app name
 #define PRODUCT_NAME @"OverSight"
 
