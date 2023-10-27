@@ -1588,7 +1588,7 @@ bail:
         
         //add active device count
         [args addObject:@"-activeCount"];
-        [args addObject:[NSNumber numberWithUnsignedLong:[self enumerateActiveDevices].count]];
+        [args addObject:[NSString stringWithFormat:@"%lu", [self enumerateActiveDevices].count]];
     }
     
     //exec user specified action
