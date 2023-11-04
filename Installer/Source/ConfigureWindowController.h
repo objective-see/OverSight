@@ -41,7 +41,13 @@
 @property (strong, nonatomic) IBOutlet NSView *notificationsView;
 
 //support us
-@property (weak, nonatomic) IBOutlet NSButton *gotoSupportViewButton;
+@property (weak, nonatomic) IBOutlet NSButton *gotoDNDView;
+
+//do not disturb view
+@property (strong) IBOutlet NSView *doNotDisturbView;
+
+//support us
+@property (weak, nonatomic) IBOutlet NSButton *gotoSupportView;
 
 /* SUPPORT US */
 

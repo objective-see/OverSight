@@ -196,13 +196,16 @@
 #define ACTION_NEXT @"Next »"
 
 //show info about notifications
-#define ACTION_SHOW_NOTIFICATIONS 2
+#define ACTION_SHOW_NOTIFICATION_VIEW 2
+
+//show info about do not disturb
+#define ACTION_SHOW_DND_VIEW 3
 
 //show friends
-#define ACTION_SHOW_SUPPORT 3
+#define ACTION_SHOW_SUPPORT_VIEW 4
 
 //support us
-#define ACTION_SUPPORT 4
+#define ACTION_SUPPORT 5
 
 //path to chmod
 #define CHMOD @"/bin/chmod"

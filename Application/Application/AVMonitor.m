@@ -89,12 +89,6 @@ extern os_log_t logHandle;
         //per device events
         self.deviceEvents = [NSMutableDictionary dictionary];
         
-        //init audio event queue
-        self.audioEventQueue = dispatch_queue_create("audio.event.timer", 0);
-        
-        //init camera event queue
-        self.cameraEventQueue = dispatch_queue_create("camera.event.timer", 0);
-        
         //enumerate active devices
         // then update status menu (on main thread)
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -115,7 +109,6 @@ extern os_log_t logHandle;
         
         //dbg msg
         os_log_debug(logHandle, "built-in camera: %{public}@ (device ID: %d)", self.builtInCamera.localizedName, [self getAVObjectID:self.builtInCamera]);
-        
     }
     
     return self;
@@ -157,53 +150,97 @@ extern os_log_t logHandle;
     //macOS 14+
     if(@available(macOS 14.0, *)) {
         
-        //regex
-        NSRegularExpression* regex = nil;
+        //regex for mic log msg
+        NSRegularExpression* micRegex = nil;
+        
+        //regex for camera log msg
+        NSRegularExpression* cameraRegex = nil;
         
         //dbg msg
-        os_log_debug(logHandle, ">= macOS 14+: Using log monitor for AV events via w/ 'added <private> endpoint <private> camera <private>'");
+        os_log_debug(logHandle, ">= macOS 14+: Using log monitor for AV events via w/ (camera): 'added <private> endpoint <private> camera <private>' AND (mic): '-[MXCoreSession beginInterruption]: Session <ID: xx, PID = xyz,...'");
         
-        //init regex
-        regex = [NSRegularExpression regularExpressionWithPattern:@"\\[\\{private\\}(\\d+)\\]" options:0 error:nil];
+        //init mic regex
+        micRegex = [NSRegularExpression regularExpressionWithPattern:@"PID = (\\d+)" options:0 error:nil];
         
-        //start logging
-        [self.logMonitor start:[NSPredicate predicateWithFormat:@"subsystem=='com.apple.cmio'"] level:Log_Level_Debug callback:^(OSLogEvent* logEvent) {
+        //init cam regex
+        cameraRegex = [NSRegularExpression regularExpressionWithPattern:@"\\[\\{private\\}(\\d+)\\]" options:0 error:nil];
+                
+        //start log monitoring
+        [self.logMonitor start:[NSPredicate predicateWithFormat:@"subsystem=='com.apple.cmio' OR subsystem=='com.apple.coremedia'"] level:Log_Level_Debug callback:^(OSLogEvent* logEvent) {
         
-            //match
-            NSTextCheckingResult* match = nil;
-            
-            //pid
-            NSInteger pid = 0;
-            
             //sync to process
             @synchronized (self) {
                 
-                //only interested msgs that end w/:
+                //match
+                NSTextCheckingResult* match = nil;
+                
+                //pid
+                NSInteger pid = 0;
+                
+                //camera:
                 // "added <private> endpoint <private> camera <private> = <pid>;"
-                if(YES != [logEvent.composedMessage hasSuffix:@"added <private> endpoint <private> camera <private>"])
+                if( (YES == [logEvent.subsystem isEqual:@"com.apple.cmio"]) &&
+                    (YES == [logEvent.composedMessage hasSuffix:@"added <private> endpoint <private> camera <private>"]) )
+                {
+                    //reset
+                    self.lastCameraClient = 0;
+                    
+                    //match on pid
+                    match = [cameraRegex firstMatchInString:logEvent.composedMessage options:0 range:NSMakeRange(0, logEvent.composedMessage.length)];
+                    if( (nil == match) ||
+                        (NSNotFound == match.range.location) )
+                    {
+                        return;
+                    }
+                    
+                    //extract/convert pid
+                    pid = [[logEvent.composedMessage substringWithRange:[match rangeAtIndex:1]] integerValue];
+                    if( (0 == pid) ||
+                        (-1 == pid) )
+                    {
+                        return;
+                    }
+                    
+                    //save
+                    self.lastCameraClient = pid;
+                }
+                
+                //mic:
+                // "-[MXCoreSession beginInterruption]: Session <ID: xx, PID = xyz, ...":
+                else if( (YES == [logEvent.subsystem isEqual:@"com.apple.coremedia"]) &&
+                         (YES == [logEvent.composedMessage hasPrefix:@"-MXCoreSession- -[MXCoreSession beginInterruption]"]) &&
+                         (YES == [logEvent.composedMessage hasSuffix:@"Recording = YES> is going active"]) )
+                {
+                    
+                    //reset
+                    self.lastMicClient = 0;
+                    
+                    //match on pid
+                    match = [micRegex firstMatchInString:logEvent.composedMessage options:0 range:NSMakeRange(0, logEvent.composedMessage.length)];
+                    if( (nil == match) ||
+                        (NSNotFound == match.range.location) )
+                    {
+                        return;
+                    }
+                    
+                    //extract/convert pid
+                    pid = [[logEvent.composedMessage substringWithRange:[match rangeAtIndex:1]] integerValue];
+                    if( (0 == pid) ||
+                        (-1 == pid) )
+                    {
+                        return;
+                    }
+                    
+                    //save
+                    self.lastMicClient = pid;
+                }
+                
+                //msg not of interest
+                else
                 {
                     return;
                 }
-                
-                //match on pid
-                match = [regex firstMatchInString:logEvent.composedMessage options:0 range:NSMakeRange(0, logEvent.composedMessage.length)];
-                if( (nil == match) ||
-                    (NSNotFound == match.range.location) )
-                {
-                    return;
-                }
-                
-                //extract/convert pid
-                pid = [[logEvent.composedMessage substringWithRange:[match rangeAtIndex:1]] integerValue];
-                if( (0 == pid) ||
-                    (-1 == pid) )
-                {
-                    return;
-                }
-                
-                //save
-                self.lastCameraClient = pid;
-        
+                    
                 //(re)enumerate active devices
                 // delayed need as device deactiavation
                 // then update status menu (on main thread)
@@ -218,6 +255,7 @@ extern os_log_t logHandle;
                     });
                     
                 }); //dispatch for delay
+            
             }
             
         }];
@@ -232,7 +270,7 @@ extern os_log_t logHandle;
         NSRegularExpression* regex = nil;
         
         //dbg msg
-        os_log_debug(logHandle, ">= macOS 13.3+: uUsing 'CMIOExtensionPropertyDeviceControlPID'");
+        os_log_debug(logHandle, ">= macOS 13.3+: Using 'CMIOExtensionPropertyDeviceControlPID'");
 
         //init regex
         regex = [NSRegularExpression regularExpressionWithPattern:@"=\\s*(\\d+)\\s*;" options:0 error:nil];
@@ -255,6 +293,9 @@ extern os_log_t logHandle;
                     return;
                 }
                 
+                //reset
+                self.lastCameraClient = 0;
+                
                 //match on pid
                 match = [regex firstMatchInString:logEvent.composedMessage options:0 range:NSMakeRange(0, logEvent.composedMessage.length)];
                 if( (nil == match) ||
@@ -294,7 +335,7 @@ extern os_log_t logHandle;
             
     }
     
-    //previous versions of macoS
+    //previous versions of macOS
     // use predicate: "subsystem=='com.apple.SystemStatus'"
     else
     {
@@ -518,97 +559,78 @@ extern os_log_t logHandle;
         //dbg msg
         os_log_debug(logHandle, "new audio event");
         
-        //cancel prev timer
-        if(nil != self.audioEventTimer)
+        //active mic
+        AVCaptureDevice* activeMic = nil;
+        
+        //audio off?
+        // sent event
+        if(0 == audioDifferences.insertions.count)
         {
-            //cancel
-            dispatch_source_cancel(self.audioEventTimer);
-            self.audioEventTimer = nil;
+            //dbg msg
+            os_log_debug(logHandle, "audio event: off");
+            
+            //init event
+            // process (client) and device are nil
+            event = [[Event alloc] init:nil device:nil deviceType:Device_Microphone state:NSControlStateValueOff];
+            
+            //handle event
+            [self handleEvent:event];
         }
         
-        //re-init timer
-        self.audioEventTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, self.audioEventQueue);
-        dispatch_source_set_timer(self.audioEventTimer, dispatch_walltime(NULL, 1.0 * NSEC_PER_SEC), DISPATCH_TIME_FOREVER, 0.1 * NSEC_PER_SEC);
-        
-        //set handler
-        dispatch_source_set_event_handler(self.audioEventTimer, ^{
+        //audio on?
+        // send event
+        else
+        {
+            //dbg msg
+            os_log_debug(logHandle, "audio event: on");
             
-            //active mic
-            AVCaptureDevice* activeMic = nil;
-            
-            //audio off?
-            // sent event
-            if(0 == audioDifferences.insertions.count)
+            //send event for each process (attribution)
+            for(NSOrderedCollectionChange* audioAttribution in audioDifferences.insertions)
             {
-                //dbg msg
-                os_log_debug(logHandle, "audio event: off");
+                //init client from attribution
+                client = [[Client alloc] init];
+                client.pid = audioAttribution.object;
+                client.path = valueForStringItem(getProcessPath(client.pid.intValue));
+                client.name = valueForStringItem(getProcessName(client.path));
                 
-                //init event
-                // process (client) and device are nil
-                event = [[Event alloc] init:nil device:nil deviceType:Device_Microphone state:NSControlStateValueOff];
-                
-                //handle event
-                [self handleEvent:event];
-            }
-            
-            //audio on?
-            // send event
-            else
-            {
-                //dbg msg
-                os_log_debug(logHandle, "audio event: on");
-                
-                //send event for each process (attribution)
-                for(NSOrderedCollectionChange* audioAttribution in audioDifferences.insertions)
+                //look for active mic
+                for(AVCaptureDevice* microphone in [AVCaptureDevice devicesWithMediaType:AVMediaTypeAudio])
                 {
-                    //init client from attribution
-                    client = [[Client alloc] init];
-                    client.pid = audioAttribution.object;
-                    client.path = valueForStringItem(getProcessPath(client.pid.intValue));
-                    client.name = valueForStringItem(getProcessName(client.path));
-                    
-                    //look for active mic
-                    for(AVCaptureDevice* microphone in [AVCaptureDevice devicesWithMediaType:AVMediaTypeAudio])
+                    //off? skip
+                    if(NSControlStateValueOn != [self getMicState:microphone])
                     {
-                        //off? skip
-                        if(NSControlStateValueOn != [self getMicState:microphone])
-                        {
-                            //skip
-                            continue;
-                        }
-                        
-                        //dbg msg
-                        os_log_debug(logHandle, "audio device: %{public}@/%{public}@ is on", microphone.manufacturer, microphone.localizedName);
-                        
-                        //save
-                        activeMic = microphone;
-                        
-                        //init event
-                        // with client and (active) mic
-                        event = [[Event alloc] init:client device:activeMic deviceType:Device_Microphone state:NSControlStateValueOn];
-                        
-                        //handle event
-                        [self handleEvent:event];
+                        //skip
+                        continue;
                     }
                     
-                    //no mic found? (e.g. headphones as input)
-                    // show (limited) alert
-                    if(nil == activeMic)
-                    {
-                        //init event
-                        // devivce is nil
-                        event = [[Event alloc] init:client device:nil deviceType:Device_Microphone state:NSControlStateValueOn];
-                        
-                        //handle event
-                        [self handleEvent:event];
-                    }
+                    //dbg msg
+                    os_log_debug(logHandle, "audio device: %{public}@/%{public}@ is on", microphone.manufacturer, microphone.localizedName);
+                    
+                    //save
+                    activeMic = microphone;
+                    
+                    //init event
+                    // with client and (active) mic
+                    event = [[Event alloc] init:client device:activeMic deviceType:Device_Microphone state:NSControlStateValueOn];
+                    
+                    //handle event
+                    [self handleEvent:event];
+                }
+                
+                //no mic found? (e.g. headphones as input)
+                // show (limited) alert
+                if(nil == activeMic)
+                {
+                    //init event
+                    // devivce is nil
+                    event = [[Event alloc] init:client device:nil deviceType:Device_Microphone state:NSControlStateValueOn];
+                    
+                    //handle event
+                    [self handleEvent:event];
                 }
             }
-        });
-        
-        //start audio event timer
-        dispatch_resume(self.audioEventTimer);
-        
+        }
+    
     } //audio event
     
     /* camera event logic */
@@ -620,104 +642,85 @@ extern os_log_t logHandle;
         //dbg msg
         os_log_debug(logHandle, "new camera event");
         
-        //cancel prev timer
-        if(nil != self.cameraEventTimer)
+        //active camera
+        AVCaptureDevice* activeCamera = nil;
+            
+        //camera off?
+        // send event
+        if(0 == cameraDifferences.insertions.count)
         {
-            //cancel
-            dispatch_source_cancel(self.cameraEventTimer);
-            self.cameraEventTimer = nil;
+            //dbg msg
+            os_log_debug(logHandle, "camera event: off");
+            
+            //init event
+            // process (client) and device are nil
+            event = [[Event alloc] init:nil device:nil deviceType:Device_Camera state:NSControlStateValueOff];
+            
+            //handle event
+            [self handleEvent:event];
         }
         
-        //re-init timer
-        self.cameraEventTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, self.cameraEventQueue);
-        dispatch_source_set_timer(self.cameraEventTimer, dispatch_walltime(NULL, 1.0 * NSEC_PER_SEC), DISPATCH_TIME_FOREVER, 0.1 * NSEC_PER_SEC);
-        
-        //set handler
-        dispatch_source_set_event_handler(self.cameraEventTimer, ^{
+        //camera on?
+        // send event
+        else
+        {
+            //dbg msg
+            os_log_debug(logHandle, "camera event: on");
             
-            //active camera
-            AVCaptureDevice* activeCamera = nil;
-            
-            //camera off?
-            // send event
-            if(0 == cameraDifferences.insertions.count)
+            //send event for each process (attribution)
+            for(NSOrderedCollectionChange* cameraAttribution in cameraDifferences.insertions)
             {
-                //dbg msg
-                os_log_debug(logHandle, "camera event: off");
+                //init client from attribution
+                client = [[Client alloc] init];
+                client.pid = cameraAttribution.object;
+                client.path = valueForStringItem(getProcessPath(client.pid.intValue));
+                client.name = valueForStringItem(getProcessName(client.path));
                 
-                //init event
-                // process (client) and device are nil
-                event = [[Event alloc] init:nil device:nil deviceType:Device_Camera state:NSControlStateValueOff];
-                
-                //handle event
-                [self handleEvent:event];
-            }
-            
-            //camera on?
-            // send event
-            else
-            {
-                //dbg msg
-                os_log_debug(logHandle, "camera event: on");
-                
-                //send event for each process (attribution)
-                for(NSOrderedCollectionChange* cameraAttribution in cameraDifferences.insertions)
+                //look for active camera
+                for(AVCaptureDevice* camera in [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo])
                 {
-                    //init client from attribution
-                    client = [[Client alloc] init];
-                    client.pid = cameraAttribution.object;
-                    client.path = valueForStringItem(getProcessPath(client.pid.intValue));
-                    client.name = valueForStringItem(getProcessName(client.path));
-                    
-                    //look for active camera
-                    for(AVCaptureDevice* camera in [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo])
+                    //off? skip
+                    if(NSControlStateValueOn != [self getCameraState:camera])
                     {
-                        //off? skip
-                        if(NSControlStateValueOn != [self getCameraState:camera])
-                        {
-                            //skip
-                            continue;
-                        }
-                        
-                        //virtual
-                        // TODO: is there a better way to determine this?
-                        if(YES == [camera.localizedName containsString:@"Virtual"])
-                        {
-                            //skip
-                            continue;
-                        }
-                        
-                        //dbg msg
-                        os_log_debug(logHandle, "camera device: %{public}@/%{public}@ is on", camera.manufacturer, camera.localizedName);
-                        
-                        //save
-                        activeCamera = camera;
-                        
-                        //init event
-                        // with client and (active) camera
-                        event = [[Event alloc] init:client device:activeCamera deviceType:Device_Camera state:NSControlStateValueOn];
-                        
-                        //handle event
-                        [self handleEvent:event];
+                        //skip
+                        continue;
                     }
                     
-                    //no camera found?
-                    // show (limited) alert
-                    if(nil == activeCamera)
+                    //virtual
+                    // TODO: is there a better way to determine this?
+                    if(YES == [camera.localizedName containsString:@"Virtual"])
                     {
-                        //init event
-                        // devivce is nil
-                        event = [[Event alloc] init:client device:nil deviceType:Device_Camera state:NSControlStateValueOn];
-                        
-                        //handle event
-                        [self handleEvent:event];
+                        //skip
+                        continue;
                     }
+                    
+                    //dbg msg
+                    os_log_debug(logHandle, "camera device: %{public}@/%{public}@ is on", camera.manufacturer, camera.localizedName);
+                    
+                    //save
+                    activeCamera = camera;
+                    
+                    //init event
+                    // with client and (active) camera
+                    event = [[Event alloc] init:client device:activeCamera deviceType:Device_Camera state:NSControlStateValueOn];
+                    
+                    //handle event
+                    [self handleEvent:event];
+                }
+                
+                //no camera found?
+                // show (limited) alert
+                if(nil == activeCamera)
+                {
+                    //init event
+                    // devivce is nil
+                    event = [[Event alloc] init:client device:nil deviceType:Device_Camera state:NSControlStateValueOn];
+                    
+                    //handle event
+                    [self handleEvent:event];
                 }
             }
-        });
-        
-        //start camera timer
-        dispatch_resume(self.cameraEventTimer);
+        }
         
     } //camera event
      
@@ -780,64 +783,62 @@ extern os_log_t logHandle;
             self.lastMicOff = device;
         }
     
-        //macOS 13.3
+        //macOS 13.3+
         // use this as trigger
+        // older version send event via log monitor
         if (@available(macOS 13.3, *)) {
             
             //dbg msg
             os_log_debug(logHandle, "new audio event");
             
-            //cancel prev timer
-            if(nil != self.audioEventTimer)
+            //audio off?
+            if(NSControlStateValueOff == state)
             {
-                //cancel
-                dispatch_source_cancel(self.audioEventTimer);
-                self.audioEventTimer = nil;
+                //dbg msg
+                os_log_debug(logHandle, "audio event: off");
+                
+                //init event
+                // process (client) and device are nil
+                event = [[Event alloc] init:nil device:device deviceType:Device_Microphone state:NSControlStateValueOff];
+                
+                //handle event
+                [self handleEvent:event];
             }
             
-            //re-init timer
-            self.audioEventTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, self.audioEventQueue);
-            dispatch_source_set_timer(self.audioEventTimer, dispatch_walltime(NULL, 0.5 * NSEC_PER_SEC), DISPATCH_TIME_FOREVER, 0.1 * NSEC_PER_SEC);
-            
-            //set handler
-            dispatch_source_set_event_handler(self.audioEventTimer, ^{
+            //audio on?
+            else if(NSControlStateValueOn == state)
+            {
+                //dbg msg
+                os_log_debug(logHandle, "audio event: on");
                 
-                //audio off?
-                // send event
-                if(NSControlStateValueOff == state)
-                {
-                    //dbg msg
-                    os_log_debug(logHandle, "audio event: off");
-                    
-                    //init event
-                    // process (client) and device are nil
-                    event = [[Event alloc] init:nil device:nil deviceType:Device_Microphone state:NSControlStateValueOff];
-                    
-                    //handle event
-                    [self handleEvent:event];
-                }
+                //delay
+                // need time for logging to grab responsible process
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 
-                //audio on?
-                // send event
-                else if(NSControlStateValueOn == state)
-                {
-                    //dbg msg
-                    os_log_debug(logHandle, "audio event: on");
+                    //client
+                    Client* client = nil;
                     
+                    //have client?
+                    if(0 != self.lastMicClient)
+                    {
+                        //init client from attribution
+                        client = [[Client alloc] init];
+                        client.pid = [NSNumber numberWithInteger:self.lastMicClient];
+                        client.path = valueForStringItem(getProcessPath(client.pid.intValue));
+                        client.name = valueForStringItem(getProcessName(client.path));
+                    }
+                
                     //init event
                     // devivce is nil
-                    event = [[Event alloc] init:nil device:nil deviceType:Device_Microphone state:NSControlStateValueOn];
+                    event = [[Event alloc] init:client device:device deviceType:Device_Microphone state:NSControlStateValueOn];
                             
                     //handle event
                     [self handleEvent:event];
                     
-                }
-            });
+                });
+            }
             
-            //start audio event timer
-            dispatch_resume(self.audioEventTimer);
-            
-        } //macOS 13.3
+        } //macOS 13.3+
     };
     
     //add property listener for audio changes
@@ -914,6 +915,7 @@ bail:
         
         //camera on?
         // macOS 13.3, use this as trigger
+        // older version send event via log monitor
         if (@available(macOS 13.3, *)) {
             
             //event
@@ -928,29 +930,22 @@ bail:
                 //dbg msg
                 os_log_debug(logHandle, "camera event: on");
                 
-                //cancel prev timer
-                if(nil != self.cameraEventTimer)
-                {
-                    //cancel
-                    dispatch_cancel(self.cameraEventTimer);
-                    self.cameraEventTimer = nil;
-                }
+                //delay
+                // need time for logging to grab responsible process
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 
-                //re-init timer
-                self.cameraEventTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, self.cameraEventQueue);
-                dispatch_source_set_timer(self.cameraEventTimer, dispatch_walltime(NULL, 1.0 * NSEC_PER_SEC), DISPATCH_TIME_FOREVER, 0.1 * NSEC_PER_SEC);
-                
-                //set handler
-                dispatch_source_set_event_handler(self.cameraEventTimer, ^{
-                    
                     //client
                     Client* client = nil;
                     
-                    //init client from attribution
-                    client = [[Client alloc] init];
-                    client.pid = [NSNumber numberWithInteger:self.lastCameraClient];
-                    client.path = valueForStringItem(getProcessPath(client.pid.intValue));
-                    client.name = valueForStringItem(getProcessName(client.path));
+                    //have a client?
+                    if(0 != self.lastCameraClient)
+                    {
+                        //init client from attribution
+                        client = [[Client alloc] init];
+                        client.pid = [NSNumber numberWithInteger:self.lastCameraClient];
+                        client.path = valueForStringItem(getProcessPath(client.pid.intValue));
+                        client.name = valueForStringItem(getProcessName(client.path));
+                    }
                     
                     //init event
                     // with client and (active) camera
@@ -960,9 +955,6 @@ bail:
                     [self handleEvent:event];
                     
                 });
-                
-                //start camera timer
-                dispatch_resume(self.cameraEventTimer);
             }
             
             //camera: off
@@ -1356,14 +1348,14 @@ bail:
     //macOS sometimes toggles / delivers 2x events for same device
     if(deviceLastEvent.deviceType == event.deviceType)
     {
-        //ignore if last event was < 0.5 ago
-        if([event.timestamp timeIntervalSinceDate:deviceLastEvent.timestamp] < 0.5f)
+        //ignore if last event was < 1.0s ago
+        if([event.timestamp timeIntervalSinceDate:deviceLastEvent.timestamp] < 1.0f)
         {
             //set result
             result = NOTIFICATION_SPURIOUS;
             
             //dbg msg
-            os_log_debug(logHandle, "ignoring event, as it happened <0.5s ago");
+            os_log_debug(logHandle, "ignoring event, as it happened <1.0s ago");
             
             //bail
             goto bail;
@@ -1373,7 +1365,6 @@ bail:
         if( (deviceLastEvent.state == event.state) &&
             ([event.timestamp timeIntervalSinceDate:deviceLastEvent.timestamp] < 2.0f) )
         {
-            
             //set result
             result = NOTIFICATION_SPURIOUS;
             
@@ -1385,7 +1376,6 @@ bail:
         }
         
     } //same device
-    
 
     //client provided?
     // check if its allowed
@@ -1498,7 +1488,7 @@ bail:
     if(nil != event.client)
     {
         //set body
-        content.body = [NSString stringWithFormat:@"\r\nProcess: %@ (%@)", event.client.name, (0 != event.client.pid.intValue) ? event.client.pid : @"pid: unknown"];
+        content.body = [NSString stringWithFormat:@"Process: %@ (%@)", event.client.name, (0 != event.client.pid.intValue) ? event.client.pid : @"pid: unknown"];
         
         //set category
         content.categoryIdentifier = CATEGORY_ACTION;

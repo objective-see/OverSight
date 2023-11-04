@@ -130,4 +130,7 @@ NSModalResponse showAlert(NSString* messageText, NSString* informativeText, NSSt
 //does console user have admin privs?
 BOOL hasAdminPrivileges(void);
 
+//get Do Not Distrub state
+BOOL DNDState(void);
+
 #endif

@@ -43,14 +43,17 @@
 //initial camera state
 @property NSControlStateValue initialCameraState;
 
-//last (camera) pid
+//last camera client
 @property NSInteger lastCameraClient;
-
-//last mic off
-@property(nonatomic, retain)AVCaptureDevice* lastMicOff;
 
 //last camera off
 @property(nonatomic, retain)AVCaptureDevice* lastCameraOff;
+
+//last mic client
+@property NSInteger lastMicClient;
+
+//last mic off
+@property(nonatomic, retain)AVCaptureDevice* lastMicOff;
 
 //audio listeners
 @property(nonatomic, retain)NSMutableDictionary* audioListeners;
@@ -60,18 +63,6 @@
 
 //per device events
 @property(nonatomic, retain)NSMutableDictionary* deviceEvents;
-
-//audio event queue
-@property(nonatomic, retain)dispatch_queue_t audioEventQueue;
-
-//audio event timer
-@property(nonatomic, retain)dispatch_source_t audioEventTimer;
-
-//camera event queue
-@property(nonatomic, retain)dispatch_queue_t cameraEventQueue;
-
-//camera event timer
-@property(nonatomic, retain)dispatch_source_t cameraEventTimer;
 
 //last alert (default) interaction
 @property(nonatomic, retain)NSDate* lastNotificationDefaultAction;

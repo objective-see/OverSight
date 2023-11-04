@@ -198,13 +198,28 @@ extern os_log_t logHandle;
         }
             
         //show 'support' view
-        case ACTION_SHOW_NOTIFICATIONS:
+        case ACTION_SHOW_NOTIFICATION_VIEW:
         {
             //dbg msg
             os_log_debug(logHandle, "showing 'notifcations' view");
             
             //show view
-            [self showView:self.notificationsView firstResponder:self.gotoSupportViewButton];
+            [self showView:self.notificationsView firstResponder:self.gotoDNDView];
+            
+            //unset window title
+            self.window.title = @"";
+            
+            break;
+        }
+            
+        //show 'support' view
+        case ACTION_SHOW_DND_VIEW:
+        {
+            //dbg msg
+            os_log_debug(logHandle, "showing 'do not disturb' view");
+            
+            //show view
+            [self showView:self.doNotDisturbView firstResponder:self.gotoSupportView];
             
             //unset window title
             self.window.title = @"";
@@ -213,7 +228,7 @@ extern os_log_t logHandle;
         }
         
         //show 'support' view
-        case ACTION_SHOW_SUPPORT:
+        case ACTION_SHOW_SUPPORT_VIEW:
         {
             //dbg msg
             os_log_debug(logHandle, "showing 'support' view");
@@ -523,7 +538,7 @@ extern os_log_t logHandle;
         self.installButton.title = ACTION_NEXT;
         
         //set tag
-        self.installButton.tag = ACTION_SHOW_NOTIFICATIONS;
+        self.installButton.tag = ACTION_SHOW_NOTIFICATION_VIEW;
     }
     //otherwise
     // set button and tag for close/exit

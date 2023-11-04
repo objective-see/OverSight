@@ -1395,6 +1395,9 @@ NSMutableDictionary* execTask(NSString* binaryPath, NSArray* arguments, BOOL sho
     // NSTask throws if path isn't found...
     if(YES != [NSFileManager.defaultManager fileExistsAtPath:binaryPath])
     {
+        //err msg
+        os_log_error(logHandle, "ERROR: %{public}@ not found", binaryPath);
+        
         //bail
         goto bail;
     }
@@ -1449,7 +1452,7 @@ NSMutableDictionary* execTask(NSString* binaryPath, NSArray* arguments, BOOL sho
     @catch(NSException *exception)
     {
         //err msg
-        os_log_debug(logHandle, "failed to launch task (%{public}@)", exception);
+        os_log_error(logHandle, "failed to launch task (%{public}@)", exception);
         
         //bail
         goto bail;
@@ -1585,7 +1588,7 @@ BOOL isFileRestricted(NSString* file)
 }
 
 //in dark mode?
-BOOL isDarkMode()
+BOOL isDarkMode(void)
 {
     return [[[NSUserDefaults standardUserDefaults] stringForKey:@"AppleInterfaceStyle"] isEqualToString:@"Dark"];
 }
@@ -1630,7 +1633,7 @@ NSModalResponse showAlert(NSString* messageText, NSString* informativeText, NSSt
 
 //checks if user has admin privs
 // based off http://stackoverflow.com/questions/30000443/asking-for-admin-privileges-for-only-standard-accounts
-BOOL hasAdminPrivileges()
+BOOL hasAdminPrivileges(void)
 {
     //flag
     BOOL isAdmin = NO;
@@ -1666,4 +1669,18 @@ BOOL hasAdminPrivileges()
     }
     
     return isAdmin;
+}
+
+//get Do Not Distrub state
+BOOL DNDState(void)
+{
+    //default
+    NSUserDefaults* defaults = nil;
+    
+    //load defaults
+    defaults = [[NSUserDefaults alloc] initWithSuiteName:@"com.apple.notificationcenterui"];
+    
+    //return status of DND
+    return [defaults boolForKey:@"doNotDisturb"];
+    
 }
