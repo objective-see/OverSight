@@ -760,7 +760,7 @@ extern os_log_t logHandle;
                 
                 //delay
                 // need time for logging to grab responsible process
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 
                     //client
                     Client* client = nil;
@@ -879,7 +879,7 @@ bail:
                 
                 //delay
                 // need time for logging to grab responsible process
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 
                     //client
                     Client* client = nil;
@@ -1310,13 +1310,13 @@ bail:
         
         //ignore if last event was same state
         if( (deviceLastEvent.state == event.state) &&
-            ([event.timestamp timeIntervalSinceDate:deviceLastEvent.timestamp] < 2.0f) )
+            ([event.timestamp timeIntervalSinceDate:deviceLastEvent.timestamp] < 1.0f) )
         {
             //set result
             result = NOTIFICATION_SPURIOUS;
             
             //dbg msg
-            os_log_debug(logHandle, "ignoring event as it was same state as last (%ld), and happened <2.0s ago", (long)event.state);
+            os_log_debug(logHandle, "ignoring event as it was same state as last (%ld), and happened <1.0s ago", (long)event.state);
             
             //bail
             goto bail;
