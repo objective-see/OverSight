@@ -89,15 +89,6 @@ extern os_log_t logHandle;
         //per device events
         self.deviceEvents = [NSMutableDictionary dictionary];
         
-        //enumerate active devices
-        // then update status menu (on main thread)
-        dispatch_async(dispatch_get_main_queue(), ^{
-            
-            //update status menu
-            [((AppDelegate*)[[NSApplication sharedApplication] delegate]).statusBarItemController setActiveDevices:[self enumerateActiveDevices]];
-            
-        });
-        
         //find built-in mic
         self.builtInMic = [self findBuiltInMic];
         
@@ -241,21 +232,6 @@ extern os_log_t logHandle;
                     return;
                 }
                     
-                //(re)enumerate active devices
-                // delayed need as device deactiavation
-                // then update status menu (on main thread)
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^
-                {
-                    //update on on main thread
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                    
-                        //update status menu
-                        [((AppDelegate*)[[NSApplication sharedApplication] delegate]).statusBarItemController setActiveDevices:[self enumerateActiveDevices]];
-                        
-                    });
-                    
-                }); //dispatch for delay
-            
             }
             
         }];
@@ -314,21 +290,6 @@ extern os_log_t logHandle;
                 
                 //save
                 self.lastCameraClient = pid;
-        
-                //(re)enumerate active devices
-                // delayed need as device deactiavation
-                // then update status menu (on main thread)
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^
-                {
-                    //update on on main thread
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                    
-                        //update status menu
-                        [((AppDelegate*)[[NSApplication sharedApplication] delegate]).statusBarItemController setActiveDevices:[self enumerateActiveDevices]];
-                        
-                    });
-                    
-                }); //dispatch for delay
             }
             
         }];
@@ -494,21 +455,7 @@ extern os_log_t logHandle;
                     [self processAttributions:newAudioAttributions newCameraAttributions:newCameraAttributions];
                     
                 }//sync
-                
-                //(re)enumerate active devices
-                // delayed need as device deactiavation
-                // then update status menu (on main thread)
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^
-                {
-                    //update on on main thread
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                    
-                        //update status menu
-                        [((AppDelegate*)[[NSApplication sharedApplication] delegate]).statusBarItemController setActiveDevices:[self enumerateActiveDevices]];
-                        
-                    });
-                    
-                }); //dispatch for delay
+            
             }];
     }
     
@@ -914,7 +861,7 @@ bail:
         }
         
         //camera on?
-        // macOS 13.3, use this as trigger
+        // macOS 13.3+, use this as trigger
         // older version send event via log monitor
         if (@available(macOS 13.3, *)) {
             
@@ -965,7 +912,7 @@ bail:
                 
                 //init event
                 // process (client) and device are nil
-                event = [[Event alloc] init:nil device:nil deviceType:Device_Camera state:NSControlStateValueOff];
+                event = [[Event alloc] init:nil device:device deviceType:Device_Camera state:NSControlStateValueOff];
                 
                 //handle event
                 [self handleEvent:event];

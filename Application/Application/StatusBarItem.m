@@ -89,6 +89,9 @@ enum menuItems
     //set menu
     self.statusItem.menu = menu;
     
+    //set delegate
+    self.statusItem.menu.delegate = self;
+    
     //set action handler for all menu items
     for(int i=toggle; i<end; i++)
     {
@@ -441,6 +444,28 @@ bail:
         //change toggle text
         [self.statusItem.menu itemWithTag:toggle].title = @"Disable";
     }
+    
+    return;
+}
+
+//menu delegate method
+// menu will open: update active devices
+-(void)menuWillOpen:(NSMenu *)menu
+{
+    //av monitor
+    AVMonitor* avMonitor = nil;
+    
+    //status bar item controller
+    StatusBarItem* statusBarItemController = nil;
+
+    //grab
+    avMonitor = ((AppDelegate*)[[NSApplication sharedApplication] delegate]).avMonitor;
+    
+    //grab
+    statusBarItemController = ((AppDelegate*)[[NSApplication sharedApplication] delegate]).statusBarItemController;
+    
+    //enumerate and update
+    [statusBarItemController setActiveDevices:[avMonitor enumerateActiveDevices]];
     
     return;
 }

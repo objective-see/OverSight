@@ -10,7 +10,7 @@
 
 @import Cocoa;
 
-@interface StatusBarItem : NSObject <NSPopoverDelegate>
+@interface StatusBarItem : NSObject <NSPopoverDelegate, NSMenuDelegate>
 {
 
 }
