@@ -1339,7 +1339,7 @@ bail:
                 result = NOTIFICATION_SKIPPED;
                 
                 //dbg msg
-                os_log_debug(logHandle, "%{public}@ is allowed to access %d, so no notification will be shown", event.client.path, event.deviceType);
+                os_log_debug(logHandle, "%{public}@ is allowed to access %d, so no notification will not be shown", event.client.path, event.deviceType);
                 
                 //done
                 goto bail;
@@ -1363,7 +1363,7 @@ bail:
 -(void)handleEvent:(Event*)event
 {
     //result
-    __block NSUInteger result = NOTIFICATION_ERROR;
+    NSInteger result = NOTIFICATION_ERROR;
     
     //should show?
     @synchronized (self) {
@@ -1372,23 +1372,23 @@ bail:
        result = [self shouldShowNotification:event];
     }
     
+    //dbg msg
+    os_log_debug(logHandle, "'shouldShowNotification:' method returned %ld", (long)result);
+    
     //deliver/show user?
     if(NOTIFICATION_DELIVER == result)
     {
         //deliver
         [self showNotification:event];
+        
+        //execute user-specified action?
+        if(YES == [NSUserDefaults.standardUserDefaults boolForKey:PREF_EXECUTE_ACTION])
+        {
+            //exec
+            [self executeUserAction:event];
+        }
     }
-    
-    //should (also) exec user action?
-    if( (NOTIFICATION_ERROR != result) &&
-        (NOTIFICATION_SPURIOUS != result) )
-    {
-        //exec
-        [self executeUserAction:event];
-    }
-    
-bail:
-    
+
     return;
 }
 
@@ -1469,6 +1469,7 @@ bail:
 }
 
 //execute user action
+// via the shell to handle binaries and scripts
 -(BOOL)executeUserAction:(Event*)event
 {
     //flag
@@ -1478,17 +1479,13 @@ bail:
     NSString* action = nil;
     
     //args
-    NSMutableArray* args = nil;
+    NSMutableString* args = nil;
     
-    //execute user-specified action?
-    if(YES != [NSUserDefaults.standardUserDefaults boolForKey:PREF_EXECUTE_ACTION])
-    {
-        //bail
-        goto bail;
-    }
-
     //dbg msg
     os_log_debug(logHandle, "executing user action");
+    
+    //alloc
+    args = [NSMutableString string];
     
     //grab action
     action = [NSUserDefaults.standardUserDefaults objectForKey:PREF_EXECUTE_PATH];
@@ -1504,32 +1501,29 @@ bail:
     //pass args?
     if(YES == [NSUserDefaults.standardUserDefaults boolForKey:PREF_EXECUTE_ACTION_ARGS])
     {
-        //alloc
-        args = [NSMutableArray array];
-        
         //add device
-        [args addObject:@"-device"];
-        (Device_Camera == event.deviceType) ? [args addObject:@"camera"] : [args addObject:@"microphone"];
+        [args appendString:@"-device "];
+        (Device_Camera == event.deviceType) ? [args appendString:@"camera"] : [args appendString:@"microphone"];
         
         //add event
-        [args addObject:@"-event"];
-        (NSControlStateValueOn == event.state) ? [args addObject:@"on"] : [args addObject:@"off"];
+        [args appendString:@" -event "];
+        (NSControlStateValueOn == event.state) ? [args appendString:@"on"] : [args appendString:@"off"];
         
         //add process
         if(nil != event.client)
         {
             //add
-            [args addObject:@"-process"];
-            [args addObject:event.client.pid.stringValue];
+            [args appendString:@" -process "];
+            [args appendString:event.client.pid.stringValue];
         }
         
         //add active device count
-        [args addObject:@"-activeCount"];
-        [args addObject:[NSString stringWithFormat:@"%lu", [self enumerateActiveDevices].count]];
+        [args appendString:@" -activeCount "];
+        [args appendFormat:@"%lu", [self enumerateActiveDevices].count];
     }
     
     //exec user specified action
-    execTask(action, args, NO, NO);
+    execTask(SHELL, @[@"-c", [NSString stringWithFormat:@"\"%@\" %@", action, args]], NO, NO);
     
 bail:
     

@@ -222,6 +222,9 @@
 //path to kill all
 #define KILL_ALL @"/usr/bin/killall"
 
+//path to shell
+#define SHELL @"/bin/bash"
+
 //path to facetime
 #define FACE_TIME @"/System/Applications/FaceTime.app/Contents/MacOS/FaceTime"
 
