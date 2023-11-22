@@ -62,6 +62,9 @@ extern os_log_t logHandle;
         //init video listeners
         self.cameraListeners = [NSMutableDictionary dictionary];
         
+        //init event queue
+        self.eventQueue = dispatch_queue_create([[NSString stringWithFormat:@"%s.eventQueue", BUNDLE_ID] UTF8String], DISPATCH_QUEUE_CONCURRENT);
+        
         //set up delegate
         UNUserNotificationCenter.currentNotificationCenter.delegate = self;
         
@@ -789,7 +792,7 @@ extern os_log_t logHandle;
     };
     
     //add property listener for audio changes
-    status = AudioObjectAddPropertyListenerBlock(deviceID, &propertyStruct, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), listenerBlock);
+    status = AudioObjectAddPropertyListenerBlock(deviceID, &propertyStruct, self.eventQueue, listenerBlock);
     if(noErr != status)
     {
         //err msg
@@ -803,7 +806,7 @@ extern os_log_t logHandle;
     self.audioListeners[device.uniqueID] = listenerBlock;
     
     //dbg msg
-    os_log_debug(logHandle, "monitoring %{public}@ for audio changes", device.localizedName);
+    os_log_debug(logHandle, "monitoring %{public}@ (uuid: %{public}@ / %x) for audio changes", device.localizedName, device.uniqueID, deviceID);
 
     //happy
     bRegistered = YES;
@@ -922,7 +925,7 @@ bail:
     };
     
     //register (add) property block listener
-    status = CMIOObjectAddPropertyListenerBlock(deviceID, &propertyStruct, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), listenerBlock);
+    status = CMIOObjectAddPropertyListenerBlock(deviceID, &propertyStruct, self.eventQueue, listenerBlock);
     if(noErr != status)
     {
         //err msg
@@ -936,7 +939,7 @@ bail:
     self.cameraListeners[device.uniqueID] = listenerBlock;
     
     //dbg msg
-    os_log_debug(logHandle, "monitoring %{public}@ for video changes", device.localizedName);
+    os_log_debug(logHandle, "monitoring %{public}@ (uuid: %{public}@ / %x) for video changes", device.localizedName, device.uniqueID, deviceID);
     
     //happy
     bRegistered = YES;
@@ -1023,7 +1026,7 @@ bail:
         builtInMic = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeAudio];
         
         //dbg msg
-        os_log_debug(logHandle, "Apple Mic not found, defaulting to default device: %{public}@/%{public}@)", builtInMic.manufacturer, builtInMic.localizedName);
+        os_log_debug(logHandle, "Apple Mic not found, defaulting to default device: %{public}@/%{public}@", builtInMic.manufacturer, builtInMic.localizedName);
     }
     
     return builtInMic;
@@ -1046,7 +1049,8 @@ bail:
         {
             //is built in camera?
             if( (YES == [currentCamera.uniqueID isEqualToString:@"FaceTime HD Camera"]) ||
-                (YES == [currentCamera.localizedName isEqualToString:@"FaceTime-HD-camera"]) )
+                (YES == [currentCamera.localizedName isEqualToString:@"FaceTime-HD-camera"]) ||
+                (YES == [currentCamera.localizedName isEqualToString:@"FaceTime HD Camera"]) )
             {
                 //found
                 builtInCamera = currentCamera;
@@ -1215,6 +1219,20 @@ bail:
     //extract its last event
     deviceLastEvent = self.deviceEvents[deviceID];
     
+    //disabled?
+    // really shouldn't ever get here, but can't hurt to check
+    if(YES == [NSUserDefaults.standardUserDefaults boolForKey:PREF_IS_DISABLED])
+    {
+        //set result
+        result = NOTIFICATION_SPURIOUS;
+        
+        //dbg msg
+        os_log_debug(logHandle, "disable is set, so ignoring event");
+            
+        //bail
+        goto bail;
+    }
+    
     //inactive alerting off?
     // ignore if event is an inactive/off
     if( (NSControlStateValueOff == event.state) &&
@@ -1380,13 +1398,14 @@ bail:
     {
         //deliver
         [self showNotification:event];
-        
-        //execute user-specified action?
-        if(YES == [NSUserDefaults.standardUserDefaults boolForKey:PREF_EXECUTE_ACTION])
-        {
-            //exec
-            [self executeUserAction:event];
-        }
+    }
+    //should (also) exec user action?
+    if( (NOTIFICATION_ERROR != result) &&
+        (NOTIFICATION_SPURIOUS != result) &&
+        (0 != [[NSUserDefaults.standardUserDefaults objectForKey:PREF_EXECUTE_PATH] length]) )
+    {
+        //exec
+        [self executeUserAction:event];
     }
 
     return;
@@ -1590,7 +1609,7 @@ bail:
     propertyStruct.mElement = kAudioObjectPropertyElementMaster;
     
     //remove
-    status = AudioObjectRemovePropertyListenerBlock(deviceID, &propertyStruct, dispatch_get_main_queue(), self.audioListeners[device.uniqueID]);
+    status = AudioObjectRemovePropertyListenerBlock(deviceID, &propertyStruct, self.eventQueue, self.audioListeners[device.uniqueID]);
     if(noErr != status)
     {
         //err msg
@@ -1599,6 +1618,9 @@ bail:
         //bail
         goto bail;
     }
+    
+    //dbg msg
+    os_log_debug(logHandle, "stopped monitoring %{public}@ (uuid: %{public}@ / %x) for audio changes", device.localizedName, device.uniqueID, deviceID);
     
     //unset listener block
     self.audioListeners[device.uniqueID] = nil;
@@ -1633,7 +1655,7 @@ bail:
     propertyStruct.mElement = kAudioObjectPropertyElementMaster;
     
     //remove
-    status = CMIOObjectRemovePropertyListenerBlock(deviceID, &propertyStruct, dispatch_get_main_queue(), self.cameraListeners[device.uniqueID]);
+    status = CMIOObjectRemovePropertyListenerBlock(deviceID, &propertyStruct, self.eventQueue, self.cameraListeners[device.uniqueID]);
     if(noErr != status)
     {
         //err msg
@@ -1642,6 +1664,9 @@ bail:
         //bail
         goto bail;
     }
+    
+    //dbg msg
+    os_log_debug(logHandle, "stopped monitoring %{public}@ (uuid: %{public}@ / %x) for video changes", device.localizedName, device.uniqueID, deviceID);
     
     //unset listener block
     self.cameraListeners[device.uniqueID] = nil;

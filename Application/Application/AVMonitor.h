@@ -19,7 +19,6 @@
 #import "Event.h"
 #import "LogMonitor.h"
 
-
 @interface AVMonitor : NSObject <UNUserNotificationCenterDelegate>
 
 //log monitor
@@ -66,6 +65,9 @@
 
 //last alert (default) interaction
 @property(nonatomic, retain)NSDate* lastNotificationDefaultAction;
+
+//listener queue
+@property(nonatomic, retain)dispatch_queue_t eventQueue;
 
 /* METHODS */
 

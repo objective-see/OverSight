@@ -466,6 +466,9 @@ bail:
         {
             //uncheck
             self.executePathButton.state = NSControlStateValueOff;
+            
+            //unset
+            [NSUserDefaults.standardUserDefaults setBool:NSControlStateValueOff forKey:PREF_EXECUTE_ACTION];
         }
         
         //bail
@@ -477,6 +480,15 @@ bail:
     
     //ensure its executable
     execTask(CHMOD, @[@"+x", panel.URL.path], YES, NO);
+    
+    //enable
+    self.executePath.enabled = NSControlStateValueOn;
+    
+    //check button as well
+    self.executePathButton.state = NSControlStateValueOn;
+    
+    //save execute state
+    [NSUserDefaults.standardUserDefaults setBool:NSControlStateValueOn forKey:PREF_EXECUTE_ACTION];
     
     //save path & sync
     [NSUserDefaults.standardUserDefaults setObject:self.executePath.stringValue forKey:PREF_EXECUTE_PATH];
