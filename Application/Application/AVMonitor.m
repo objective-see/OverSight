@@ -132,6 +132,76 @@ extern os_log_t logHandle;
        [self watchVideoDevice:videoDevice];
     }
     
+    //dbg msg
+    os_log_debug(logHandle, "registering for device connection/disconnection notifications");
+    
+    //handle new device connections
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(handleConnectedDeviceNotification:) name:AVCaptureDeviceWasConnectedNotification object:nil];
+
+    //handle device disconnections
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(handleDisconnectedDeviceNotification:) name:AVCaptureDeviceWasDisconnectedNotification object:nil];
+    
+    
+    return;
+}
+
+//new device is connected
+// get its type, then watch it for events
+-(void)handleConnectedDeviceNotification:(NSNotification *)notification
+{
+    //device
+    AVCaptureDevice* device = NULL;
+    
+    //type
+    device = notification.object;
+    
+    //dbg msg
+    os_log_debug(logHandle, "new device connected: %{public}@", device.localizedName);
+    
+    //audio devive
+    if(YES == [device hasMediaType:AVMediaTypeAudio])
+    {
+        //watch
+        [self watchAudioDevice:device];
+    }
+    
+    //video device
+    else if(YES == [device hasMediaType:AVMediaTypeVideo])
+    {
+        //watch
+        [self watchVideoDevice:device];
+    }
+
+    return;
+}
+
+//device is disconnected
+// get its type, then unwatch it
+-(void)handleDisconnectedDeviceNotification:(NSNotification *)notification
+{
+    //device
+    AVCaptureDevice* device = NULL;
+    
+    //type
+    device = notification.object;
+    
+    //dbg msg
+    os_log_debug(logHandle, "device disconnected: %{public}@", device.localizedName);
+    
+    //audio devive
+    if(YES == [device hasMediaType:AVMediaTypeAudio])
+    {
+        //unwatch
+        [self unwatchAudioDevice:device];
+    }
+    
+    //video device
+    else if(YES == [device hasMediaType:AVMediaTypeVideo])
+    {
+        //unwatch
+        [self unwatchVideoDevice:device];
+    }
+    
     return;
 }
 
@@ -160,7 +230,7 @@ extern os_log_t logHandle;
         cameraRegex = [NSRegularExpression regularExpressionWithPattern:@"\\[\\{private\\}(\\d+)\\]" options:0 error:nil];
                 
         //start log monitoring
-        [self.logMonitor start:[NSPredicate predicateWithFormat:@"subsystem=='com.apple.cmio' OR subsystem=='com.apple.coremedia'"] level:Log_Level_Debug callback:^(OSLogEvent* logEvent) {
+        [self.logMonitor start:[NSPredicate predicateWithFormat:@"subsystem=='com.apple.cmio' OR subsystem=='com.apple.coremedia'"] level:Log_Level_Default callback:^(OSLogEvent* logEvent) {
         
             //sync to process
             @synchronized (self) {
@@ -1109,7 +1179,7 @@ bail:
 }
 
 //determine if audio device is active
--(UInt32)getMicState:(AVCaptureDevice*)device;
+-(UInt32)getMicState:(AVCaptureDevice*)device
 {
     //status var
     OSStatus status = -1;
@@ -1180,7 +1250,7 @@ bail:
     propertyStruct.mScope = kCMIOObjectPropertyScopeGlobal;
     
     //init property struct's element
-    propertyStruct.mElement = 0;
+    propertyStruct.mElement = kAudioObjectPropertyElementMaster;
     
     //query to get 'kAudioDevicePropertyDeviceIsRunningSomewhere' status
     status = CMIOObjectGetPropertyData(deviceID, &propertyStruct, 0, NULL, sizeof(kAudioDevicePropertyDeviceIsRunningSomewhere), &propertySize, &isRunning);
@@ -1577,6 +1647,15 @@ bail:
        //start (device) monitor
        [self unwatchVideoDevice:videoDevice];
     }
+    
+    //dbg msg
+    os_log_debug(logHandle, "unregistering notifications");
+    
+    //remove connection notification
+    [NSNotificationCenter.defaultCenter removeObserver:self name:AVCaptureDeviceWasConnectedNotification object:nil];
+    
+    //remove disconnection notification
+    [NSNotificationCenter.defaultCenter removeObserver:self name:AVCaptureDeviceWasDisconnectedNotification object:nil];
     
     //dbg msg
     os_log_debug(logHandle, "all stopped...");
