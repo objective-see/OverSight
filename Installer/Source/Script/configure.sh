@@ -33,7 +33,9 @@ echo "uninstalling"
 rm -rf "/Applications/OverSight.app"
     
 #remove preferences, etc.
-rm -rf "${2}"
+if [ -n "$2" ]; then
+    rm -rf "$2"
+fi
 
 killall "OverSight" 2> /dev/null
 killall "com.objective-see.OverSight.helper" 2> /dev/null

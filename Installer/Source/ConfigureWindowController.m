@@ -501,6 +501,9 @@ extern os_log_t logHandle;
         //set result msg
         resultMsg = [NSMutableString stringWithFormat:@"⚠️ Error: %@ failed", action];
         
+        //set debug msg
+        self.debugMsg.stringValue = @"For more info, from the terminal run:\r\nlog show --predicate=\"subsystem='com.objective-see.oversight'\"";
+        
         //show 'get more info' button
         self.moreInfoButton.hidden = NO;
     }

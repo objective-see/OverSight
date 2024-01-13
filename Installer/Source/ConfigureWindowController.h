@@ -29,6 +29,9 @@
 //status msg
 @property (weak, nonatomic) IBOutlet NSTextField *statusMsg;
 
+//debug msg
+@property (weak, nonatomic) IBOutlet NSTextField *debugMsg;
+
 //more info button
 @property (weak, nonatomic) IBOutlet NSButton *moreInfoButton;
 
@@ -44,7 +47,7 @@
 @property (weak, nonatomic) IBOutlet NSButton *gotoDNDView;
 
 //do not disturb view
-@property (strong) IBOutlet NSView *doNotDisturbView;
+@property (strong, nonatomic) IBOutlet NSView *doNotDisturbView;
 
 //support us
 @property (weak, nonatomic) IBOutlet NSButton *gotoSupportView;

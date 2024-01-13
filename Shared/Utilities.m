@@ -33,7 +33,7 @@ extern os_log_t logHandle;
 
 //get app's version
 // extracted from Info.plist
-NSString* getAppVersion()
+NSString* getAppVersion(void)
 {
     //read and return 'CFBundleVersion' from bundle
     return [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
@@ -114,7 +114,7 @@ NSString* getBinaryName(NSString* path)
 
 //get path to (main) app of a login item
 // login item is in app bundle, so parse up to get main app
-NSString* getMainAppPath()
+NSString* getMainAppPath(void)
 {
     //path components
     NSArray *pathComponents = nil;
@@ -408,7 +408,7 @@ bail:
 }
 
 //get name of logged in user
-uid_t getConsoleUserID()
+uid_t getConsoleUserID(void)
 {
     //uid
     uid_t userID = 0;
@@ -528,7 +528,7 @@ BOOL setFileOwner(NSString* path, NSNumber* groupID, NSNumber* ownerID, BOOL rec
     }
     
     //dbg msg
-    os_log_debug(logHandle, "set ownership for %@ (%@)", path, fileOwner);
+    os_log_debug(logHandle, "set ownership for %{public}@ (%{public}@)", path, fileOwner);
     
     //do it recursively
     if(YES == recursive)
@@ -552,7 +552,7 @@ BOOL setFileOwner(NSString* path, NSNumber* groupID, NSNumber* ownerID, BOOL rec
             if(YES != [[NSFileManager defaultManager] setAttributes:fileOwner ofItemAtPath:fullPath error:NULL])
             {
                 //err msg
-                os_log_error(logHandle, "ERROR: failed to set ownership for %@ (%@)", fullPath, fileOwner);
+                os_log_error(logHandle, "ERROR: failed to set ownership for %{public}@ (%{public}@)", fullPath, fileOwner);
                 
                 //bail
                 goto bail;

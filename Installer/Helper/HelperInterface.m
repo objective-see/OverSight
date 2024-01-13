@@ -77,14 +77,14 @@ dispatch_source_t dispatchSource = nil;
     }
     
     //dbg msg
-    os_log_debug(logHandle, "validated %@", app);
+    os_log_debug(logHandle, "validated %{public}@", app);
 
     //exec script
     result = [self execScript:validatedApp arguments:args];
     if(noErr != result)
     {
         //err msg
-        os_log_error(logHandle, "ERROR: failed to execute config script %@ (%d)", CONF_SCRIPT, result);
+        os_log_error(logHandle, "ERROR: failed to execute config script %{public}@ (%d)", CONF_SCRIPT, result);
         
         //bail
         goto bail;
@@ -99,7 +99,7 @@ bail:
     if(YES != [[NSFileManager defaultManager] removeItemAtPath:validatedApp error:nil])
     {
         //err msg
-        os_log_error(logHandle, "ERROR: failed to remove validated app %@", validatedApp);
+        os_log_error(logHandle, "ERROR: failed to remove validated app %{public}@", validatedApp);
         
         //set err
         result = -1;
@@ -225,7 +225,7 @@ bail:
     appCopy = [NSTemporaryDirectory() stringByAppendingPathComponent:app.lastPathComponent];
     
     //dbg msg
-    os_log_debug(logHandle, "validating %@", appCopy);
+    os_log_debug(logHandle, "validating %{public}@", appCopy);
     
     //delete if old copy is there
     if(YES == [defaultManager fileExistsAtPath:appCopy])
@@ -234,7 +234,7 @@ bail:
         if(YES != [defaultManager removeItemAtPath:appCopy error:&error])
         {
             //err msg
-            os_log_error(logHandle, "ERROR: failed to delete %@ (error: %@)", appCopy, error.description);
+            os_log_error(logHandle, "ERROR: failed to delete %{public}@ (error: %{public}@)", appCopy, error.description);
         }
     }
     
@@ -242,7 +242,7 @@ bail:
     if(YES != [defaultManager copyItemAtPath:app toPath:appCopy error:&error])
     {
         //err msg
-        os_log_error(logHandle, "ERROR: failed to copy %{public}@ to %{public}@ (error: %@)", app, appCopy, error.description);
+        os_log_error(logHandle, "ERROR: failed to copy %{public}@ to %{public}@ (error: %{public}@)", app, appCopy, error.description);
         
         //bail
         goto bail;
@@ -252,7 +252,7 @@ bail:
     if(YES != setFileOwner(appCopy, @0, @0, YES))
     {
         //err msg
-        os_log_error(logHandle, "ERROR: failed to set %@ to be owned by root", appCopy);
+        os_log_error(logHandle, "ERROR: failed to set %{public}@ to be owned by root", appCopy);
         
         //bail
         goto bail;
@@ -263,7 +263,7 @@ bail:
     if(noErr != verifyApp(appCopy, SIGNING_AUTH))
     {
         //err msg
-        os_log_error(logHandle, "ERROR: failed to validate %@", appCopy);
+        os_log_error(logHandle, "ERROR: failed to validate %{public}@", appCopy);
         
         //bail
         goto bail;
@@ -306,7 +306,7 @@ bail:
     if(nil == appBundle)
     {
         //err msg
-        os_log_error(logHandle, "ERROR: failed to load app bundle for %@", validatedApp);
+        os_log_error(logHandle, "ERROR: failed to load app bundle for %{public}@", validatedApp);
         
         //bail
         goto bail;
@@ -317,7 +317,7 @@ bail:
     if(nil == script)
     {
         //err msg
-        os_log_error(logHandle, "ERROR: failed to find config script %@", CONF_SCRIPT);
+        os_log_error(logHandle, "ERROR: failed to find config script %{public}@", CONF_SCRIPT);
         
         //bail
         goto bail;

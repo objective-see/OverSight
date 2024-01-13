@@ -27,6 +27,7 @@ extern os_log_t logHandle;
 
 @synthesize gotHelp;
 @synthesize xpcComms;
+@synthesize errorCode;
 
 //invokes appropriate action
 // either install || uninstall logic
@@ -550,10 +551,42 @@ bail:
     if(YES != [NSFileManager.defaultManager removeItemAtPath:application error:&error])
     {
         //err msg
-        os_log_error(logHandle, "ERROR: failed to remove %{public}@ (error: %@)", application, error);
+        os_log_error(logHandle, "ERROR: failed to remove %{public}@ (error: %{public}@)", application, error);
         
-        //bail
-        goto bail;
+        //access denied?
+        // uninstall app via priv'd XPC
+        if(error.code == NSFileWriteNoPermissionError)
+        {
+            //err msg
+            os_log_debug(logHandle, "access denied, so will try to remove app via priv'd XPC");
+            
+            //init XPC comms?
+            if(nil == xpcComms)
+            {
+                //get help
+                if(YES != [self initHelper])
+                {
+                    //err msg
+                    os_log_error(logHandle, "ERROR: failed to init helper tool");
+                    
+                    //bail
+                    goto bail;
+                }
+            }
+            
+            //uninstall
+            if(YES != [xpcComms uninstall:@""])
+            {
+                //bail
+                goto bail;
+            }
+        }
+        //bail on all other errors
+        else
+        {
+            //bail
+            goto bail;
+        }
     }
         
     //dbg msg

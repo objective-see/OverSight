@@ -17,6 +17,9 @@
 
 /* PROPERTIES */
 
+//error
+@property(nonatomic)NSInteger errorCode;
+
 //helper installed & connected
 @property(nonatomic) BOOL gotHelp;
 
