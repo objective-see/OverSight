@@ -176,7 +176,6 @@ extern os_log_t logHandle;
 }
 
 //device is disconnected
-// get its type, then unwatch it
 -(void)handleDisconnectedDeviceNotification:(NSNotification *)notification
 {
     //device
@@ -777,9 +776,6 @@ extern os_log_t logHandle;
     //init property struct's element
     propertyStruct.mElement = kAudioObjectPropertyElementMaster;
     
-    //get device ID
-    deviceID = [self getAVObjectID:device];
-    
     //block
     // invoked when audio changes
     AudioObjectPropertyListenerBlock listenerBlock = ^(UInt32 inNumberAddresses, const AudioObjectPropertyAddress *inAddresses)
@@ -861,6 +857,17 @@ extern os_log_t logHandle;
         } //macOS 13.3+
     };
     
+    //get device ID
+    deviceID = [self getAVObjectID:device];
+    if(0 == deviceID)
+    {
+        //err msg
+        os_log_error(logHandle, "ERROR: 'failed to find %{public}@'s object id", device.localizedName);
+        
+        //bail
+        goto bail;
+    }
+    
     //add property listener for audio changes
     status = AudioObjectAddPropertyListenerBlock(deviceID, &propertyStruct, self.eventQueue, listenerBlock);
     if(noErr != status)
@@ -909,9 +916,6 @@ bail:
     
     //init property struct's element
     propertyStruct.mElement = kAudioObjectPropertyElementMaster;
-    
-    //get device ID
-    deviceID = [self getAVObjectID:device];
     
     //block
     // invoked when video changes
@@ -993,6 +997,17 @@ bail:
             
         } //macOS 13.3
     };
+    
+    //get device ID
+    deviceID = [self getAVObjectID:device];
+    if(0 == deviceID)
+    {
+        //err msg
+        os_log_error(logHandle, "ERROR: 'failed to find %{public}@'s object id", device.localizedName);
+        
+        //bail
+        goto bail;
+    }
     
     //register (add) property block listener
     status = CMIOObjectAddPropertyListenerBlock(deviceID, &propertyStruct, self.eventQueue, listenerBlock);
@@ -1195,6 +1210,17 @@ bail:
     
     //get device ID
     deviceID = [self getAVObjectID:device];
+    if(0 == deviceID)
+    {
+        //err msg
+        os_log_error(logHandle, "ERROR: 'failed to find %{public}@'s object id", device.localizedName);
+        
+        //set error
+        isRunning = -1;
+        
+        //bail
+        goto bail;
+    }
     
     //init size
     propertySize = sizeof(isRunning);
@@ -1204,7 +1230,7 @@ bail:
     if(noErr != status)
     {
         //err msg
-        os_log_error(logHandle, "ERROR: getting status of audio device failed with %d", status);
+        os_log_error(logHandle, "ERROR: failed to get run state for %{public}@ (error: %#x)", device.localizedName, status);
         
         //set error
         isRunning = -1;
@@ -1239,6 +1265,17 @@ bail:
     
     //get device ID
     deviceID = [self getAVObjectID:device];
+    if(0 == deviceID)
+    {
+        //err msg
+        os_log_error(logHandle, "ERROR: 'failed to find %{public}@'s object id", device.localizedName);
+        
+        //set error
+        isRunning = -1;
+        
+        //bail
+        goto bail;
+    }
     
     //init size
     propertySize = sizeof(isRunning);
@@ -1257,7 +1294,7 @@ bail:
     if(noErr != status)
     {
         //err msg
-        os_log_error(logHandle, "ERROR: failed to get camera status (error: %#x)", status);
+        os_log_error(logHandle, "ERROR: failed to get run state for %{public}@ (error: %#x)", device.localizedName, status);
         
         //set error
         isRunning = -1;
@@ -1285,6 +1322,14 @@ bail:
     
     //get device ID
     deviceID = [NSNumber numberWithInt:[self getAVObjectID:event.device]];
+    if(0 == deviceID)
+    {
+        //err msg
+        os_log_error(logHandle, "ERROR: 'failed to find %{public}@'s object id", event.device.localizedName);
+        
+        //bail
+        goto bail;
+    }
     
     //extract its last event
     deviceLastEvent = self.deviceEvents[deviceID];
@@ -1631,21 +1676,21 @@ bail:
     //dbg msg
     os_log_debug(logHandle, "stopping audio monitor(s)");
     
-    //watch all input audio (mic) devices
+    //unwatch all input audio (mic) devices
     for(AVCaptureDevice* audioDevice in [AVCaptureDevice devicesWithMediaType:AVMediaTypeAudio])
     {
-       //stop (device) monitor
-       [self unwatchAudioDevice:audioDevice];
+        //unwatch
+        [self unwatchAudioDevice:audioDevice];
     }
        
     //dbg msg
     os_log_debug(logHandle, "stopping video monitor(s)");
     
-    //watch all input video (cam) devices
+    //unwatch all input video (cam) devices
     for(AVCaptureDevice* videoDevice in [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo])
     {
-       //start (device) monitor
-       [self unwatchVideoDevice:videoDevice];
+        //unwatch
+        [self unwatchVideoDevice:videoDevice];
     }
     
     //dbg msg
@@ -1675,9 +1720,24 @@ bail:
     //property struct
     AudioObjectPropertyAddress propertyStruct = {0};
     
+    //bail if device was disconnected
+    if(YES == device.isConnected)
+    {
+        //bail
+        goto bail;
+    }
+    
     //get device ID
     deviceID = [self getAVObjectID:device];
-    
+    if(0 == deviceID)
+    {
+        //err msg
+        os_log_error(logHandle, "ERROR: 'failed to find %{public}@'s object id", device.localizedName);
+        
+        //bail
+        goto bail;
+    }
+
     //init property struct's selector
     propertyStruct.mSelector = kAudioDevicePropertyDeviceIsRunningSomewhere;
     
@@ -1721,8 +1781,23 @@ bail:
     //property struct
     CMIOObjectPropertyAddress propertyStruct = {0};
     
+    //bail if device was disconnected
+    if(YES == device.isConnected)
+    {
+        //bail
+        goto bail;
+    }
+    
     //get device ID
     deviceID = [self getAVObjectID:device];
+    if(0 == deviceID)
+    {
+        //err msg
+        os_log_error(logHandle, "ERROR: 'failed to find %{public}@'s object id", device.localizedName);
+        
+        //bail
+        goto bail;
+    }
     
     //init property struct's selector
     propertyStruct.mSelector = kAudioDevicePropertyDeviceIsRunningSomewhere;
@@ -1747,10 +1822,10 @@ bail:
     //dbg msg
     os_log_debug(logHandle, "stopped monitoring %{public}@ (uuid: %{public}@ / %x) for video changes", device.localizedName, device.uniqueID, deviceID);
     
-    //unset listener block
-    self.cameraListeners[device.uniqueID] = nil;
-    
 bail:
+    
+    //always unset listener block
+    self.cameraListeners[device.uniqueID] = nil;
     
     return;
     

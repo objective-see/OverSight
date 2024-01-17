@@ -115,7 +115,7 @@ bail:
     [UNUserNotificationCenter.currentNotificationCenter requestAuthorizationWithOptions:(UNAuthorizationOptionAlert) completionHandler:^(BOOL granted, NSError * _Nullable error)
     {
         //dbg msg
-        os_log_debug(logHandle, "permission to display notifications granted? %d (error: %@)", granted, error);
+        os_log_debug(logHandle, "permission to display notifications granted? %d (error: %{public}@)", granted, error);
     
         //not granted/error
         if( (nil != error) ||
