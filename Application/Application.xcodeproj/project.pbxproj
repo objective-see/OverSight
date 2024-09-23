@@ -3,37 +3,37 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 48;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		7D16D6941F64E43300DB3161 /* Update.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D16D6901F64E43300DB3161 /* Update.m */; };
-		7D16D6951F64E43300DB3161 /* UpdateWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7D16D6911F64E43300DB3161 /* UpdateWindow.xib */; };
 		7D16D6961F64E43300DB3161 /* UpdateWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D16D6931F64E43300DB3161 /* UpdateWindowController.m */; };
 		7D3B75141F13354900568828 /* StatusBarItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D3B74FD1F13354900568828 /* StatusBarItem.m */; };
 		7D5C5F521F200B9200C0E94A /* utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D5C5F511F200B9200C0E94A /* utilities.m */; };
 		7D7755E81F02E05B00D0017D /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D7755E71F02E05B00D0017D /* AppDelegate.m */; };
 		7D7755EB1F02E05B00D0017D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D7755EA1F02E05B00D0017D /* main.m */; };
-		7D7755F01F02E05B00D0017D /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7D7755EE1F02E05B00D0017D /* MainMenu.xib */; };
 		7DD25FF01F23B73C00277EC4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7DD25FEF1F23B73C00277EC4 /* Assets.xcassets */; };
-		CD22785E20434CAC00C72C76 /* StatusBarPopover.xib in Resources */ = {isa = PBXBuildFile; fileRef = CD22785B20434CAB00C72C76 /* StatusBarPopover.xib */; };
 		CD22785F20434CAC00C72C76 /* StatusBarPopoverController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD22785D20434CAB00C72C76 /* StatusBarPopoverController.m */; };
 		CD2F8008244551AC009C3D77 /* NSApplicationKeyEvents.m in Sources */ = {isa = PBXBuildFile; fileRef = CD2F8007244551AC009C3D77 /* NSApplicationKeyEvents.m */; };
-		CD2F800C24455333009C3D77 /* AboutWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = CD2F800924455333009C3D77 /* AboutWindow.xib */; };
 		CD2F800D24455333009C3D77 /* AboutWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD2F800B24455333009C3D77 /* AboutWindowController.m */; };
 		CD2F801724468A8C009C3D77 /* patrons.txt in Resources */ = {isa = PBXBuildFile; fileRef = CD2F801624468A8C009C3D77 /* patrons.txt */; };
 		CD6836682391DB6F00CF19C1 /* security.plist in Resources */ = {isa = PBXBuildFile; fileRef = CD6836672391DB6F00CF19C1 /* security.plist */; };
-		CD7E47D42B5227B600B63153 /* OverSight Installer.app in Resources */ = {isa = PBXBuildFile; fileRef = CD7E47D32B5227B600B63153 /* OverSight Installer.app */; };
-		CD8FD5D523BAE2D200EFE0FB /* Preferences.xib in Resources */ = {isa = PBXBuildFile; fileRef = CD8FD5D323BAE2D100EFE0FB /* Preferences.xib */; };
+		CD86413C2CA1617A00803551 /* AboutWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = CD86413B2CA1617A00803551 /* AboutWindow.xib */; };
+		CD8641442CA161AA00803551 /* Preferences.xib in Resources */ = {isa = PBXBuildFile; fileRef = CD8641432CA161AA00803551 /* Preferences.xib */; };
+		CD86414D2CA161CF00803551 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = CD86414C2CA161CF00803551 /* MainMenu.xib */; };
+		CD8641512CA161D500803551 /* Rules.xib in Resources */ = {isa = PBXBuildFile; fileRef = CD8641502CA161D500803551 /* Rules.xib */; };
+		CD8641552CA161DA00803551 /* StatusBarPopover.xib in Resources */ = {isa = PBXBuildFile; fileRef = CD8641542CA161DA00803551 /* StatusBarPopover.xib */; };
+		CD8641592CA161DF00803551 /* UpdateWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = CD8641582CA161DF00803551 /* UpdateWindow.xib */; };
 		CD8FD5D623BAE2D200EFE0FB /* PrefsWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8FD5D423BAE2D200EFE0FB /* PrefsWindowController.m */; };
 		CD8FD5F623C05AD900EFE0FB /* RuleRow.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8FD5F023C05AD800EFE0FB /* RuleRow.m */; };
 		CD8FD5F723C05AD900EFE0FB /* RuleRowCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8FD5F223C05AD800EFE0FB /* RuleRowCell.m */; };
 		CD8FD5F823C05AD900EFE0FB /* RulesWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8FD5F323C05AD800EFE0FB /* RulesWindowController.m */; };
-		CD8FD5FA23C05AD900EFE0FB /* Rules.xib in Resources */ = {isa = PBXBuildFile; fileRef = CD8FD5F523C05AD900EFE0FB /* Rules.xib */; };
 		CDC6098E263CB7EB006D1332 /* LogMonitor.m in Sources */ = {isa = PBXBuildFile; fileRef = CDC6098D263CB7EB006D1332 /* LogMonitor.m */; };
 		CDC60991263CBD36006D1332 /* AVMonitor.m in Sources */ = {isa = PBXBuildFile; fileRef = CDC60990263CBD36006D1332 /* AVMonitor.m */; };
 		CDC60994263CBEE7006D1332 /* Client.m in Sources */ = {isa = PBXBuildFile; fileRef = CDC60993263CBEE7006D1332 /* Client.m */; };
 		CDCBF0DE26499DFF001D9F9A /* Event.m in Sources */ = {isa = PBXBuildFile; fileRef = CDCBF0DD26499DFF001D9F9A /* Event.m */; };
+		CDF660612B58639E00A238A2 /* OverSight Installer.app in Resources */ = {isa = PBXBuildFile; fileRef = CDF660602B58639E00A238A2 /* OverSight Installer.app */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -51,7 +51,6 @@
 /* Begin PBXFileReference section */
 		7D16D68F1F64E43300DB3161 /* Update.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Update.h; sourceTree = "<group>"; };
 		7D16D6901F64E43300DB3161 /* Update.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Update.m; sourceTree = "<group>"; };
-		7D16D6911F64E43300DB3161 /* UpdateWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UpdateWindow.xib; sourceTree = "<group>"; };
 		7D16D6921F64E43300DB3161 /* UpdateWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UpdateWindowController.h; sourceTree = "<group>"; };
 		7D16D6931F64E43300DB3161 /* UpdateWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UpdateWindowController.m; sourceTree = "<group>"; };
 		7D3B74FD1F13354900568828 /* StatusBarItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StatusBarItem.m; sourceTree = "<group>"; };
@@ -64,22 +63,29 @@
 		7D7755E61F02E05B00D0017D /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		7D7755E71F02E05B00D0017D /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		7D7755EA1F02E05B00D0017D /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		7D7755EF1F02E05B00D0017D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		7D7755F11F02E05B00D0017D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7DD25FEF1F23B73C00277EC4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		CD22785B20434CAB00C72C76 /* StatusBarPopover.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = StatusBarPopover.xib; sourceTree = "<group>"; };
 		CD22785C20434CAB00C72C76 /* StatusBarPopoverController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StatusBarPopoverController.h; sourceTree = "<group>"; };
 		CD22785D20434CAB00C72C76 /* StatusBarPopoverController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StatusBarPopoverController.m; sourceTree = "<group>"; };
 		CD2F8006244551AB009C3D77 /* NSApplicationKeyEvents.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSApplicationKeyEvents.h; sourceTree = "<group>"; };
 		CD2F8007244551AC009C3D77 /* NSApplicationKeyEvents.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSApplicationKeyEvents.m; sourceTree = "<group>"; };
-		CD2F800924455333009C3D77 /* AboutWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AboutWindow.xib; sourceTree = "<group>"; };
 		CD2F800A24455333009C3D77 /* AboutWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AboutWindowController.h; sourceTree = "<group>"; };
 		CD2F800B24455333009C3D77 /* AboutWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AboutWindowController.m; sourceTree = "<group>"; };
 		CD2F801624468A8C009C3D77 /* patrons.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = patrons.txt; path = ../Shared/patrons.txt; sourceTree = "<group>"; };
 		CD6836672391DB6F00CF19C1 /* security.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = security.plist; sourceTree = "<group>"; };
-		CD7E47D32B5227B600B63153 /* OverSight Installer.app */ = {isa = PBXFileReference; lastKnownFileType = wrapper.application; path = "OverSight Installer.app"; sourceTree = "<group>"; };
+		CD86413A2CA1617A00803551 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/AboutWindow.xib; sourceTree = "<group>"; };
+		CD86413D2CA1617A00803551 /* mul */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; name = mul; path = mul.lproj/AboutWindow.xcstrings; sourceTree = "<group>"; };
+		CD8641422CA161AA00803551 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/Preferences.xib; sourceTree = "<group>"; };
+		CD8641452CA161AA00803551 /* mul */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; name = mul; path = mul.lproj/Preferences.xcstrings; sourceTree = "<group>"; };
+		CD86414B2CA161CF00803551 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		CD86414E2CA161CF00803551 /* mul */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; name = mul; path = mul.lproj/MainMenu.xcstrings; sourceTree = "<group>"; };
+		CD86414F2CA161D500803551 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/Rules.xib; sourceTree = "<group>"; };
+		CD8641522CA161D500803551 /* mul */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; name = mul; path = mul.lproj/Rules.xcstrings; sourceTree = "<group>"; };
+		CD8641532CA161DA00803551 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/StatusBarPopover.xib; sourceTree = "<group>"; };
+		CD8641562CA161DA00803551 /* mul */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; name = mul; path = mul.lproj/StatusBarPopover.xcstrings; sourceTree = "<group>"; };
+		CD8641572CA161DF00803551 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/UpdateWindow.xib; sourceTree = "<group>"; };
+		CD86415A2CA161DF00803551 /* mul */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; name = mul; path = mul.lproj/UpdateWindow.xcstrings; sourceTree = "<group>"; };
 		CD8FD5D223BAE2D100EFE0FB /* PrefsWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrefsWindowController.h; sourceTree = "<group>"; };
-		CD8FD5D323BAE2D100EFE0FB /* Preferences.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = Preferences.xib; sourceTree = "<group>"; };
 		CD8FD5D423BAE2D200EFE0FB /* PrefsWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PrefsWindowController.m; sourceTree = "<group>"; };
 		CD8FD5ED23C05AD800EFE0FB /* RuleRowCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RuleRowCell.h; sourceTree = "<group>"; };
 		CD8FD5EE23C05AD800EFE0FB /* RulesWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RulesWindowController.h; sourceTree = "<group>"; };
@@ -87,7 +93,6 @@
 		CD8FD5F123C05AD800EFE0FB /* RuleRow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RuleRow.h; sourceTree = "<group>"; };
 		CD8FD5F223C05AD800EFE0FB /* RuleRowCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RuleRowCell.m; sourceTree = "<group>"; };
 		CD8FD5F323C05AD800EFE0FB /* RulesWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RulesWindowController.m; sourceTree = "<group>"; };
-		CD8FD5F523C05AD900EFE0FB /* Rules.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = Rules.xib; sourceTree = "<group>"; };
 		CDC6098C263CB7EB006D1332 /* LogMonitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogMonitor.h; sourceTree = "<group>"; };
 		CDC6098D263CB7EB006D1332 /* LogMonitor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LogMonitor.m; sourceTree = "<group>"; };
 		CDC6098F263CBD36006D1332 /* AVMonitor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AVMonitor.h; sourceTree = "<group>"; };
@@ -96,6 +101,7 @@
 		CDC60993263CBEE7006D1332 /* Client.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Client.m; sourceTree = "<group>"; };
 		CDCBF0DC26499DFF001D9F9A /* Event.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Event.h; sourceTree = "<group>"; };
 		CDCBF0DD26499DFF001D9F9A /* Event.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Event.m; sourceTree = "<group>"; };
+		CDF660602B58639E00A238A2 /* OverSight Installer.app */ = {isa = PBXFileReference; lastKnownFileType = wrapper.application; path = "OverSight Installer.app"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -150,7 +156,7 @@
 		7D7755E51F02E05B00D0017D /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				CD2F800924455333009C3D77 /* AboutWindow.xib */,
+				CD86413B2CA1617A00803551 /* AboutWindow.xib */,
 				CD2F800A24455333009C3D77 /* AboutWindowController.h */,
 				CD2F800B24455333009C3D77 /* AboutWindowController.m */,
 				7D7755E61F02E05B00D0017D /* AppDelegate.h */,
@@ -166,28 +172,28 @@
 				7D7755F11F02E05B00D0017D /* Info.plist */,
 				CDC6098C263CB7EB006D1332 /* LogMonitor.h */,
 				CDC6098D263CB7EB006D1332 /* LogMonitor.m */,
-				7D7755EE1F02E05B00D0017D /* MainMenu.xib */,
+				CD86414C2CA161CF00803551 /* MainMenu.xib */,
 				CD2F8006244551AB009C3D77 /* NSApplicationKeyEvents.h */,
 				CD2F8007244551AC009C3D77 /* NSApplicationKeyEvents.m */,
-				CD8FD5D323BAE2D100EFE0FB /* Preferences.xib */,
+				CD8641432CA161AA00803551 /* Preferences.xib */,
 				CD8FD5D223BAE2D100EFE0FB /* PrefsWindowController.h */,
 				CD8FD5D423BAE2D200EFE0FB /* PrefsWindowController.m */,
 				CD8FD5F123C05AD800EFE0FB /* RuleRow.h */,
 				CD8FD5F023C05AD800EFE0FB /* RuleRow.m */,
 				CD8FD5ED23C05AD800EFE0FB /* RuleRowCell.h */,
 				CD8FD5F223C05AD800EFE0FB /* RuleRowCell.m */,
-				CD8FD5F523C05AD900EFE0FB /* Rules.xib */,
+				CD8641502CA161D500803551 /* Rules.xib */,
 				CD8FD5EE23C05AD800EFE0FB /* RulesWindowController.h */,
 				CD8FD5F323C05AD800EFE0FB /* RulesWindowController.m */,
 				7D3B74FF1F13354900568828 /* StatusBarItem.h */,
 				7D3B74FD1F13354900568828 /* StatusBarItem.m */,
-				CD22785B20434CAB00C72C76 /* StatusBarPopover.xib */,
+				CD8641542CA161DA00803551 /* StatusBarPopover.xib */,
 				CD22785C20434CAB00C72C76 /* StatusBarPopoverController.h */,
 				CD22785D20434CAB00C72C76 /* StatusBarPopoverController.m */,
 				7D7755E91F02E05B00D0017D /* Supporting Files */,
 				7D16D68F1F64E43300DB3161 /* Update.h */,
 				7D16D6901F64E43300DB3161 /* Update.m */,
-				7D16D6911F64E43300DB3161 /* UpdateWindow.xib */,
+				CD8641582CA161DF00803551 /* UpdateWindow.xib */,
 				7D16D6921F64E43300DB3161 /* UpdateWindowController.h */,
 				7D16D6931F64E43300DB3161 /* UpdateWindowController.m */,
 			);
@@ -214,7 +220,7 @@
 		CDE09AF12919829000561CFF /* Uninstaller */ = {
 			isa = PBXGroup;
 			children = (
-				CD7E47D32B5227B600B63153 /* OverSight Installer.app */,
+				CDF660602B58639E00A238A2 /* OverSight Installer.app */,
 			);
 			path = Uninstaller;
 			sourceTree = "<group>";
@@ -291,15 +297,15 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CD8FD5D523BAE2D200EFE0FB /* Preferences.xib in Resources */,
-				CD7E47D42B5227B600B63153 /* OverSight Installer.app in Resources */,
+				CD8641442CA161AA00803551 /* Preferences.xib in Resources */,
+				CDF660612B58639E00A238A2 /* OverSight Installer.app in Resources */,
 				CD6836682391DB6F00CF19C1 /* security.plist in Resources */,
-				CD2F800C24455333009C3D77 /* AboutWindow.xib in Resources */,
-				7D16D6951F64E43300DB3161 /* UpdateWindow.xib in Resources */,
-				CD22785E20434CAC00C72C76 /* StatusBarPopover.xib in Resources */,
+				CD86413C2CA1617A00803551 /* AboutWindow.xib in Resources */,
+				CD8641592CA161DF00803551 /* UpdateWindow.xib in Resources */,
+				CD8641552CA161DA00803551 /* StatusBarPopover.xib in Resources */,
 				CD2F801724468A8C009C3D77 /* patrons.txt in Resources */,
-				CD8FD5FA23C05AD900EFE0FB /* Rules.xib in Resources */,
-				7D7755F01F02E05B00D0017D /* MainMenu.xib in Resources */,
+				CD8641512CA161D500803551 /* Rules.xib in Resources */,
+				CD86414D2CA161CF00803551 /* MainMenu.xib in Resources */,
 				7DD25FF01F23B73C00277EC4 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -342,12 +348,58 @@
 			name = MainMenu.xib;
 			sourceTree = "<group>";
 		};
-		7D7755EE1F02E05B00D0017D /* MainMenu.xib */ = {
+		CD86413B2CA1617A00803551 /* AboutWindow.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
-				7D7755EF1F02E05B00D0017D /* Base */,
+				CD86413A2CA1617A00803551 /* Base */,
+				CD86413D2CA1617A00803551 /* mul */,
+			);
+			name = AboutWindow.xib;
+			sourceTree = "<group>";
+		};
+		CD8641432CA161AA00803551 /* Preferences.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				CD8641422CA161AA00803551 /* Base */,
+				CD8641452CA161AA00803551 /* mul */,
+			);
+			name = Preferences.xib;
+			sourceTree = "<group>";
+		};
+		CD86414C2CA161CF00803551 /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				CD86414B2CA161CF00803551 /* Base */,
+				CD86414E2CA161CF00803551 /* mul */,
 			);
 			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+		CD8641502CA161D500803551 /* Rules.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				CD86414F2CA161D500803551 /* Base */,
+				CD8641522CA161D500803551 /* mul */,
+			);
+			name = Rules.xib;
+			sourceTree = "<group>";
+		};
+		CD8641542CA161DA00803551 /* StatusBarPopover.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				CD8641532CA161DA00803551 /* Base */,
+				CD8641562CA161DA00803551 /* mul */,
+			);
+			name = StatusBarPopover.xib;
+			sourceTree = "<group>";
+		};
+		CD8641582CA161DF00803551 /* UpdateWindow.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				CD8641572CA161DF00803551 /* Base */,
+				CD86415A2CA161DF00803551 /* mul */,
+			);
+			name = UpdateWindow.xib;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -473,7 +525,10 @@
 				INFOPLIST_FILE = Application/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = OverSight;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
-				LD_RUNPATH_SEARCH_PATHS = "$(LD_RUNPATH_SEARCH_PATHS_$(IS_MACCATALYST)) @executable_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(LD_RUNPATH_SEARCH_PATHS_$(IS_MACCATALYST))",
+					"@executable_path/../Frameworks",
+				);
 				LIBRARY_SEARCH_PATHS = "";
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				MARKETING_VERSION = 2.3.0;
@@ -499,7 +554,10 @@
 				INFOPLIST_FILE = Application/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = OverSight;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
-				LD_RUNPATH_SEARCH_PATHS = "$(LD_RUNPATH_SEARCH_PATHS_$(IS_MACCATALYST)) @executable_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(LD_RUNPATH_SEARCH_PATHS_$(IS_MACCATALYST))",
+					"@executable_path/../Frameworks",
+				);
 				LIBRARY_SEARCH_PATHS = "";
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				MARKETING_VERSION = 2.3.0;

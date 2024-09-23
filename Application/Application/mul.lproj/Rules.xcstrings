@@ -1,0 +1,78 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "2GD-5k-sEf.title" : {
+      "comment" : "Class = \"NSTextFieldCell\"; title = \"Process\"; ObjectID = \"2GD-5k-sEf\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Process"
+          }
+        }
+      }
+    },
+    "EZN-NC-GXx.title" : {
+      "comment" : "Class = \"NSTextFieldCell\"; title = \"file:\"; ObjectID = \"EZN-NC-GXx\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "file:"
+          }
+        }
+      }
+    },
+    "ocl-vV-SZu.headerCell.title" : {
+      "comment" : "Class = \"NSTableColumn\"; headerCell.title = \" Process\"; ObjectID = \"ocl-vV-SZu\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : " Process"
+          }
+        }
+      }
+    },
+    "QUv-cU-tQS.headerCell.title" : {
+      "comment" : "Class = \"NSTableColumn\"; headerCell.title = \"Allowed Device\"; ObjectID = \"QUv-cU-tQS\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Allowed Device"
+          }
+        }
+      }
+    },
+    "UoV-OW-a04.title" : {
+      "comment" : "Class = \"NSTextFieldCell\"; title = \"action\"; ObjectID = \"UoV-OW-a04\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "action"
+          }
+        }
+      }
+    },
+    "Wjb-RO-P6A.title" : {
+      "comment" : "Class = \"NSTextFieldCell\"; title = \"Currently, there are no allowed items...\"; ObjectID = \"Wjb-RO-P6A\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Currently, there are no allowed items..."
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

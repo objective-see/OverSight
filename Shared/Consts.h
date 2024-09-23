@@ -187,13 +187,13 @@
 #define ACTION_INSTALL_FLAG 1
 
 //button title: upgrade
-#define ACTION_UPGRADE @"Upgrade"
+#define ACTION_UPGRADE NSLocalizedString(@"Upgrade", @"Upgrade")
 
 //button title: close
-#define ACTION_CLOSE @"Close"
+#define ACTION_CLOSE NSLocalizedString(@"Close", @"Close")
 
 //button title: next
-#define ACTION_NEXT @"Next »"
+#define ACTION_NEXT NSLocalizedString(@"Next »", @"Next »")
 
 //show info about notifications
 #define ACTION_SHOW_NOTIFICATION_VIEW 2

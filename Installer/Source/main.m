@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
     if(YES != hasAdminPrivileges())
     {
         //show alert
-        showAlert(@"ERROR: Insuffient Privileges.", @"OverSight can only be installed / run on accounts with administrative privileges", @"Exit");
+        showAlert(NSLocalizedString(@"ERROR: Insuffient Privileges.", @"ERROR: Insuffient Privileges."), NSLocalizedString(@"OverSight can only be installed / run on accounts with administrative privileges", @"OverSight can only be installed / run on accounts with administrative privileges"), NSLocalizedString(@"Exit", @"Exit"));
         
         //bail
         goto bail;

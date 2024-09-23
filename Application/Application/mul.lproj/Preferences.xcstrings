@@ -1,0 +1,294 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "1A2-j2-kqG.title" : {
+      "comment" : "Class = \"NSTextFieldCell\"; title = \"Do not show an alert when the camera/microphone is deactivated.  \"; ObjectID = \"1A2-j2-kqG\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Do not show an alert when the camera/microphone is deactivated.  "
+          }
+        }
+      }
+    },
+    "2qr-2x-A3U.title" : {
+      "comment" : "Class = \"NSButtonCell\"; title = \"Check Now\"; ObjectID = \"2qr-2x-A3U\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Check Now"
+          }
+        }
+      }
+    },
+    "4EN-j2-enV.title" : {
+      "comment" : "Class = \"NSTextFieldCell\"; title = \"No Icon Mode\"; ObjectID = \"4EN-j2-enV\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "No Icon Mode"
+          }
+        }
+      }
+    },
+    "7Ah-kZ-gGe.title" : {
+      "comment" : "Class = \"NSTextFieldCell\"; title = \"OverSight will pass in the following arguments: -device <camera|microphone> -event <on|off> -process <pid> -activeCount <0..n>  Notes:\\n-process is only specified on activation events.\\n-activeCount is the number of devices still active.\"; ObjectID = \"7Ah-kZ-gGe\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "OverSight will pass in the following arguments: -device <camera|microphone> -event <on|off> -process <pid> -activeCount <0..n>  Notes:\n-process is only specified on activation events.\n-activeCount is the number of devices still active."
+          }
+        }
+      }
+    },
+    "a5n-tt-65v.title" : {
+      "comment" : "Class = \"NSTextFieldCell\"; title = \"Ignore External Device\"; ObjectID = \"a5n-tt-65v\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Ignore External Device"
+          }
+        }
+      }
+    },
+    "bky-MW-yBn.title" : {
+      "comment" : "Class = \"NSTextFieldCell\"; title = \"Execute a script or binary when an event is detected.\"; ObjectID = \"bky-MW-yBn\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Execute a script or binary when an event is detected."
+          }
+        }
+      }
+    },
+    "BTl-QV-9GT.title" : {
+      "comment" : "Class = \"NSButtonCell\"; title = \"Browse\"; ObjectID = \"BTl-QV-9GT\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Browse"
+          }
+        }
+      }
+    },
+    "E0T-Ug-P8f.title" : {
+      "comment" : "Class = \"NSTextFieldCell\"; title = \"Automatically (re)start each time you login.\"; ObjectID = \"E0T-Ug-P8f\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Automatically (re)start each time you login."
+          }
+        }
+      }
+    },
+    "gji-hP-t04.label" : {
+      "comment" : "Class = \"NSToolbarItem\"; label = \"Action\"; ObjectID = \"gji-hP-t04\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Action"
+          }
+        }
+      }
+    },
+    "gji-hP-t04.paletteLabel" : {
+      "comment" : "Class = \"NSToolbarItem\"; paletteLabel = \"Action\"; ObjectID = \"gji-hP-t04\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Action"
+          }
+        }
+      }
+    },
+    "Gsa-fn-iag.title" : {
+      "comment" : "Class = \"NSTextFieldCell\"; title = \"Disable 'Inactive' Alerts\"; ObjectID = \"Gsa-fn-iag\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Disable 'Inactive' Alerts"
+          }
+        }
+      }
+    },
+    "JV5-cY-ff4.title" : {
+      "comment" : "Class = \"NSTextFieldCell\"; title = \"Do not automatically check for new versions.\"; ObjectID = \"JV5-cY-ff4\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Do not automatically check for new versions."
+          }
+        }
+      }
+    },
+    "JVI-Or-h0u.title" : {
+      "comment" : "Class = \"NSTextFieldCell\"; title = \"Start at Login\"; ObjectID = \"JVI-Or-h0u\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Start at Login"
+          }
+        }
+      }
+    },
+    "k0w-Oi-kwd.label" : {
+      "comment" : "Class = \"NSToolbarItem\"; label = \"Mode\"; ObjectID = \"k0w-Oi-kwd\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Mode"
+          }
+        }
+      }
+    },
+    "k0w-Oi-kwd.paletteLabel" : {
+      "comment" : "Class = \"NSToolbarItem\"; paletteLabel = \"Mode\"; ObjectID = \"k0w-Oi-kwd\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Mode"
+          }
+        }
+      }
+    },
+    "KsW-is-XrR.title" : {
+      "comment" : "Class = \"NSButtonCell\"; title = \"View Allowed Items\"; ObjectID = \"KsW-is-XrR\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "View Allowed Items"
+          }
+        }
+      }
+    },
+    "ncJ-bF-dAA.title" : {
+      "comment" : "Class = \"NSTextFieldCell\"; title = \"Execute\"; ObjectID = \"ncJ-bF-dAA\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Execute"
+          }
+        }
+      }
+    },
+    "Oe0-3Y-Srk.placeholderString" : {
+      "comment" : "Class = \"NSTextFieldCell\"; placeholderString = \"Path...\"; ObjectID = \"Oe0-3Y-Srk\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Path..."
+          }
+        }
+      }
+    },
+    "rrF-xj-cXp.label" : {
+      "comment" : "Class = \"NSToolbarItem\"; label = \"Update\"; ObjectID = \"rrF-xj-cXp\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Update"
+          }
+        }
+      }
+    },
+    "rrF-xj-cXp.paletteLabel" : {
+      "comment" : "Class = \"NSToolbarItem\"; paletteLabel = \"Update\"; ObjectID = \"rrF-xj-cXp\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Update"
+          }
+        }
+      }
+    },
+    "SG5-YM-BoV.title" : {
+      "comment" : "Class = \"NSTextFieldCell\"; title = \"Run without showing an icon in the status menu bar.\"; ObjectID = \"SG5-YM-BoV\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Run without showing an icon in the status menu bar."
+          }
+        }
+      }
+    },
+    "SYJ-Qv-cRq.title" : {
+      "comment" : "Class = \"NSTextFieldCell\"; title = \"Do not show an alert when external devices trigger an event.\"; ObjectID = \"SYJ-Qv-cRq\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Do not show an alert when external devices trigger an event."
+          }
+        }
+      }
+    },
+    "WL4-fV-4Wq.title" : {
+      "comment" : "Class = \"NSTextFieldCell\"; title = \"Pass Arguments\"; ObjectID = \"WL4-fV-4Wq\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Pass Arguments"
+          }
+        }
+      }
+    },
+    "z5b-fA-WCk.title" : {
+      "comment" : "Class = \"NSTextFieldCell\"; title = \"Disable Update Checks\"; ObjectID = \"z5b-fA-WCk\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Disable Update Checks"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

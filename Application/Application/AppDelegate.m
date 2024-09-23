@@ -126,7 +126,7 @@ bail:
             dispatch_async(dispatch_get_main_queue(), ^{
                 
                 //show alert
-                showAlert(@"ERROR: OverSight is not authorized to display notifications.", @"Please authorize (style: \"Alerts\") via the Notifications pane in System Preferences.", @"Open System Preferences...");
+                showAlert(NSLocalizedString(@"ERROR: OverSight is not authorized to display notifications.", @"ERROR: OverSight is not authorized to display notifications."), NSLocalizedString(@"Please authorize (style: \"Alerts\") via the Notifications pane in System Preferences.", @"Please authorize (style: \"Alerts\") via the Notifications pane in System Preferences."), NSLocalizedString(@"Open System Preferences...", @"Open System Preferences..."));
                 
                 //open `System Preferences` notifications pane
                 [NSWorkspace.sharedWorkspace openURL:[NSURL URLWithString:@"x-apple.systempreferences:com.apple.preference.notifications?com.objective-see.oversight"]];
@@ -164,7 +164,7 @@ bail:
                     dispatch_async(dispatch_get_main_queue(), ^{
                         
                         //show alert
-                        showAlert([NSString stringWithFormat:@"OverSight notification mode set to %@.", style], @"Please change to \"Alerts\" via the Notifications pane in System Preferences.", @"Open System Preferences...");
+                        showAlert([NSString stringWithFormat:NSLocalizedString(@"OverSight notification mode set to %@.", @"OverSight notification mode set to %@."), style], NSLocalizedString(@"Please change to \"Alerts\" via the Notifications pane in System Preferences.", @"Please change to \"Alerts\" via the Notifications pane in System Preferences."), NSLocalizedString(@"Open System Preferences...",@"Open System Preferences..."));
                         
                         //open `System Preferences` notifications pane
                         [NSWorkspace.sharedWorkspace openURL:[NSURL URLWithString:@"x-apple.systempreferences:com.apple.preference.notifications?com.objective-see.oversight"]];
@@ -494,7 +494,7 @@ bail:
             updateWindowController = [[UpdateWindowController alloc] initWithWindowNibName:@"UpdateWindow"];
             
             //configure
-            [self.updateWindowController configure:[NSString stringWithFormat:@"a new version (%@) is available!", newVersion] buttonTitle:@"Update"];
+            [self.updateWindowController configure:[NSString stringWithFormat:NSLocalizedString(@"a new version (%@) is available!", @"a new version (%@) is available!"), newVersion] buttonTitle:NSLocalizedString(@"Update",@"Update")];
             
             //center window
             [[self.updateWindowController window] center];

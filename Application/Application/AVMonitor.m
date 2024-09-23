@@ -75,13 +75,13 @@ extern os_log_t logHandle;
         closeCategory = [UNNotificationCategory categoryWithIdentifier:CATEGORY_CLOSE actions:@[ok] intentIdentifiers:@[] options:0];
         
         //init allow action
-        allow = [UNNotificationAction actionWithIdentifier:@"Allow" title:@"Allow (Once)" options:UNNotificationActionOptionNone];
+        allow = [UNNotificationAction actionWithIdentifier:@"Allow" title:NSLocalizedString(@"Allow (Once)", @"Allow (Once)") options:UNNotificationActionOptionNone];
         
         //init allow action
-        allowAlways = [UNNotificationAction actionWithIdentifier:@"AllowAlways" title:@"Allow (Always)" options:UNNotificationActionOptionNone];
+        allowAlways = [UNNotificationAction actionWithIdentifier:@"AllowAlways" title:NSLocalizedString(@"Allow (Always)", @"Allow (Always)") options:UNNotificationActionOptionNone];
         
         //init block action
-        block = [UNNotificationAction actionWithIdentifier:@"Block" title:@"Block" options:UNNotificationActionOptionNone];
+        block = [UNNotificationAction actionWithIdentifier:@"Block" title:NSLocalizedString(@"Block",@"Block") options:UNNotificationActionOptionNone];
         
         //init category
         actionCategory = [UNNotificationCategory categoryWithIdentifier:CATEGORY_ACTION actions:@[allow, allowAlways, block] intentIdentifiers:@[] options:UNNotificationCategoryOptionCustomDismissAction];
@@ -1551,7 +1551,7 @@ bail:
     (Device_Camera == event.deviceType) ? [title appendString:@"📸"] : [title appendFormat:@"🎙️"];
     
     //set status
-    (NSControlStateValueOn == event.state) ? [title appendString:@" Became Active!"] : [title appendString:@" Became Inactive."];
+    (NSControlStateValueOn == event.state) ? [title appendString:NSLocalizedString(@" Became Active!",@" Became Active!")] : [title appendString:NSLocalizedString(@" Became Inactive.", @" Became Inactive.")];
     
     //set title
     content.title = title;
@@ -1569,7 +1569,7 @@ bail:
     if(nil != event.client)
     {
         //set body
-        content.body = [NSString stringWithFormat:@"Process: %@ (%@)", event.client.name, (0 != event.client.pid.intValue) ? event.client.pid : @"pid: unknown"];
+        content.body = [NSString stringWithFormat:NSLocalizedString(@"Process: %@ (%@)", @"Process: %@ (%@)"), event.client.name, (0 != event.client.pid.intValue) ? event.client.pid : NSLocalizedString(@"pid: unknown", @"pid: unknown")];
         
         //set category
         content.categoryIdentifier = CATEGORY_ACTION;
@@ -1580,7 +1580,7 @@ bail:
     else if(nil != event.device)
     {
         //set body
-        content.body = [NSString stringWithFormat:@"Device: %@", event.device.localizedName];
+        content.body = [NSString stringWithFormat:NSLocalizedString(@"Device: %@", @"Device: %@"), event.device.localizedName];
     }
     
     //init request
@@ -1959,7 +1959,7 @@ bail:
             os_log_error(logHandle, "ERROR: failed to kill %@ (%@)", processName, processID);
     
             //show an alert
-            showAlert([NSString stringWithFormat:@"ERROR: failed to terminate %@ (%@)", processName, processID], [NSString stringWithFormat:@"system error code: %d", error], @"OK");
+            showAlert([NSString stringWithFormat:NSLocalizedString(@"ERROR: failed to terminate %@ (%@)", @"ERROR: failed to terminate %@ (%@)"), processName, processID], [NSString stringWithFormat:NSLocalizedString(@"system error code: %d", @"system error code: %d"), error], @"OK");
             
             //bail
             goto bail;

@@ -348,7 +348,7 @@ bail:
         case Update_Error:
             
             //set label
-            self.updateLabel.stringValue = @"Error: update check failed";
+            self.updateLabel.stringValue = NSLocalizedString(@"Error: update check failed", @"Error: update check failed");
             
             break;
             
@@ -359,7 +359,7 @@ bail:
             os_log_debug(logHandle, "no updates available");
             
             //set label
-            self.updateLabel.stringValue = [NSString stringWithFormat:@"Installed version (%@),\r\nis the latest.", getAppVersion()];
+            self.updateLabel.stringValue = [NSString stringWithFormat:NSLocalizedString(@"Installed version (%@),\r\nis the latest.",@"Installed version (%@),\r\nis the latest."), getAppVersion()];
             
             break;
             
@@ -370,7 +370,7 @@ bail:
             os_log_debug(logHandle, "update available, but not for this version of macOS.");
             
             //set label
-            self.updateLabel.stringValue = [NSString stringWithFormat:@"Update available, but isn't supported on macOS %ld.%ld", NSProcessInfo.processInfo.operatingSystemVersion.majorVersion, NSProcessInfo.processInfo.operatingSystemVersion.minorVersion];
+            self.updateLabel.stringValue = [NSString stringWithFormat:NSLocalizedString(@"Update available, but isn't supported on macOS %ld.%ld", @"Update available, but isn't supported on macOS %ld.%ld"), NSProcessInfo.processInfo.operatingSystemVersion.majorVersion, NSProcessInfo.processInfo.operatingSystemVersion.minorVersion];
             
             break;
          
@@ -384,7 +384,7 @@ bail:
             updateWindowController = [[UpdateWindowController alloc] initWithWindowNibName:@"UpdateWindow"];
             
             //configure
-            [self.updateWindowController configure:[NSString stringWithFormat:@"a new version (%@) is available!", newVersion] buttonTitle:@"Update"];
+            [self.updateWindowController configure:[NSString stringWithFormat:NSLocalizedString(@"a new version (%@) is available!",@"a new version (%@) is available!"), newVersion] buttonTitle:@"Update"];
             
             //center window
             [[self.updateWindowController window] center];

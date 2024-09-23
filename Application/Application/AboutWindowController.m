@@ -47,7 +47,7 @@
     if(nil == version)
     {
         //default
-        version = @"unknown";
+        version = NSLocalizedString(@"unknown",@"unknown");
     }
     
     //set version sting
@@ -59,7 +59,7 @@
     if(nil == self.patrons.string)
     {
         //default
-        self.patrons.string = @"error: failed to load patrons :/";
+        self.patrons.string = NSLocalizedString(@"error: failed to load patrons :/", @"error: failed to load patrons :/");
     }
 
     return;

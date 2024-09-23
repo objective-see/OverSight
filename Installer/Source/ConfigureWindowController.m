@@ -72,10 +72,10 @@ extern os_log_t logHandle;
     isInstalled = [self.configureObj isInstalled];
     
     //set window title
-    [self window].title = [NSString stringWithFormat:@"version %@", getAppVersion()];
+    [self window].title = [NSString stringWithFormat:NSLocalizedString(@"version %@", @"version %@"), getAppVersion()];
     
     //init status msg
-    [self.statusMsg setStringValue:@"...protects your webcam & microphone!"];
+    [self.statusMsg setStringValue:NSLocalizedString(@"...protects your webcam & microphone!", @"...protects your webcam & microphone!")];
     
     //uninstall via app?
     // just enable uinstall button
@@ -426,13 +426,13 @@ extern os_log_t logHandle;
     if(ACTION_INSTALL_FLAG == event)
     {
         //update status msg
-        [self.statusMsg setStringValue:@"Installing..."];
+        [self.statusMsg setStringValue:NSLocalizedString(@"Installing...", @"Installing...")];
     }
     //uninstall msg
     else
     {
         //update status msg
-        [self.statusMsg setStringValue:@"Uninstalling..."];
+        [self.statusMsg setStringValue:NSLocalizedString(@"Uninstalling...", @"Uninstalling...")];
     }
     
     //disable action button
@@ -476,33 +476,35 @@ extern os_log_t logHandle;
         self.appActivationObserver = nil;
     }
     
-    //set action msg for install
+    //action was install
     if(ACTION_INSTALL_FLAG == event)
     {
         //set msg
-        action = @"install";
+        action = NSLocalizedString(@"install", @"install");
+        if(YES == success)
+        {
+            resultMsg = [NSMutableString stringWithFormat:NSLocalizedString(@"☑️ %@: installed!\n", @"☑️ %@: installed!\n"), PRODUCT_NAME];
+        }
     }
-    //set action msg for uninstall
+    //action was uninstall
     else
     {
         //set msg
-        action = @"uninstall";
+        action = NSLocalizedString(@"uninstall", @"uninstall");
+        if(YES == success)
+        {
+            resultMsg = [NSMutableString stringWithFormat:NSLocalizedString(@"☑️ %@: uninstalled!\n", @"☑️ %@: uninstalled!\n"), PRODUCT_NAME];
+        }
     }
-    
-    //success
-    if(YES == success)
+
+    //failure?
+    if(YES != success)
     {
         //set result msg
-        resultMsg = [NSMutableString stringWithFormat:@"☑️ %@: %@ed!\n", PRODUCT_NAME, action];
-    }
-    //failure
-    else
-    {
-        //set result msg
-        resultMsg = [NSMutableString stringWithFormat:@"⚠️ Error: %@ failed", action];
+        resultMsg = [NSMutableString stringWithFormat:NSLocalizedString(@"⚠️ Error: %@ failed", @"⚠️ Error: %@ failed"), action];
         
         //set debug msg
-        self.debugMsg.stringValue = @"For more info, from the terminal run:\r\nlog show --predicate=\"subsystem='com.objective-see.oversight'\"";
+        self.debugMsg.stringValue = NSLocalizedString(@"For more info, from the terminal run:\r\nlog show --predicate=\"subsystem='com.objective-see.oversight'\"", @"For more info, from the terminal run:\r\nlog show --predicate=\"subsystem='com.objective-see.oversight'\"");
         
         //show 'get more info' button
         self.moreInfoButton.hidden = NO;

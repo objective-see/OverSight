@@ -1,0 +1,174 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "1Xt-HY-uBw.title" : {
+      "comment" : "Class = \"NSMenuItem\"; title = \"OverSight\"; ObjectID = \"1Xt-HY-uBw\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "OverSight"
+          }
+        }
+      }
+    },
+    "amL-48-7OW.title" : {
+      "comment" : "Class = \"NSMenuItem\"; title = \"Uninstall OverSight...\"; ObjectID = \"amL-48-7OW\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Uninstall OverSight..."
+          }
+        }
+      }
+    },
+    "AYu-sK-qS6.title" : {
+      "comment" : "Class = \"NSMenu\"; title = \"Main Menu\"; ObjectID = \"AYu-sK-qS6\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Main Menu"
+          }
+        }
+      }
+    },
+    "FkZ-L3-H8o.title" : {
+      "comment" : "Class = \"NSMenuItem\"; title = \"Quit OverSight\"; ObjectID = \"FkZ-L3-H8o\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Quit OverSight"
+          }
+        }
+      }
+    },
+    "fTQ-KS-1uk.title" : {
+      "comment" : "Class = \"NSMenuItem\"; title = \"OverSight: enabled\"; ObjectID = \"fTQ-KS-1uk\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "OverSight: enabled"
+          }
+        }
+      }
+    },
+    "HRl-aW-6nn.title" : {
+      "comment" : "Class = \"NSMenuItem\"; title = \"Active Devices\"; ObjectID = \"HRl-aW-6nn\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Active Devices"
+          }
+        }
+      }
+    },
+    "i2A-ax-9ff.title" : {
+      "comment" : "Class = \"NSMenuItem\"; title = \"Allowed Items...\"; ObjectID = \"i2A-ax-9ff\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Allowed Items..."
+          }
+        }
+      }
+    },
+    "l0V-ZX-X8S.title" : {
+      "comment" : "Class = \"NSMenuItem\"; title = \"Allowed Items...\"; ObjectID = \"l0V-ZX-X8S\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Allowed Items..."
+          }
+        }
+      }
+    },
+    "p8u-9L-hFY.title" : {
+      "comment" : "Class = \"NSMenuItem\"; title = \"Disable\"; ObjectID = \"p8u-9L-hFY\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Disable"
+          }
+        }
+      }
+    },
+    "rfE-3I-qPr.title" : {
+      "comment" : "Class = \"NSMenuItem\"; title = \"Close Window\"; ObjectID = \"rfE-3I-qPr\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Close Window"
+          }
+        }
+      }
+    },
+    "RPu-ap-wNj.title" : {
+      "comment" : "Class = \"NSMenuItem\"; title = \"About OverSight\"; ObjectID = \"RPu-ap-wNj\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "About OverSight"
+          }
+        }
+      }
+    },
+    "uQy-DD-JDr.title" : {
+      "comment" : "Class = \"NSMenu\"; title = \"OverSight\"; ObjectID = \"uQy-DD-JDr\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "OverSight"
+          }
+        }
+      }
+    },
+    "yfe-lu-f3I.title" : {
+      "comment" : "Class = \"NSMenuItem\"; title = \"Preferences...\"; ObjectID = \"yfe-lu-f3I\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Preferences..."
+          }
+        }
+      }
+    },
+    "Zao-2v-WyJ.title" : {
+      "comment" : "Class = \"NSMenuItem\"; title = \"Preferences...\"; ObjectID = \"Zao-2v-WyJ\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Preferences..."
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

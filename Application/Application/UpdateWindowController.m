@@ -59,7 +59,7 @@
 
     //hide 1st button on 'update'
     // ...don't need update check button
-    if(YES == [self.actionButton.title isEqualToString:@"Update"])
+    if(YES == [self.actionButton.title isEqualToString:NSLocalizedString(@"Update", @"Update")])
     {
         //hide
         self.firstButton.hidden = YES;
@@ -106,7 +106,7 @@
 {
     //handle 'update' / 'more info', etc
     // ->open OverSight's webpage, if they *didn't* click 'close'
-    if(YES != [((NSButton*)sender).title isEqualToString:@"close"])
+    if(YES != [((NSButton*)sender).title isEqualToString:NSLocalizedString(@"Close", @"Close")])
     {
         //open URL
         // ->invokes user's default browser

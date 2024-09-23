@@ -143,14 +143,14 @@ enum menuItems
     if(0 == activeDevices.count)
     {
         //set title
-        activeDeviceMenuItem.title = @"No Active Devices";
+        activeDeviceMenuItem.title = NSLocalizedString(@"No Active Devices", @"No Active Devices");
         
         //gone
         goto bail;
     }
     
     //set title
-    activeDeviceMenuItem.title = @"Active Devices:";
+    activeDeviceMenuItem.title = NSLocalizedString(@"Active Devices:", @"Active Devices:");
     
     //inc
     menuIndex++;
@@ -421,28 +421,28 @@ bail:
     if(YES == self.isDisabled)
     {
         //update status
-        [self.statusItem.menu itemWithTag:status].title = [NSString stringWithFormat:@"%@: disabled", PRODUCT_NAME];
+        [self.statusItem.menu itemWithTag:status].title = [NSString stringWithFormat:NSLocalizedString(@"%@: disabled", @"%@: disabled"), PRODUCT_NAME];
         
         //set icon
         self.statusItem.button.image = [NSImage imageNamed:@"StatusInactive"];
         self.statusItem.button.image.template = YES;
         
         //change toggle text
-        [self.statusItem.menu itemWithTag:toggle].title = @"Enable";
+        [self.statusItem.menu itemWithTag:toggle].title = NSLocalizedString(@"Enable", @"Enable");
     }
     
     //set to enabled
     else
     {
         //update status
-        [self.statusItem.menu itemWithTag:status].title = [NSString stringWithFormat:@"%@: enabled", PRODUCT_NAME];
+        [self.statusItem.menu itemWithTag:status].title = [NSString stringWithFormat:NSLocalizedString(@"%@: enabled", @"%@: enabled"), PRODUCT_NAME];
         
         //set icon
         self.statusItem.button.image = [NSImage imageNamed:@"StatusActive"];
         self.statusItem.button.image.template = YES;
         
         //change toggle text
-        [self.statusItem.menu itemWithTag:toggle].title = @"Disable";
+        [self.statusItem.menu itemWithTag:toggle].title = NSLocalizedString(@"Disable", @"Disable");
     }
     
     return;

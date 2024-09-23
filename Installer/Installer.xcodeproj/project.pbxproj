@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -13,11 +13,8 @@
 		4BE49092104463A0006BE471 /* com.objective-see.oversight.uninstallHelper in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4BE4905D10445E0A006BE471 /* com.objective-see.oversight.uninstallHelper */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		BF04235611C0531400431286 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BF04235511C0531400431286 /* AppDelegate.m */; };
-		BF65C19111B985C0007C20AB /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = BF65C19011B985C0007C20AB /* MainMenu.xib */; };
-		CD17D54E20104EE700F798D7 /* AboutWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = CD17D54420104EE700F798D7 /* AboutWindow.xib */; };
 		CD17D54F20104EE700F798D7 /* Configure.m in Sources */ = {isa = PBXBuildFile; fileRef = CD17D54720104EE700F798D7 /* Configure.m */; };
 		CD17D55020104EE700F798D7 /* ConfigureWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD17D54820104EE700F798D7 /* ConfigureWindowController.m */; };
-		CD17D55120104EE700F798D7 /* ConfigureWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = CD17D54920104EE700F798D7 /* ConfigureWindowController.xib */; };
 		CD17D55320104EE700F798D7 /* AboutWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD17D54B20104EE700F798D7 /* AboutWindowController.m */; };
 		CD2F801124465F68009C3D77 /* patrons.txt in Resources */ = {isa = PBXBuildFile; fileRef = CD2F801024465F68009C3D77 /* patrons.txt */; };
 		CD3307AE203567D500F10D71 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CD3307AD203567D400F10D71 /* Assets.xcassets */; };
@@ -26,6 +23,9 @@
 		CD73DA9520046548001FFC84 /* HelperInterface.m in Sources */ = {isa = PBXBuildFile; fileRef = CD73DA902004629D001FFC84 /* HelperInterface.m */; };
 		CD73DA9620046548001FFC84 /* HelperListener.m in Sources */ = {isa = PBXBuildFile; fileRef = CD73DA9220046339001FFC84 /* HelperListener.m */; };
 		CD73DA99200490B4001FFC84 /* HelperComms.m in Sources */ = {isa = PBXBuildFile; fileRef = CD73DA97200490B4001FFC84 /* HelperComms.m */; };
+		CD8641302CA15DCD00803551 /* AboutWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = CD86412F2CA15DCD00803551 /* AboutWindow.xib */; };
+		CD8641342CA15DDA00803551 /* ConfigureWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = CD8641332CA15DDA00803551 /* ConfigureWindowController.xib */; };
+		CD8641382CA15DE200803551 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = CD8641372CA15DE200803551 /* MainMenu.xib */; };
 		CD86B6EA23A5BBE7003F6BA4 /* configure.sh in Resources */ = {isa = PBXBuildFile; fileRef = CD86B6E923A5BBE7003F6BA4 /* configure.sh */; };
 		CDAAC241202255580032F2E6 /* utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAAC23F202255580032F2E6 /* utilities.m */; };
 		CDAAC243202257D70032F2E6 /* utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAAC23F202255580032F2E6 /* utilities.m */; };
@@ -76,14 +76,11 @@
 		8D1107320486CEB800E47090 /* OverSight Installer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "OverSight Installer.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF04235411C0531400431286 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		BF04235511C0531400431286 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		BF65C19011B985C0007C20AB /* MainMenu.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainMenu.xib; sourceTree = "<group>"; };
 		CD17D54220104EE600F798D7 /* AboutWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AboutWindowController.h; sourceTree = "<group>"; };
-		CD17D54420104EE700F798D7 /* AboutWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AboutWindow.xib; sourceTree = "<group>"; };
 		CD17D54520104EE700F798D7 /* Configure.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Configure.h; sourceTree = "<group>"; };
 		CD17D54620104EE700F798D7 /* ConfigureWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConfigureWindowController.h; sourceTree = "<group>"; };
 		CD17D54720104EE700F798D7 /* Configure.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Configure.m; sourceTree = "<group>"; };
 		CD17D54820104EE700F798D7 /* ConfigureWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConfigureWindowController.m; sourceTree = "<group>"; };
-		CD17D54920104EE700F798D7 /* ConfigureWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ConfigureWindowController.xib; sourceTree = "<group>"; };
 		CD17D54B20104EE700F798D7 /* AboutWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AboutWindowController.m; sourceTree = "<group>"; };
 		CD18D64C200DA301005609F9 /* XPCProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = XPCProtocol.h; path = Shared/XPCProtocol.h; sourceTree = SOURCE_ROOT; };
 		CD2F801024465F68009C3D77 /* patrons.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = patrons.txt; path = ../../Shared/patrons.txt; sourceTree = "<group>"; };
@@ -96,6 +93,12 @@
 		CD73DA932004633A001FFC84 /* HelperListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HelperListener.h; sourceTree = "<group>"; };
 		CD73DA97200490B4001FFC84 /* HelperComms.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HelperComms.m; sourceTree = "<group>"; };
 		CD73DA98200490B4001FFC84 /* HelperComms.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HelperComms.h; sourceTree = "<group>"; };
+		CD86412E2CA15DCD00803551 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/AboutWindow.xib; sourceTree = "<group>"; };
+		CD8641312CA15DCD00803551 /* mul */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; name = mul; path = mul.lproj/AboutWindow.xcstrings; sourceTree = "<group>"; };
+		CD8641322CA15DDA00803551 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/ConfigureWindowController.xib; sourceTree = "<group>"; };
+		CD8641352CA15DDA00803551 /* mul */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; name = mul; path = mul.lproj/ConfigureWindowController.xcstrings; sourceTree = "<group>"; };
+		CD8641362CA15DE200803551 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		CD8641392CA15DE200803551 /* mul */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; name = mul; path = mul.lproj/MainMenu.xcstrings; sourceTree = "<group>"; };
 		CD86B6E923A5BBE7003F6BA4 /* configure.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = configure.sh; path = Source/Script/configure.sh; sourceTree = SOURCE_ROOT; };
 		CDA6E62E203B67A100C78F91 /* consts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = consts.h; path = ../../Shared/consts.h; sourceTree = "<group>"; };
 		CDA6E632203B6B7800C78F91 /* objectiveSeeText.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = objectiveSeeText.png; path = ../../shared/images/objectiveSeeText.png; sourceTree = "<group>"; };
@@ -154,18 +157,18 @@
 			isa = PBXGroup;
 			children = (
 				CD3307AD203567D400F10D71 /* Assets.xcassets */,
-				CD17D54420104EE700F798D7 /* AboutWindow.xib */,
+				CD86412F2CA15DCD00803551 /* AboutWindow.xib */,
 				CD17D54220104EE600F798D7 /* AboutWindowController.h */,
 				CD17D54B20104EE700F798D7 /* AboutWindowController.m */,
 				CD17D54520104EE700F798D7 /* Configure.h */,
 				CD17D54720104EE700F798D7 /* Configure.m */,
 				CD17D54620104EE700F798D7 /* ConfigureWindowController.h */,
 				CD17D54820104EE700F798D7 /* ConfigureWindowController.m */,
-				CD17D54920104EE700F798D7 /* ConfigureWindowController.xib */,
+				CD8641332CA15DDA00803551 /* ConfigureWindowController.xib */,
 				CD73DA98200490B4001FFC84 /* HelperComms.h */,
 				CD73DA97200490B4001FFC84 /* HelperComms.m */,
 				4BE4904C10445D49006BE471 /* Info.plist */,
-				BF65C19011B985C0007C20AB /* MainMenu.xib */,
+				CD8641372CA15DE200803551 /* MainMenu.xib */,
 				CD6CAC9120A42D5000188B0A /* main.h */,
 				4BE4904D10445D49006BE471 /* main.m */,
 				BF04235411C0531400431286 /* AppDelegate.h */,
@@ -284,11 +287,12 @@
 			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "Installer" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 1;
 			knownRegions = (
-				English,
 				en,
+				Base,
+				es,
 			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* SMJobBless */;
 			projectDirPath = "";
@@ -306,11 +310,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				CD86B6EA23A5BBE7003F6BA4 /* configure.sh in Resources */,
-				BF65C19111B985C0007C20AB /* MainMenu.xib in Resources */,
-				CD17D54E20104EE700F798D7 /* AboutWindow.xib in Resources */,
+				CD8641382CA15DE200803551 /* MainMenu.xib in Resources */,
+				CD8641302CA15DCD00803551 /* AboutWindow.xib in Resources */,
 				CD2F801124465F68009C3D77 /* patrons.txt in Resources */,
 				CD3307AE203567D500F10D71 /* Assets.xcassets in Resources */,
-				CD17D55120104EE700F798D7 /* ConfigureWindowController.xib in Resources */,
+				CD8641342CA15DDA00803551 /* ConfigureWindowController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -370,6 +374,36 @@
 			targetProxy = 4BE4907E1044624F006BE471 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		CD86412F2CA15DCD00803551 /* AboutWindow.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				CD86412E2CA15DCD00803551 /* Base */,
+				CD8641312CA15DCD00803551 /* mul */,
+			);
+			name = AboutWindow.xib;
+			sourceTree = "<group>";
+		};
+		CD8641332CA15DDA00803551 /* ConfigureWindowController.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				CD8641322CA15DDA00803551 /* Base */,
+				CD8641352CA15DDA00803551 /* mul */,
+			);
+			name = ConfigureWindowController.xib;
+			sourceTree = "<group>";
+		};
+		CD8641372CA15DE200803551 /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				CD8641362CA15DE200803551 /* Base */,
+				CD8641392CA15DE200803551 /* mul */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		4BE4905F10445E0B006BE471 /* Debug */ = {

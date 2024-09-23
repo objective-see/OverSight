@@ -1,0 +1,150 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "0wd-cy-xEw.title" : {
+      "comment" : "Class = \"NSButtonCell\"; title = \"Next »\"; ObjectID = \"0wd-cy-xEw\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Next »"
+          }
+        }
+      }
+    },
+    "1hy-8F-qxt.title" : {
+      "comment" : "Class = \"NSButtonCell\"; title = \"Install\"; ObjectID = \"1hy-8F-qxt\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Install"
+          }
+        }
+      }
+    },
+    "8dX-bb-vf1.title" : {
+      "comment" : "Class = \"NSTextFieldCell\"; title = \"If prompted, please allow OverSight to show notifications, setting the style to \\\"Alerts\\\"\"; ObjectID = \"8dX-bb-vf1\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "If prompted, please allow OverSight to show notifications, setting the style to \"Alerts\""
+          }
+        }
+      }
+    },
+    "DHG-bQ-JvA.title" : {
+      "comment" : "Class = \"NSButtonCell\"; title = \"Next »\"; ObjectID = \"DHG-bQ-JvA\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Next »"
+          }
+        }
+      }
+    },
+    "E5X-AO-6V1.title" : {
+      "comment" : "Class = \"NSButtonCell\"; title = \"Yes!\"; ObjectID = \"E5X-AO-6V1\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Yes!"
+          }
+        }
+      }
+    },
+    "G7H-Q1-04P.title" : {
+      "comment" : "Class = \"NSButtonCell\"; title = \"Uninstall\"; ObjectID = \"G7H-Q1-04P\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Uninstall"
+          }
+        }
+      }
+    },
+    "hLy-Nm-ajB.title" : {
+      "comment" : "Class = \"NSTextFieldCell\"; title = \"Support OverSight?\"; ObjectID = \"hLy-Nm-ajB\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Support OverSight?"
+          }
+        }
+      }
+    },
+    "Hvk-zS-1VC.title" : {
+      "comment" : "Class = \"NSTextFieldCell\"; title = \"Show some love? \"; ObjectID = \"Hvk-zS-1VC\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Show some love? "
+          }
+        }
+      }
+    },
+    "IEz-R9-W5R.title" : {
+      "comment" : "Class = \"NSButtonCell\"; title = \"No\"; ObjectID = \"IEz-R9-W5R\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "No"
+          }
+        }
+      }
+    },
+    "OYn-6J-Cfb.title" : {
+      "comment" : "Class = \"NSTextFieldCell\"; title = \"Mahalo to the \\\"Friends Objective-See\\\"\"; ObjectID = \"OYn-6J-Cfb\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Mahalo to the \"Friends Objective-See\""
+          }
+        }
+      }
+    },
+    "WLJ-8f-ExO.title" : {
+      "comment" : "Class = \"NSTextFieldCell\"; title = \"It's free, open-source, and written by a single (mac-loving) coder!\"; ObjectID = \"WLJ-8f-ExO\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "It's free, open-source, and written by a single (mac-loving) coder!"
+          }
+        }
+      }
+    },
+    "zdX-7L-hfX.title" : {
+      "comment" : "Class = \"NSTextFieldCell\"; title = \"If \\\"Do Not Disturb\\\" mode is activated, OverSight's alerts won't be shown\"; ObjectID = \"zdX-7L-hfX\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "If \"Do Not Disturb\" mode is activated, OverSight's alerts won't be shown"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

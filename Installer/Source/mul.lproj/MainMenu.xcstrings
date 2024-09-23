@@ -1,0 +1,54 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "Cgo-Jp-sNo.title" : {
+      "comment" : "Class = \"NSMenuItem\"; title = \"About OverSight\"; ObjectID = \"Cgo-Jp-sNo\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "About OverSight"
+          }
+        }
+      }
+    },
+    "Ihj-A9-cAO.title" : {
+      "comment" : "Class = \"NSMenuItem\"; title = \"OverSight\"; ObjectID = \"Ihj-A9-cAO\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "OverSight"
+          }
+        }
+      }
+    },
+    "sPv-lJ-f9j.title" : {
+      "comment" : "Class = \"NSMenu\"; title = \"Main Menu\"; ObjectID = \"sPv-lJ-f9j\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Main Menu"
+          }
+        }
+      }
+    },
+    "VQ8-yZ-1ga.title" : {
+      "comment" : "Class = \"NSMenu\"; title = \"OverSight\"; ObjectID = \"VQ8-yZ-1ga\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "OverSight"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}
