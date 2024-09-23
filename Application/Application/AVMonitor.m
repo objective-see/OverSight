@@ -1440,34 +1440,25 @@ bail:
         
     } //PREF_NO_EXTERNAL_DEVICES_MODE
     
-    //macOS sometimes toggles / delivers 2x events for same device
+    //macOS sometimes toggles delivers 2x events for same device
     if(deviceLastEvent.deviceType == event.deviceType)
     {
         //ignore if last event was < 1.0s ago
         if([event.timestamp timeIntervalSinceDate:deviceLastEvent.timestamp] < 1.0f)
         {
-            //set result
-            result = NOTIFICATION_SPURIOUS;
-            
-            //dbg msg
-            os_log_debug(logHandle, "ignoring event, as last event happened <1.0s ago");
-            
-            //bail
-            goto bail;
-        }
-        
-        //ignore if last event was same state
-        if( (deviceLastEvent.state == event.state) &&
-            ([event.timestamp timeIntervalSinceDate:deviceLastEvent.timestamp] < 1.0f) )
-        {
-            //set result
-            result = NOTIFICATION_SPURIOUS;
-            
-            //dbg msg
-            os_log_debug(logHandle, "ignoring event as it was same state as last (%ld), and happened <1.0s ago", (long)event.state);
-            
-            //bail
-            goto bail;
+            //ignore if last event was same state
+            if( (deviceLastEvent.state == event.state) &&
+                ([event.timestamp timeIntervalSinceDate:deviceLastEvent.timestamp] < 1.0f) )
+            {
+                //set result
+                result = NOTIFICATION_SPURIOUS;
+                
+                //dbg msg
+                os_log_debug(logHandle, "ignoring event as it was same state as last (%ld), and happened <1.0s ago", (long)event.state);
+                
+                //bail
+                goto bail;
+            }
         }
         
     } //same device
