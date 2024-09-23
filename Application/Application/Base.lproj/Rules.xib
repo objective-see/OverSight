@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="18122" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="23094" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="18122"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23094"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -19,11 +19,11 @@
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <window allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" animationBehavior="default" id="F0z-JX-Cv5">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" resizable="YES"/>
-            <rect key="contentRect" x="913" y="419" width="1108" height="581"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1440" height="875"/>
+            <rect key="contentRect" x="913" y="419" width="1072" height="581"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1512" height="944"/>
             <value key="minSize" type="size" width="1104" height="552"/>
             <view key="contentView" wantsLayer="YES" misplaced="YES" id="se5-gp-TjO">
-                <rect key="frame" x="0.0" y="0.0" width="1108" height="581"/>
+                <rect key="frame" x="0.0" y="0.0" width="1072" height="581"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 <subviews>
                     <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="qQ9-BU-evn">
@@ -39,7 +39,7 @@
                             <rect key="frame" x="1" y="1" width="1108" height="509"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
-                                <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="54" rowSizeStyle="automatic" headerView="MjO-gV-r1W" viewBased="YES" id="rpa-sZ-jQp">
+                                <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnReordering="NO" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" rowHeight="54" rowSizeStyle="automatic" headerView="MjO-gV-r1W" viewBased="YES" id="rpa-sZ-jQp">
                                     <rect key="frame" x="0.0" y="0.0" width="1108" height="486"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <size key="intercellSpacing" width="3" height="2"/>
@@ -59,7 +59,7 @@
                                             <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                             <prototypeCellViews>
                                                 <tableCellView identifier="processCell" id="moN-VP-hzI" userLabel="Process Row Cell" customClass="RuleRowCell">
-                                                    <rect key="frame" x="11" y="1" width="703" height="54"/>
+                                                    <rect key="frame" x="1" y="1" width="703" height="54"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                     <subviews>
                                                         <imageView translatesAutoresizingMaskIntoConstraints="NO" id="JiF-Nx-dl5">
@@ -70,7 +70,7 @@
                                                             </constraints>
                                                             <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSColorPanel" id="v3A-16-OyI"/>
                                                         </imageView>
-                                                        <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" tag="100" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="JMN-i9-vxR">
+                                                        <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" tag="100" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="JMN-i9-vxR">
                                                             <rect key="frame" x="54" y="23" width="68" height="20"/>
                                                             <textFieldCell key="cell" lineBreakMode="truncatingTail" selectable="YES" allowsUndo="NO" sendsActionOnEndEditing="YES" title="Process" id="2GD-5k-sEf">
                                                                 <font key="font" size="15" name="Menlo-Bold"/>
@@ -78,7 +78,7 @@
                                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                             </textFieldCell>
                                                         </textField>
-                                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" tag="101" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="w9P-yZ-pho">
+                                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" tag="101" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="w9P-yZ-pho">
                                                             <rect key="frame" x="54" y="6" width="648" height="17"/>
                                                             <textFieldCell key="cell" lineBreakMode="truncatingMiddle" selectable="YES" editable="YES" allowsUndo="NO" sendsActionOnEndEditing="YES" title="file:" id="EZN-NC-GXx">
                                                                 <font key="font" metaFont="fixedUser" size="11"/>
@@ -106,7 +106,7 @@
                                                 </tableCellView>
                                             </prototypeCellViews>
                                         </tableColumn>
-                                        <tableColumn editable="NO" width="370" minWidth="100" maxWidth="10000" id="QUv-cU-tQS">
+                                        <tableColumn editable="NO" width="370" minWidth="370" maxWidth="370" id="QUv-cU-tQS">
                                             <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Allowed Device">
                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -119,24 +119,24 @@
                                             <tableColumnResizingMask key="resizingMask" resizeWithTable="YES"/>
                                             <prototypeCellViews>
                                                 <tableCellView identifier="ruleCell" id="cqk-B9-OZf" customClass="RuleRowCell">
-                                                    <rect key="frame" x="717" y="1" width="374" height="54"/>
+                                                    <rect key="frame" x="707" y="1" width="374" height="54"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                     <subviews>
-                                                        <button verticalHuggingPriority="750" tag="110" translatesAutoresizingMaskIntoConstraints="NO" id="ygq-ha-4ac">
+                                                        <button tag="110" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ygq-ha-4ac">
                                                             <rect key="frame" x="351" y="16" width="20" height="21"/>
-                                                            <constraints>
-                                                                <constraint firstAttribute="width" constant="20" id="9A5-FS-nJF"/>
-                                                                <constraint firstAttribute="height" constant="15" id="zE2-xM-T10"/>
-                                                            </constraints>
                                                             <buttonCell key="cell" type="bevel" bezelStyle="regularSquare" image="NSStopProgressFreestandingTemplate" imagePosition="overlaps" alignment="center" imageScaling="proportionallyDown" inset="2" id="4nO-hs-GGE">
                                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                                 <font key="font" metaFont="system"/>
                                                             </buttonCell>
+                                                            <constraints>
+                                                                <constraint firstAttribute="width" constant="20" id="9A5-FS-nJF"/>
+                                                                <constraint firstAttribute="height" constant="15" id="zE2-xM-T10"/>
+                                                            </constraints>
                                                             <connections>
                                                                 <action selector="deleteRule:" target="-2" id="AzS-bQ-k7z"/>
                                                             </connections>
                                                         </button>
-                                                        <textField horizontalHuggingPriority="249" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" tag="100" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="WZT-5Q-dUx">
+                                                        <textField focusRingType="none" horizontalHuggingPriority="249" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" tag="100" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="WZT-5Q-dUx">
                                                             <rect key="frame" x="31" y="15" width="291" height="20"/>
                                                             <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="action" id="UoV-OW-a04">
                                                                 <font key="font" size="13" name="Menlo-Regular"/>
@@ -195,7 +195,7 @@
                     <customView hidden="YES" translatesAutoresizingMaskIntoConstraints="NO" id="hpe-dB-Ek8" userLabel="Overlay">
                         <rect key="frame" x="304" y="165" width="500" height="200"/>
                         <subviews>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" setsMaxLayoutWidthAtFirstLayout="YES" translatesAutoresizingMaskIntoConstraints="NO" id="m0M-KX-7D6" userLabel="loading data">
+                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" setsMaxLayoutWidthAtFirstLayout="YES" translatesAutoresizingMaskIntoConstraints="NO" id="m0M-KX-7D6" userLabel="loading data">
                                 <rect key="frame" x="89" y="92" width="322" height="15"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" allowsUndo="NO" sendsActionOnEndEditing="YES" alignment="center" title="Currently, there are no allowed items..." id="Wjb-RO-P6A">
@@ -226,13 +226,13 @@
             <connections>
                 <outlet property="delegate" destination="-2" id="0bl-1N-AYu"/>
             </connections>
-            <point key="canvasLocation" x="62" y="442.5"/>
+            <point key="canvasLocation" x="44" y="442.5"/>
         </window>
         <window title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="pch-yV-NXy" userLabel="Add Rule" customClass="NSPanel">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" utility="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="272" y="172" width="276" height="378"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1440" height="875"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1512" height="944"/>
             <view key="contentView" id="cna-Y1-PEc">
                 <rect key="frame" x="0.0" y="0.0" width="276" height="378"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -242,7 +242,7 @@
     </objects>
     <resources>
         <image name="NSColorPanel" width="32" height="32"/>
-        <image name="NSStopProgressFreestandingTemplate" width="15" height="15"/>
+        <image name="NSStopProgressFreestandingTemplate" width="20" height="20"/>
         <image name="OverSight" width="1301" height="227"/>
         <image name="allow" width="72" height="72"/>
     </resources>
