@@ -25,6 +25,8 @@
 		CD8641512CA161D500803551 /* Rules.xib in Resources */ = {isa = PBXBuildFile; fileRef = CD8641502CA161D500803551 /* Rules.xib */; };
 		CD8641552CA161DA00803551 /* StatusBarPopover.xib in Resources */ = {isa = PBXBuildFile; fileRef = CD8641542CA161DA00803551 /* StatusBarPopover.xib */; };
 		CD8641592CA161DF00803551 /* UpdateWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = CD8641582CA161DF00803551 /* UpdateWindow.xib */; };
+		CD8641702CA1B5F300803551 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = CD86416E2CA1B5F300803551 /* InfoPlist.strings */; };
+		CD8641802CA1F03E00803551 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = CD86417F2CA1F03E00803551 /* Localizable.xcstrings */; };
 		CD8FD5D623BAE2D200EFE0FB /* PrefsWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8FD5D423BAE2D200EFE0FB /* PrefsWindowController.m */; };
 		CD8FD5F623C05AD900EFE0FB /* RuleRow.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8FD5F023C05AD800EFE0FB /* RuleRow.m */; };
 		CD8FD5F723C05AD900EFE0FB /* RuleRowCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8FD5F223C05AD800EFE0FB /* RuleRowCell.m */; };
@@ -85,6 +87,8 @@
 		CD8641562CA161DA00803551 /* mul */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; name = mul; path = mul.lproj/StatusBarPopover.xcstrings; sourceTree = "<group>"; };
 		CD8641572CA161DF00803551 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/UpdateWindow.xib; sourceTree = "<group>"; };
 		CD86415A2CA161DF00803551 /* mul */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; name = mul; path = mul.lproj/UpdateWindow.xcstrings; sourceTree = "<group>"; };
+		CD86416F2CA1B5F300803551 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		CD86417F2CA1F03E00803551 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		CD8FD5D223BAE2D100EFE0FB /* PrefsWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrefsWindowController.h; sourceTree = "<group>"; };
 		CD8FD5D423BAE2D200EFE0FB /* PrefsWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PrefsWindowController.m; sourceTree = "<group>"; };
 		CD8FD5ED23C05AD800EFE0FB /* RuleRowCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RuleRowCell.h; sourceTree = "<group>"; };
@@ -137,6 +141,7 @@
 		7D7755DA1F02E05B00D0017D = {
 			isa = PBXGroup;
 			children = (
+				CD86417F2CA1F03E00803551 /* Localizable.xcstrings */,
 				CDE09AF12919829000561CFF /* Uninstaller */,
 				7D3B75201F13356900568828 /* Shared */,
 				7D7755E51F02E05B00D0017D /* Source */,
@@ -170,6 +175,7 @@
 				CDCBF0DC26499DFF001D9F9A /* Event.h */,
 				CDCBF0DD26499DFF001D9F9A /* Event.m */,
 				7D7755F11F02E05B00D0017D /* Info.plist */,
+				CD86416E2CA1B5F300803551 /* InfoPlist.strings */,
 				CDC6098C263CB7EB006D1332 /* LogMonitor.h */,
 				CDC6098D263CB7EB006D1332 /* LogMonitor.m */,
 				CD86414C2CA161CF00803551 /* MainMenu.xib */,
@@ -281,6 +287,7 @@
 				English,
 				en,
 				Base,
+				es,
 			);
 			mainGroup = 7D7755DA1F02E05B00D0017D;
 			productRefGroup = 7D7755E41F02E05B00D0017D /* Products */;
@@ -302,10 +309,12 @@
 				CD6836682391DB6F00CF19C1 /* security.plist in Resources */,
 				CD86413C2CA1617A00803551 /* AboutWindow.xib in Resources */,
 				CD8641592CA161DF00803551 /* UpdateWindow.xib in Resources */,
+				CD8641802CA1F03E00803551 /* Localizable.xcstrings in Resources */,
 				CD8641552CA161DA00803551 /* StatusBarPopover.xib in Resources */,
 				CD2F801724468A8C009C3D77 /* patrons.txt in Resources */,
 				CD8641512CA161D500803551 /* Rules.xib in Resources */,
 				CD86414D2CA161CF00803551 /* MainMenu.xib in Resources */,
+				CD8641702CA1B5F300803551 /* InfoPlist.strings in Resources */,
 				7DD25FF01F23B73C00277EC4 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -402,6 +411,14 @@
 			name = UpdateWindow.xib;
 			sourceTree = "<group>";
 		};
+		CD86416E2CA1B5F300803551 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				CD86416F2CA1B5F300803551 /* es */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
@@ -458,6 +475,7 @@
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = NO;
 				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
 			};
 			name = Debug;
 		};
@@ -507,6 +525,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
 			};
 			name = Release;
 		};

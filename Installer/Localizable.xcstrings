@@ -1,0 +1,193 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "☑️ %@: installed!\n" : {
+      "comment" : "☑️ %@: installed!\n",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "☑️ %@: ¡instalado!"
+          }
+        }
+      }
+    },
+    "☑️ %@: uninstalled!\n" : {
+      "comment" : "☑️ %@: uninstalled!\n",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "☑️ %@: ¡desinstalado!"
+          }
+        }
+      }
+    },
+    "⚠️ Error: %@ failed" : {
+      "comment" : "⚠️ Error: %@ failed",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⚠️ Error: %@ falló"
+          }
+        }
+      }
+    },
+    "Close" : {
+      "comment" : "Close",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cerrar"
+          }
+        }
+      }
+    },
+    "ERROR: Insuffient Privileges." : {
+      "comment" : "ERROR: Insuffient Privileges.",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ERROR: Privilegios Insuficientes."
+          }
+        }
+      }
+    },
+    "Exit" : {
+      "comment" : "Exit",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Salir"
+          }
+        }
+      }
+    },
+    "For more info, from the terminal run:\r\nlog show --predicate=\"subsystem='com.objective-see.oversight'\"" : {
+      "comment" : "For more info, from the terminal run:\r\nlog show --predicate=\"subsystem='com.objective-see.oversight'\"",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Para más información, ejecuta en la terminal:\nlog show --predicate=\"subsystem='com.objective-see.oversight'"
+          }
+        }
+      }
+    },
+    "install" : {
+      "comment" : "install",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "instalar"
+          }
+        }
+      }
+    },
+    "Installing..." : {
+      "comment" : "Installing...",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Instalando..."
+          }
+        }
+      }
+    },
+    "Next »" : {
+      "comment" : "Next »",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siguiente »"
+          }
+        }
+      }
+    },
+    "OverSight can only be installed / run on accounts with administrative privileges" : {
+      "comment" : "OverSight can only be installed / run on accounts with administrative privileges",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OverSight solo puede ser instalado / ejecutado en cuentas con privilegios administrativos"
+          }
+        }
+      }
+    },
+    "Protects your webcam & microphone!" : {
+      "comment" : "Protects your webcam & microphone!",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¡Protege tu webcam & micrófono!"
+          }
+        }
+      }
+    },
+    "uninstall" : {
+      "comment" : "uninstall",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "desinstalar"
+          }
+        }
+      }
+    },
+    "Uninstalling..." : {
+      "comment" : "Uninstalling...",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desinstalando..."
+          }
+        }
+      }
+    },
+    "Upgrade" : {
+      "comment" : "Upgrade",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actualizar"
+          }
+        }
+      }
+    },
+    "version %@" : {
+      "comment" : "version %@",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "versión %@"
+          }
+        }
+      }
+    },
+    "Version: %@" : {
+      "comment" : "Version: %@",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Versión %@"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

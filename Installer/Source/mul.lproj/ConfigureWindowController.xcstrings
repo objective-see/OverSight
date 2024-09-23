@@ -10,6 +10,12 @@
             "state" : "new",
             "value" : "Next »"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siguiente »"
+          }
         }
       }
     },
@@ -21,6 +27,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Install"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Instalar"
           }
         }
       }
@@ -34,6 +46,12 @@
             "state" : "new",
             "value" : "If prompted, please allow OverSight to show notifications, setting the style to \"Alerts\""
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si solicitado, permite que OverSight muestre notificaciones, configurando el estilo en \"Alertas\""
+          }
         }
       }
     },
@@ -45,6 +63,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Next »"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siguiente »"
           }
         }
       }
@@ -58,6 +82,12 @@
             "state" : "new",
             "value" : "Yes!"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¡Sí!"
+          }
         }
       }
     },
@@ -69,6 +99,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Uninstall"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desinstalar"
           }
         }
       }
@@ -82,6 +118,12 @@
             "state" : "new",
             "value" : "Support OverSight?"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Apoyas OverSight?"
+          }
         }
       }
     },
@@ -94,6 +136,12 @@
             "state" : "new",
             "value" : "Show some love? "
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Nos das tu apoyo?"
+          }
         }
       }
     },
@@ -104,6 +152,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : "No"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "No"
           }
         }
@@ -118,6 +172,12 @@
             "state" : "new",
             "value" : "Mahalo to the \"Friends Objective-See\""
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mahalo a los \"Friends de Objective-See\""
+          }
         }
       }
     },
@@ -130,6 +190,12 @@
             "state" : "new",
             "value" : "It's free, open-source, and written by a single (mac-loving) coder!"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sin cargo, open-source y desarrollado por un único programador (amante de Mac)!  "
+          }
         }
       }
     },
@@ -141,6 +207,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "If \"Do Not Disturb\" mode is activated, OverSight's alerts won't be shown"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si el modo \"No Molestar\" está activado, las alertas de OverSight no se mostrarán"
           }
         }
       }

@@ -1,0 +1,343 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    " Became Active!" : {
+      "comment" : " Became Active!",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¡Se activó!"
+          }
+        }
+      }
+    },
+    " Became Inactive." : {
+      "comment" : " Became Inactive.",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se desactivó."
+          }
+        }
+      }
+    },
+    "%@: disabled" : {
+      "comment" : "%@: disabled",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@: deshabilitado"
+          }
+        }
+      }
+    },
+    "%@: enabled" : {
+      "comment" : "%@: enabled",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@: habilitado"
+          }
+        }
+      }
+    },
+    "a new version (%@) is available!" : {
+      "comment" : "a new version (%@) is available!",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¡una nueva versión (%@) está disponible!"
+          }
+        }
+      }
+    },
+    "Active Devices:" : {
+      "comment" : "Active Devices:",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dispositivos Activos:"
+          }
+        }
+      }
+    },
+    "Allow (Always)" : {
+      "comment" : "Allow (Always)",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permitir (Siempre)"
+          }
+        }
+      }
+    },
+    "Allow (Once)" : {
+      "comment" : "Allow (Once)",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permitir (una vez)"
+          }
+        }
+      }
+    },
+    "Block" : {
+      "comment" : "Block",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bloquear"
+          }
+        }
+      }
+    },
+    "Close" : {
+      "comment" : "Close",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cerrar"
+          }
+        }
+      }
+    },
+    "Device: %@" : {
+      "comment" : "Device: %@",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dispositivo: %@"
+          }
+        }
+      }
+    },
+    "Disable" : {
+      "comment" : "Disable",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deshabilitar"
+          }
+        }
+      }
+    },
+    "Enable" : {
+      "comment" : "Enable",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Habilitar"
+          }
+        }
+      }
+    },
+    "error: failed to load patrons :/" : {
+      "comment" : "error: failed to load patrons :/",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "error: no se pudieron cargar los patrons :/"
+          }
+        }
+      }
+    },
+    "ERROR: failed to terminate %@ (%@)" : {
+      "comment" : "ERROR: failed to terminate %@ (%@)",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "ERROR: failed to terminate %1$@ (%2$@)"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ERROR: no se pudo terminar %1$@ (%2$@)"
+          }
+        }
+      }
+    },
+    "ERROR: OverSight is not authorized to display notifications." : {
+      "comment" : "ERROR: OverSight is not authorized to display notifications.",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ERROR: OverSight no está autorizado para mostrar notificaciones."
+          }
+        }
+      }
+    },
+    "Error: update check failed" : {
+      "comment" : "Error: update check failed",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error: la verificación de actualización falló"
+          }
+        }
+      }
+    },
+    "Installed version (%@),\r\nis the latest." : {
+      "comment" : "Installed version (%@),\r\nis the latest.",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La versión instalada (%@) es la más reciente."
+          }
+        }
+      }
+    },
+    "No Active Devices" : {
+      "comment" : "No Active Devices",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No hay Dispositivos Activos"
+          }
+        }
+      }
+    },
+    "Open System Preferences..." : {
+      "comment" : "Open System Preferences...",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir Preferencias del Sistema..."
+          }
+        }
+      }
+    },
+    "OverSight notification mode set to %@." : {
+      "comment" : "OverSight notification mode set to %@.",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modo de notificación de OverSight configurado en %@."
+          }
+        }
+      }
+    },
+    "pid: unknown" : {
+      "comment" : "pid: unknown",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "pid: desconocido"
+          }
+        }
+      }
+    },
+    "Please authorize (style: \"Alerts\") via the Notifications pane in System Preferences." : {
+      "comment" : "Please authorize (style: \"Alerts\") via the Notifications pane in System Preferences.",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Por favor, autoriza (estilo: \\\"Alertas\\\") a través del panel de Notificaciones en Preferencias del Sistema."
+          }
+        }
+      }
+    },
+    "Please change to \"Alerts\" via the Notifications pane in System Preferences." : {
+      "comment" : "Please change to \"Alerts\" via the Notifications pane in System Preferences.",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Por favor, cambia a \\\"Alertas\\\" a través del panel de Notificaciones en Preferencias del Sistema."
+          }
+        }
+      }
+    },
+    "Process: %@ (%@)" : {
+      "comment" : "Process: %@ (%@)",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Process: %1$@ (%2$@)"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Proceso: %1$@ (%2$@)"
+          }
+        }
+      }
+    },
+    "system error code: %d" : {
+      "comment" : "system error code: %d",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "código de error del sistema: %d"
+          }
+        }
+      }
+    },
+    "unknown" : {
+      "comment" : "unknown",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "desconocido"
+          }
+        }
+      }
+    },
+    "Update" : {
+      "comment" : "Update",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actualizar"
+          }
+        }
+      }
+    },
+    "Update available, but isn't supported on macOS %ld.%ld" : {
+      "comment" : "Update available, but isn't supported on macOS %ld.%ld",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Update available, but isn't supported on macOS %1$ld.%2$ld"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actualización disponible, pero no es compatible con macOS %1$ld.%2$ld"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

@@ -10,6 +10,12 @@
             "state" : "new",
             "value" : "OverSight"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OverSight"
+          }
         }
       }
     },
@@ -21,6 +27,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Uninstall OverSight..."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desinstalar OverSight..."
           }
         }
       }
@@ -34,6 +46,12 @@
             "state" : "new",
             "value" : "Main Menu"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Menú Principal"
+          }
         }
       }
     },
@@ -45,6 +63,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Quit OverSight"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Salir de OverSight"
           }
         }
       }
@@ -58,6 +82,12 @@
             "state" : "new",
             "value" : "OverSight: enabled"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OverSight: activado"
+          }
         }
       }
     },
@@ -69,6 +99,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Active Devices"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dispositivos Activos"
           }
         }
       }
@@ -82,6 +118,12 @@
             "state" : "new",
             "value" : "Allowed Items..."
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ítems Permitidos..."
+          }
         }
       }
     },
@@ -93,6 +135,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Allowed Items..."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ítems Permitidos..."
           }
         }
       }
@@ -106,6 +154,12 @@
             "state" : "new",
             "value" : "Disable"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deshabilitar"
+          }
         }
       }
     },
@@ -117,6 +171,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Close Window"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cerrar Ventana"
           }
         }
       }
@@ -130,6 +190,12 @@
             "state" : "new",
             "value" : "About OverSight"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sobre OverSight"
+          }
         }
       }
     },
@@ -142,29 +208,47 @@
             "state" : "new",
             "value" : "OverSight"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OverSight"
+          }
         }
       }
     },
     "yfe-lu-f3I.title" : {
-      "comment" : "Class = \"NSMenuItem\"; title = \"Preferences...\"; ObjectID = \"yfe-lu-f3I\";",
+      "comment" : "Class = \"NSMenuItem\"; title = \"Settings...\"; ObjectID = \"yfe-lu-f3I\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Preferences..."
+            "value" : "Settings..."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Configuración…"
           }
         }
       }
     },
     "Zao-2v-WyJ.title" : {
-      "comment" : "Class = \"NSMenuItem\"; title = \"Preferences...\"; ObjectID = \"Zao-2v-WyJ\";",
+      "comment" : "Class = \"NSMenuItem\"; title = \"Settings...\"; ObjectID = \"Zao-2v-WyJ\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Preferences..."
+            "value" : "Settings..."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Configuración…"
           }
         }
       }

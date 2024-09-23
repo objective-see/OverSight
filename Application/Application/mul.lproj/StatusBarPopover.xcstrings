@@ -10,6 +10,12 @@
             "state" : "new",
             "value" : "⌃"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⌃"
+          }
         }
       }
     },
@@ -22,17 +28,29 @@
             "state" : "new",
             "value" : "OverSight up & running!"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¡OverSight en funcionamiento!"
+          }
         }
       }
     },
     "22.title" : {
-      "comment" : "Class = \"NSTextFieldCell\"; title = \"...access it from here anytime\"; ObjectID = \"22\";",
+      "comment" : "Class = \"NSTextFieldCell\"; title = \"Access it from here anytime\"; ObjectID = \"22\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "...access it from here anytime"
+            "value" : "Access it from here anytime"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accede desde aquí en cualquier momento"
           }
         }
       }

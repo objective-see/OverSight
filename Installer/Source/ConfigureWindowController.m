@@ -75,7 +75,7 @@ extern os_log_t logHandle;
     [self window].title = [NSString stringWithFormat:NSLocalizedString(@"version %@", @"version %@"), getAppVersion()];
     
     //init status msg
-    [self.statusMsg setStringValue:NSLocalizedString(@"...protects your webcam & microphone!", @"...protects your webcam & microphone!")];
+    [self.statusMsg setStringValue:NSLocalizedString(@"Protects your webcam & microphone!", @"Protects your webcam & microphone!")];
     
     //uninstall via app?
     // just enable uinstall button
@@ -106,7 +106,7 @@ extern os_log_t logHandle;
         self.uninstallButton.enabled = YES;
         
         //set to 'upgrade'
-        self.installButton.title = ACTION_UPGRADE;
+        self.installButton.title = NSLocalizedString(@"Upgrade", @"Upgrade");
     }
     
     //otherwise disable
@@ -540,7 +540,7 @@ extern os_log_t logHandle;
         (ACTION_INSTALL_FLAG == event) )
     {
         //next
-        self.installButton.title = ACTION_NEXT;
+        self.installButton.title = NSLocalizedString(@"Next »", @"Next »");
         
         //set tag
         self.installButton.tag = ACTION_SHOW_NOTIFICATION_VIEW;
@@ -550,7 +550,7 @@ extern os_log_t logHandle;
     else
     {
         //close
-        self.installButton.title = ACTION_CLOSE;
+        self.installButton.title = NSLocalizedString(@"Close", @"Close");
         
         //update it's tag
         // will allow button handler method process

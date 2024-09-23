@@ -1,0 +1,6 @@
+/* Bundle name */
+"CFBundleName" = "OverSight";
+
+/* Copyright (human-readable) */
+"NSHumanReadableCopyright" = "Copyright (c) 2021 Objective-See. Todos los derechos reservados.";
+

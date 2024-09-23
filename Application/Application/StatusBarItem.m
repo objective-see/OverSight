@@ -226,8 +226,8 @@ bail:
     self.popover.contentViewController = [[StatusBarPopoverController alloc] initWithNibName:@"StatusBarPopover" bundle:nil];
     
     //set behavior
-    // auto-close if user clicks button in status bar
-    self.popover.behavior = NSPopoverBehaviorTransient;
+    // don't want it close before timeout (unless user clicks '^')
+    self.popover.behavior = NSPopoverBehaviorApplicationDefined;
     
     //set delegate
     self.popover.delegate = self;
@@ -457,6 +457,14 @@ bail:
     
     //status bar item controller
     StatusBarItem* statusBarItemController = nil;
+    
+    //first
+    // sure to close popover
+    if(YES == self.popover.shown)
+    {
+        //close
+        [self.popover performClose:nil];
+    }
 
     //grab
     avMonitor = ((AppDelegate*)[[NSApplication sharedApplication] delegate]).avMonitor;

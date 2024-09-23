@@ -752,6 +752,9 @@ extern os_log_t logHandle;
     return;
 }
 
+//TODO: refactor alerts
+// delay showing them!
+
 //register for audio changes
 -(BOOL)watchAudioDevice:(AVCaptureDevice*)device
 {
@@ -813,12 +816,18 @@ extern os_log_t logHandle;
                 //dbg msg
                 os_log_debug(logHandle, "audio event: off");
                 
-                //init event
-                // process (client) and device are nil
-                event = [[Event alloc] init:nil device:device deviceType:Device_Microphone state:NSControlStateValueOff];
-                
-                //handle event
-                [self handleEvent:event];
+                //still wait
+                // cuz the on event is waiting...
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                    
+                    //init event
+                    // process (client) and device are nil
+                    event = [[Event alloc] init:nil device:device deviceType:Device_Microphone state:NSControlStateValueOff];
+                    
+                    //handle event
+                    [self handleEvent:event];
+                    
+                });
             }
             
             //audio on?
@@ -987,12 +996,18 @@ bail:
                 //dbg msg
                 os_log_debug(logHandle, "camera event: off");
                 
-                //init event
-                // process (client) and device are nil
-                event = [[Event alloc] init:nil device:device deviceType:Device_Camera state:NSControlStateValueOff];
-                
-                //handle event
-                [self handleEvent:event];
+                //still wait
+                // cuz the on event is waiting...
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                    
+                    //init event
+                    // process (client) and device are nil
+                    event = [[Event alloc] init:nil device:device deviceType:Device_Camera state:NSControlStateValueOff];
+                    
+                    //handle event
+                    [self handleEvent:event];
+                    
+                });
             }
             
         } //macOS 13.3
@@ -1435,7 +1450,7 @@ bail:
             result = NOTIFICATION_SPURIOUS;
             
             //dbg msg
-            os_log_debug(logHandle, "ignoring event, as it happened <1.0s ago");
+            os_log_debug(logHandle, "ignoring event, as last event happened <1.0s ago");
             
             //bail
             goto bail;
@@ -1497,6 +1512,9 @@ bail:
 {
     //result
     NSInteger result = NOTIFICATION_ERROR;
+    
+    //dbg msg
+    os_log_debug(logHandle, "handling event: %{public}@", event);
     
     //should show?
     @synchronized (self) {
@@ -1585,6 +1603,19 @@ bail:
     
     //init request
     request = [UNNotificationRequest requestWithIdentifier:NSUUID.UUID.UUIDString content:content trigger:NULL];
+    
+    //log: on
+    if(NSControlStateValueOn == event.state)
+    {
+        //log
+        os_log(logHandle, "[Alert] On Event: %@ / Device: %@ / %@", content.title, content.subtitle, content.body);
+    }
+    //log: off
+    else
+    {
+        //log
+        os_log(logHandle, "[Alert] Off Event: %@ / Device: %@", content.title, content.subtitle);
+    }
     
     //send notification
     [UNUserNotificationCenter.currentNotificationCenter addNotificationRequest:request withCompletionHandler:^(NSError *_Nullable error)

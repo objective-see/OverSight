@@ -10,6 +10,12 @@
             "state" : "new",
             "value" : "About OverSight"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Acerca de OverSight"
+          }
         }
       }
     },
@@ -20,6 +26,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : "OverSight"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "OverSight"
           }
         }
@@ -34,6 +46,12 @@
             "state" : "new",
             "value" : "Main Menu"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Menú Principal"
+          }
         }
       }
     },
@@ -44,6 +62,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : "OverSight"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "OverSight"
           }
         }

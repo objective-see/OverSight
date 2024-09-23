@@ -36,4 +36,12 @@
     return self;
 }
 
+//override description method
+-(NSString*)description
+{
+    //description
+    return [NSString stringWithFormat:@"EVENT: device: %@, device type: %d, state: %ld, timestamp: %@", self.device.localizedName, self.deviceType, (long)self.state, self.timestamp];
+}
+
+
 @end

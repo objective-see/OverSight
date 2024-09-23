@@ -10,6 +10,12 @@
             "state" : "new",
             "value" : "Do not show an alert when the camera/microphone is deactivated.  "
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No mostrar una alerta cuando la cámara/micrófono se desactiven."
+          }
         }
       }
     },
@@ -21,6 +27,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Check Now"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verificar Ahora"
           }
         }
       }
@@ -34,6 +46,12 @@
             "state" : "new",
             "value" : "No Icon Mode"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modo Sin Ícono"
+          }
         }
       }
     },
@@ -45,6 +63,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "OverSight will pass in the following arguments: -device <camera|microphone> -event <on|off> -process <pid> -activeCount <0..n>  Notes:\n-process is only specified on activation events.\n-activeCount is the number of devices still active."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OverSight pasará los siguientes argumentos:\n-device <camera|microphone> -event <on|off> -process <pid> -activeCount <0..n>\n\nNotas:\n-process solo se especifica en eventos de activación.\n-activeCount es el número de dispositivos que siguen activos."
           }
         }
       }
@@ -58,6 +82,12 @@
             "state" : "new",
             "value" : "Ignore External Device"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ignorar Dispositivo Externo"
+          }
         }
       }
     },
@@ -69,6 +99,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Execute a script or binary when an event is detected."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ejecutar un script o un programa cuando se detecte un evento."
           }
         }
       }
@@ -82,6 +118,12 @@
             "state" : "new",
             "value" : "Browse"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Navegar"
+          }
         }
       }
     },
@@ -93,6 +135,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Automatically (re)start each time you login."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Iniciar automáticamente cada vez que inicies sesión."
           }
         }
       }
@@ -106,6 +154,12 @@
             "state" : "new",
             "value" : "Action"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Acción"
+          }
         }
       }
     },
@@ -117,6 +171,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Action"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Acción"
           }
         }
       }
@@ -130,6 +190,12 @@
             "state" : "new",
             "value" : "Disable 'Inactive' Alerts"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desactivar Alertas de 'Inactivo'"
+          }
         }
       }
     },
@@ -141,6 +207,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Do not automatically check for new versions."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No comprobar automáticamente si hay nuevas versiones."
           }
         }
       }
@@ -154,6 +226,12 @@
             "state" : "new",
             "value" : "Start at Login"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Iniciar al iniciar sesión"
+          }
         }
       }
     },
@@ -165,6 +243,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Mode"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modo"
           }
         }
       }
@@ -178,6 +262,12 @@
             "state" : "new",
             "value" : "Mode"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modo"
+          }
         }
       }
     },
@@ -189,6 +279,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "View Allowed Items"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ver Ítems Permitidos"
           }
         }
       }
@@ -202,6 +298,12 @@
             "state" : "new",
             "value" : "Execute"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ejecutar"
+          }
         }
       }
     },
@@ -213,6 +315,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Path..."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ruta..."
           }
         }
       }
@@ -226,6 +334,12 @@
             "state" : "new",
             "value" : "Update"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actualizar"
+          }
         }
       }
     },
@@ -237,6 +351,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Update"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actualizar"
           }
         }
       }
@@ -250,6 +370,12 @@
             "state" : "new",
             "value" : "Run without showing an icon in the status menu bar."
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ejecutar sin mostrar un ícono en la barra de menú de estado."
+          }
         }
       }
     },
@@ -261,6 +387,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Do not show an alert when external devices trigger an event."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No mostrar una alerta cuando los dispositivos externos desencadenen un evento."
           }
         }
       }
@@ -274,6 +406,12 @@
             "state" : "new",
             "value" : "Pass Arguments"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pasar Argumentos"
+          }
         }
       }
     },
@@ -285,6 +423,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Disable Update Checks"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desactivar Verificación de Actualizaciones"
           }
         }
       }

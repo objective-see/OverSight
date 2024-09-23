@@ -37,4 +37,7 @@
 //time stamp
 @property(nonatomic, retain)NSDate* timestamp;
 
+//was shown
+@property BOOL wasShown;
+
 @end
