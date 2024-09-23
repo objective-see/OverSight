@@ -121,15 +121,15 @@ extern os_log_t logHandle;
     //watch all input audio (mic) devices
     for(AVCaptureDevice* audioDevice in [AVCaptureDevice devicesWithMediaType:AVMediaTypeAudio])
     {
-       //start (device) monitor
-       [self watchAudioDevice:audioDevice];
+        //start (device) monitor
+        [self watchAudioDevice:audioDevice];
     }
        
     //watch all input video (cam) devices
     for(AVCaptureDevice* videoDevice in [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo])
     {
-       //start (device) monitor
-       [self watchVideoDevice:videoDevice];
+        //start (device) monitor
+        [self watchVideoDevice:videoDevice];
     }
     
     //dbg msg
@@ -774,7 +774,7 @@ extern os_log_t logHandle;
     propertyStruct.mScope = kAudioObjectPropertyScopeGlobal;
     
     //init property struct's element
-    propertyStruct.mElement = kAudioObjectPropertyElementMaster;
+    propertyStruct.mElement = kAudioObjectPropertyElementMain;
     
     //block
     // invoked when audio changes
@@ -915,7 +915,7 @@ bail:
     propertyStruct.mScope = kAudioObjectPropertyScopeGlobal;
     
     //init property struct's element
-    propertyStruct.mElement = kAudioObjectPropertyElementMaster;
+    propertyStruct.mElement = kAudioObjectPropertyElementMain;
     
     //block
     // invoked when video changes
@@ -1287,7 +1287,7 @@ bail:
     propertyStruct.mScope = kCMIOObjectPropertyScopeGlobal;
     
     //init property struct's element
-    propertyStruct.mElement = kAudioObjectPropertyElementMaster;
+    propertyStruct.mElement = kAudioObjectPropertyElementMain;
     
     //query to get 'kAudioDevicePropertyDeviceIsRunningSomewhere' status
     status = CMIOObjectGetPropertyData(deviceID, &propertyStruct, 0, NULL, sizeof(kAudioDevicePropertyDeviceIsRunningSomewhere), &propertySize, &isRunning);
@@ -1745,7 +1745,7 @@ bail:
     propertyStruct.mScope = kAudioObjectPropertyScopeGlobal;
     
     //init property struct's element
-    propertyStruct.mElement = kAudioObjectPropertyElementMaster;
+    propertyStruct.mElement = kAudioObjectPropertyElementMain;
     
     //remove
     status = AudioObjectRemovePropertyListenerBlock(deviceID, &propertyStruct, self.eventQueue, self.audioListeners[device.uniqueID]);
@@ -1806,7 +1806,7 @@ bail:
     propertyStruct.mScope = kAudioObjectPropertyScopeGlobal;
     
     //init property struct's element
-    propertyStruct.mElement = kAudioObjectPropertyElementMaster;
+    propertyStruct.mElement = kAudioObjectPropertyElementMain;
     
     //remove
     status = CMIOObjectRemovePropertyListenerBlock(deviceID, &propertyStruct, self.eventQueue, self.cameraListeners[device.uniqueID]);
