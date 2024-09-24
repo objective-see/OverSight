@@ -75,10 +75,10 @@ extern os_log_t logHandle;
         closeCategory = [UNNotificationCategory categoryWithIdentifier:CATEGORY_CLOSE actions:@[ok] intentIdentifiers:@[] options:0];
         
         //init allow action
-        allow = [UNNotificationAction actionWithIdentifier:@"Allow" title:NSLocalizedString(@"Allow (Once)", @"Allow (Once)") options:UNNotificationActionOptionNone];
+        allow = [UNNotificationAction actionWithIdentifier:@"Allow" title:NSLocalizedString(@"Allow (once)", @"Allow (once)") options:UNNotificationActionOptionNone];
         
         //init allow action
-        allowAlways = [UNNotificationAction actionWithIdentifier:@"AllowAlways" title:NSLocalizedString(@"Allow (Always)", @"Allow (Always)") options:UNNotificationActionOptionNone];
+        allowAlways = [UNNotificationAction actionWithIdentifier:@"AllowAlways" title:NSLocalizedString(@"Allow (always)", @"Allow (always)") options:UNNotificationActionOptionNone];
         
         //init block action
         block = [UNNotificationAction actionWithIdentifier:@"Block" title:NSLocalizedString(@"Block",@"Block") options:UNNotificationActionOptionNone];

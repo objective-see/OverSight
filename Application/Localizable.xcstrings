@@ -67,19 +67,19 @@
         }
       }
     },
-    "Allow (Always)" : {
-      "comment" : "Allow (Always)",
+    "Allow (always)" : {
+      "comment" : "Allow (always)",
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Permitir (Siempre)"
+            "value" : "Permitir (siempre)"
           }
         }
       }
     },
-    "Allow (Once)" : {
-      "comment" : "Allow (Once)",
+    "Allow (once)" : {
+      "comment" : "Allow (once)",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -255,7 +255,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Por favor, autoriza (estilo: \\\"Alertas\\\") a través del panel de Notificaciones en Preferencias del Sistema."
+            "value" : "Por favor, autoriza (estilo: \"Alertas\") a través del panel de Notificaciones en Preferencias del Sistema."
           }
         }
       }
@@ -266,7 +266,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Por favor, cambia a \\\"Alertas\\\" a través del panel de Notificaciones en Preferencias del Sistema."
+            "value" : "Por favor, cambia a \"Alertas\" a través del panel de Notificaciones en Preferencias del Sistema."
           }
         }
       }

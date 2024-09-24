@@ -341,7 +341,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "#Note: To build uninstaller for app (menu)\n# 0. Delete this script and Installer.app from App's on-disk folder \n# 1. Build Installer\n# 2. Copy into App \"Uninstaller\" folder (& proj if needed)\n# 3. Re-add script, and then build (archive) for deployment\n\n#archive\n# copy in main application \nif [[ $BUILT_PRODUCTS_DIR = *\"ArchiveIntermediates\"* ]]; then\n    cp -R -f \"$PROJECT_TEMP_ROOT/UninstalledProducts/macosx/OverSight.app\" \"$BUILT_PRODUCTS_DIR/$CONTENTS_FOLDER_PATH/Resources\"\n    \n#normal build\n# delete and copy in main application \nelse\n\nrm -rf  \"$BUILT_PRODUCTS_DIR/$CONTENTS_FOLDER_PATH/Resources/OverSight.app\"\ncp -R -f \"$BUILT_PRODUCTS_DIR/OverSight.app\" \"$BUILT_PRODUCTS_DIR/$CONTENTS_FOLDER_PATH/Resources\"\n\nfi\n\n";
+			shellScript = "#Note: To build uninstaller for app (menu)\n# 0. Delete this script and Installer.app from App's on-disk folder \n# 1. Build Installer\n# 2. Copy into App \"Uninstaller\" folder (& proj if needed)\n# 3. Re-add script, and then build (archive) for deployment\n\n#archive\n# copy in main application \nif [[ $BUILT_PRODUCTS_DIR = *\"ArchiveIntermediates\"* ]]; then\n    cp -R -f \"$PROJECT_TEMP_ROOT/UninstalledProducts/macosx/OverSight.app\" \"$BUILT_PRODUCTS_DIR/$CONTENTS_FOLDER_PATH/Resources\"\n    \n#normal build\n# delete and copy in main application \nelse\n\nrm -rf  \"$BUILT_PRODUCTS_DIR/$CONTENTS_FOLDER_PATH/Resources/OverSight.app\"\ncp -R -f \"$BUILT_PRODUCTS_DIR/OverSight.app\" \"$BUILT_PRODUCTS_DIR/$CONTENTS_FOLDER_PATH/Resources\"\n\nfi\n\n\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -501,7 +501,7 @@
 				CODE_SIGN_IDENTITY = "Developer ID Application";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 2.3.0;
+				CURRENT_PROJECT_VERSION = 2.4.0;
 				DEVELOPMENT_TEAM = VBG97UB4TA;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "";
@@ -513,7 +513,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = "";
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
-				MARKETING_VERSION = 2.3.0;
+				MARKETING_VERSION = 2.4.0;
 				OTHER_CODE_SIGN_FLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.objective-see.oversight.installer";
 				PRODUCT_NAME = "OverSight Installer";
@@ -530,7 +530,7 @@
 				CODE_SIGN_IDENTITY = "Developer ID Application";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 2.3.0;
+				CURRENT_PROJECT_VERSION = 2.4.0;
 				DEVELOPMENT_TEAM = VBG97UB4TA;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "";
@@ -542,7 +542,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = "";
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
-				MARKETING_VERSION = 2.3.0;
+				MARKETING_VERSION = 2.4.0;
 				OTHER_CODE_SIGN_FLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.objective-see.oversight.installer";
 				PRODUCT_NAME = "OverSight Installer";
