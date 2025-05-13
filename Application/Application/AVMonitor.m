@@ -219,8 +219,22 @@ extern os_log_t logHandle;
         //regex for camera log msg
         NSRegularExpression* cameraRegex = nil;
         
+        const NSString* debugMsg = nil;
+        NSString* micLogPrefix =nil;
+        NSString* micLogSuffix = nil;
+        
+        if(@available(macOS 15.4.0, *)) {
+            debugMsg = @">= macOS 15.4+: Using log monitor for AV events via w/ (camera): 'added <private> endpoint <private> camera <private>' AND (mic): '-MXCoreSession- -[MXCoreSession updateIsRecording:]: Bumping the mode to Voice chat for session as session started recording = <ID: xx, PID = xx,...'";
+            micLogPrefix = @"-MXCoreSession- -[MXCoreSession updateIsRecording:]: Bumping the mode to Voice chat for session as session started";
+            micLogSuffix = @"Recording = YES>";
+        }
+        else{
+            debugMsg = @">= macOS 14+: Using log monitor for AV events via w/ (camera): 'added <private> endpoint <private> camera <private>' AND (mic): '-[MXCoreSession beginInterruption]: Session <ID: xx, PID = xyz,...'";
+            micLogPrefix = @"-MXCoreSession- -[MXCoreSession beginInterruption]";
+            micLogSuffix = @"Recording = YES> is going active";
+        }
         //dbg msg
-        os_log_debug(logHandle, ">= macOS 14+: Using log monitor for AV events via w/ (camera): 'added <private> endpoint <private> camera <private>' AND (mic): '-[MXCoreSession beginInterruption]: Session <ID: xx, PID = xyz,...'");
+        os_log_debug(logHandle, "%s",[debugMsg UTF8String]);
         
         //init mic regex
         micRegex = [NSRegularExpression regularExpressionWithPattern:@"PID = (\\d+)" options:0 error:nil];
@@ -269,10 +283,9 @@ extern os_log_t logHandle;
                 }
                 
                 //mic:
-                // "-[MXCoreSession beginInterruption]: Session <ID: xx, PID = xyz, ...":
                 else if( (YES == [logEvent.subsystem isEqual:@"com.apple.coremedia"]) &&
-                         (YES == [logEvent.composedMessage hasPrefix:@"-MXCoreSession- -[MXCoreSession beginInterruption]"]) &&
-                         (YES == [logEvent.composedMessage hasSuffix:@"Recording = YES> is going active"]) )
+                         (YES == [logEvent.composedMessage hasPrefix:micLogPrefix]) &&
+                         (YES == [logEvent.composedMessage hasSuffix:micLogSuffix]) )
                 {
                     
                     //reset
