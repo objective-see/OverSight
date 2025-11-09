@@ -1577,8 +1577,13 @@ bail:
     // use as body
     if(nil != event.client)
     {
-        //set body
-        content.body = [NSString stringWithFormat:NSLocalizedString(@"Process: %@ (%@)", @"Process: %@ (%@)"), event.client.name, (0 != event.client.pid.intValue) ? event.client.pid : NSLocalizedString(@"pid: unknown", @"pid: unknown")];
+        //date formatter
+        NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
+        formatter.dateStyle = NSDateFormatterNoStyle;
+        formatter.timeStyle = NSDateFormatterMediumStyle;
+        
+        //set body with timestamp
+        content.body = [NSString stringWithFormat:NSLocalizedString(@"Process: %@ (%@)\nTime: %@", @"Process: %@ (%@)\nTime: %@"), event.client.name, (0 != event.client.pid.intValue) ? event.client.pid : NSLocalizedString(@"pid: unknown", @"pid: unknown"), [formatter stringFromDate:event.timestamp]];
         
         //set category
         content.categoryIdentifier = CATEGORY_ACTION;
@@ -1588,8 +1593,13 @@ bail:
     }
     else if(nil != event.device)
     {
-        //set body
-        content.body = [NSString stringWithFormat:NSLocalizedString(@"Device: %@", @"Device: %@"), event.device.localizedName];
+        //date formatter
+        NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
+        formatter.dateStyle = NSDateFormatterNoStyle;
+        formatter.timeStyle = NSDateFormatterMediumStyle;
+        
+        //set body with timestamp
+        content.body = [NSString stringWithFormat:NSLocalizedString(@"Device: %@\nTime: %@", @"Device: %@\nTime: %@"), event.device.localizedName, [formatter stringFromDate:event.timestamp]];
     }
     
     //init request
