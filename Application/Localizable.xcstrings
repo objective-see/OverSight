@@ -122,6 +122,23 @@
         }
       }
     },
+    "Device: %@\nTime: %@" : {
+      "comment" : "Device: %@\nTime: %@",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Device: %1$@\nTime: %2$@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dispositivo: %1$@\nHora: %2$@"
+          }
+        }
+      }
+    },
     "Disable" : {
       "comment" : "Disable",
       "localizations" : {
@@ -284,6 +301,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Proceso: %1$@ (%2$@)"
+          }
+        }
+      }
+    },
+    "Process: %@ (%@)\nTime: %@" : {
+      "comment" : "Process: %@ (%@)\nTime: %@",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Process: %1$@ (%2$@)\nTime: %3$@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Proceso: %1$@ (%2$@)\nHora: %3$@"
           }
         }
       }
