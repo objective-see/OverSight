@@ -20,6 +20,10 @@
 //log handle
 extern os_log_t logHandle;
 
+@interface AVMonitor ()
+-(BOOL)executeUserAction:(Event*)event wait:(BOOL)wait;
+@end
+
 @implementation AVMonitor
 
 //init
@@ -218,12 +222,18 @@ extern os_log_t logHandle;
         
         //regex for camera log msg
         NSRegularExpression* cameraRegex = nil;
+
+        //active microphone sessions, keyed by CoreMedia session ID
+        NSMutableDictionary* micSessions = [NSMutableDictionary dictionary];
+
+        //preserve CoreMedia event order while action scripts execute
+        dispatch_queue_t micActionQueue = dispatch_queue_create([[NSString stringWithFormat:@"%s.micActionQueue", BUNDLE_ID] UTF8String], DISPATCH_QUEUE_SERIAL);
         
         //dbg msg
         os_log_debug(logHandle, ">= macOS 14+: Using log monitor for AV events via w/ (camera): 'added <private> endpoint <private> camera <private>' AND (mic): '-[MXCoreSession beginInterruption]: Session <ID: xx, PID = xyz,...'");
         
         //init mic regex
-        micRegex = [NSRegularExpression regularExpressionWithPattern:@"PID = (\\d+)" options:0 error:nil];
+        micRegex = [NSRegularExpression regularExpressionWithPattern:@"ID: (\\d+), PID = (\\d+)" options:0 error:nil];
         
         //init cam regex
         cameraRegex = [NSRegularExpression regularExpressionWithPattern:@"\\[\\{private\\}(\\d+)\\]" options:0 error:nil];
@@ -239,6 +249,12 @@ extern os_log_t logHandle;
                 
                 //pid
                 NSInteger pid = 0;
+
+                //session ID
+                NSNumber* sessionID = nil;
+
+                //session event emitted only to the configured user action
+                Event* sessionEvent = nil;
                 
                 //camera:
                 // "added <private> endpoint <private> camera <private> = <pid>;"
@@ -270,15 +286,14 @@ extern os_log_t logHandle;
                 
                 //mic:
                 // "-[MXCoreSession beginInterruption]: Session <ID: xx, PID = xyz, ...":
+                // "-[MXCoreSession endInterruption]: Session <ID: xx, PID = xyz, ...":
                 else if( (YES == [logEvent.subsystem isEqual:@"com.apple.coremedia"]) &&
-                         (YES == [logEvent.composedMessage hasPrefix:@"-MXCoreSession- -[MXCoreSession beginInterruption]"]) &&
-                         (YES == [logEvent.composedMessage hasSuffix:@"Recording = YES> is going active"]) )
+                         (((YES == [logEvent.composedMessage hasPrefix:@"-MXCoreSession- -[MXCoreSession beginInterruption]"]) &&
+                           (YES == [logEvent.composedMessage hasSuffix:@"Recording = YES> is going active"])) ||
+                          ((YES == [logEvent.composedMessage hasPrefix:@"-MXCoreSession- -[MXCoreSession endInterruption:]"]) &&
+                           (YES == [logEvent.composedMessage hasSuffix:@"Recording = NO> is going inactive"]))) )
                 {
-                    
-                    //reset
-                    self.lastMicClient = 0;
-                    
-                    //match on pid
+                    //match on session ID and pid
                     match = [micRegex firstMatchInString:logEvent.composedMessage options:0 range:NSMakeRange(0, logEvent.composedMessage.length)];
                     if( (nil == match) ||
                         (NSNotFound == match.range.location) )
@@ -286,16 +301,88 @@ extern os_log_t logHandle;
                         return;
                     }
                     
-                    //extract/convert pid
-                    pid = [[logEvent.composedMessage substringWithRange:[match rangeAtIndex:1]] integerValue];
+                    //extract/convert session ID and pid
+                    sessionID = @([[logEvent.composedMessage substringWithRange:[match rangeAtIndex:1]] integerValue]);
+                    pid = [[logEvent.composedMessage substringWithRange:[match rangeAtIndex:2]] integerValue];
                     if( (0 == pid) ||
-                        (-1 == pid) )
+                        (-1 == pid) ||
+                        (0 == sessionID.integerValue) )
                     {
                         return;
                     }
-                    
-                    //save
-                    self.lastMicClient = pid;
+
+                    //recording began
+                    if(YES == [logEvent.composedMessage hasSuffix:@"Recording = YES> is going active"])
+                    {
+                        //ignore duplicate messages for the same session
+                        if(nil != micSessions[sessionID])
+                        {
+                            return;
+                        }
+
+                        //only emit on when this is the process's first session
+                        BOOL hasOtherSession = NO;
+                        for(Client* sessionClient in micSessions.objectEnumerator)
+                        {
+                            if(pid == sessionClient.pid.integerValue)
+                            {
+                                hasOtherSession = YES;
+                                break;
+                            }
+                        }
+
+                        Client* client = [[Client alloc] init];
+                        client.pid = @(pid);
+                        client.path = valueForStringItem(getProcessPath((int)pid));
+                        client.name = valueForStringItem(getProcessName(client.path));
+                        micSessions[sessionID] = client;
+                        self.lastMicClient = pid;
+
+                        if(NO == hasOtherSession)
+                        {
+                            sessionEvent = [[Event alloc] init:client device:nil deviceType:Device_Microphone state:NSControlStateValueOn];
+                        }
+                    }
+
+                    //recording ended
+                    else
+                    {
+                        Client* client = micSessions[sessionID];
+                        if(nil == client)
+                        {
+                            //Playback-only sessions also end with Recording =
+                            //NO, so only close sessions opened by a recording.
+                            return;
+                        }
+
+                        [micSessions removeObjectForKey:sessionID];
+
+                        //only emit off after the process's final session ends
+                        BOOL hasOtherSession = NO;
+                        for(Client* sessionClient in micSessions.objectEnumerator)
+                        {
+                            if(pid == sessionClient.pid.integerValue)
+                            {
+                                hasOtherSession = YES;
+                                break;
+                            }
+                        }
+
+                        if(NO == hasOtherSession)
+                        {
+                            sessionEvent = [[Event alloc] init:client device:nil deviceType:Device_Microphone state:NSControlStateValueOff];
+                        }
+                    }
+
+                    //CoreAudio only reports aggregate hardware state. Emit the
+                    //per-process transition directly to the configured action.
+                    if( (nil != sessionEvent) &&
+                        (0 != [[NSUserDefaults.standardUserDefaults objectForKey:PREF_EXECUTE_PATH] length]) )
+                    {
+                        dispatch_async(micActionQueue, ^{
+                            [self executeUserAction:sessionEvent wait:YES];
+                        });
+                    }
                 }
                 
                 //msg not of interest
@@ -1523,13 +1610,22 @@ bail:
         //deliver
         [self showNotification:event];
     }
+    //On macOS 14+, CoreMedia session events provide ordered, per-process
+    //microphone actions. Keep hardware events for notifications only.
+    BOOL isHardwareMicAction = NO;
+    if(@available(macOS 14.0, *))
+    {
+        isHardwareMicAction = (Device_Microphone == event.deviceType);
+    }
+
     //should (also) exec user action?
-    if( (NOTIFICATION_ERROR != result) &&
+    if( (NO == isHardwareMicAction) &&
+        (NOTIFICATION_ERROR != result) &&
         (NOTIFICATION_SPURIOUS != result) &&
         (0 != [[NSUserDefaults.standardUserDefaults objectForKey:PREF_EXECUTE_PATH] length]) )
     {
         //exec
-        [self executeUserAction:event];
+        [self executeUserAction:event wait:NO];
     }
 
     return;
@@ -1626,7 +1722,7 @@ bail:
 
 //execute user action
 // via the shell to handle binaries and scripts
--(BOOL)executeUserAction:(Event*)event
+-(BOOL)executeUserAction:(Event*)event wait:(BOOL)wait
 {
     //flag
     BOOL wasExecuted = NO;
@@ -1679,7 +1775,7 @@ bail:
     }
     
     //exec user specified action
-    execTask(SHELL, @[@"-c", [NSString stringWithFormat:@"\"%@\" %@", action, args]], NO, NO);
+    execTask(SHELL, @[@"-c", [NSString stringWithFormat:@"\"%@\" %@", action, args]], wait, NO);
     
 bail:
     
