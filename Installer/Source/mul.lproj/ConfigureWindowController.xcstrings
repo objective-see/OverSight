@@ -1,222 +1,294 @@
 {
-  "sourceLanguage" : "en",
-  "strings" : {
-    "0wd-cy-xEw.title" : {
-      "comment" : "Class = \"NSButtonCell\"; title = \"Next »\"; ObjectID = \"0wd-cy-xEw\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Next »"
+  "sourceLanguage": "en",
+  "strings": {
+    "0wd-cy-xEw.title": {
+      "comment": "Class = \"NSButtonCell\"; title = \"Next »\"; ObjectID = \"0wd-cy-xEw\";",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Next »"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Siguiente »"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Siguiente »"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Επόμενο »"
           }
         }
       }
     },
-    "1hy-8F-qxt.title" : {
-      "comment" : "Class = \"NSButtonCell\"; title = \"Install\"; ObjectID = \"1hy-8F-qxt\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Install"
+    "1hy-8F-qxt.title": {
+      "comment": "Class = \"NSButtonCell\"; title = \"Install\"; ObjectID = \"1hy-8F-qxt\";",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Install"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Instalar"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instalar"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Εγκατάσταση"
           }
         }
       }
     },
-    "8dX-bb-vf1.title" : {
-      "comment" : "Class = \"NSTextFieldCell\"; title = \"If prompted, please allow OverSight to show notifications, setting the style to \\\"Alerts\\\"\"; ObjectID = \"8dX-bb-vf1\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "If prompted, please allow OverSight to show notifications, setting the style to \"Alerts\""
+    "8dX-bb-vf1.title": {
+      "comment": "Class = \"NSTextFieldCell\"; title = \"If prompted, please allow OverSight to show notifications, setting the style to \\\"Alerts\\\"\"; ObjectID = \"8dX-bb-vf1\";",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "If prompted, please allow OverSight to show notifications, setting the style to \"Alerts\""
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Si solicitado, permite que OverSight muestre notificaciones, configurando el estilo en \"Alertas\""
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Si solicitado, permite que OverSight muestre notificaciones, configurando el estilo en \"Alertas\""
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Αν ζητηθεί, επίτρεψε τις γνωστοποιήσεις του OverSight επιλέγοντας το στιλ «Ειδοποιήσεις»."
           }
         }
       }
     },
-    "DHG-bQ-JvA.title" : {
-      "comment" : "Class = \"NSButtonCell\"; title = \"Next »\"; ObjectID = \"DHG-bQ-JvA\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Next »"
+    "DHG-bQ-JvA.title": {
+      "comment": "Class = \"NSButtonCell\"; title = \"Next »\"; ObjectID = \"DHG-bQ-JvA\";",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Next »"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Siguiente »"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Siguiente »"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Επόμενο »"
           }
         }
       }
     },
-    "E5X-AO-6V1.title" : {
-      "comment" : "Class = \"NSButtonCell\"; title = \"Yes!\"; ObjectID = \"E5X-AO-6V1\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Yes!"
+    "E5X-AO-6V1.title": {
+      "comment": "Class = \"NSButtonCell\"; title = \"Yes!\"; ObjectID = \"E5X-AO-6V1\";",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Yes!"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "¡Sí!"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¡Sí!"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ναι!"
           }
         }
       }
     },
-    "G7H-Q1-04P.title" : {
-      "comment" : "Class = \"NSButtonCell\"; title = \"Uninstall\"; ObjectID = \"G7H-Q1-04P\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Uninstall"
+    "G7H-Q1-04P.title": {
+      "comment": "Class = \"NSButtonCell\"; title = \"Uninstall\"; ObjectID = \"G7H-Q1-04P\";",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Uninstall"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Desinstalar"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Desinstalar"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Απεγκατάσταση"
           }
         }
       }
     },
-    "hLy-Nm-ajB.title" : {
-      "comment" : "Class = \"NSTextFieldCell\"; title = \"Support OverSight?\"; ObjectID = \"hLy-Nm-ajB\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Support OverSight?"
+    "hLy-Nm-ajB.title": {
+      "comment": "Class = \"NSTextFieldCell\"; title = \"Support OverSight?\"; ObjectID = \"hLy-Nm-ajB\";",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Support OverSight?"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "¿Apoyas OverSight?"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¿Apoyas OverSight?"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Θέλεις να υποστηρίξεις το OverSight;"
           }
         }
       }
     },
-    "Hvk-zS-1VC.title" : {
-      "comment" : "Class = \"NSTextFieldCell\"; title = \"Show some love? \"; ObjectID = \"Hvk-zS-1VC\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Show some love? "
+    "Hvk-zS-1VC.title": {
+      "comment": "Class = \"NSTextFieldCell\"; title = \"Show some love? \"; ObjectID = \"Hvk-zS-1VC\";",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Show some love? "
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "¿Nos das tu apoyo?"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¿Nos das tu apoyo?"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Θέλεις να δείξεις την υποστήριξή σου; "
           }
         }
       }
     },
-    "IEz-R9-W5R.title" : {
-      "comment" : "Class = \"NSButtonCell\"; title = \"No\"; ObjectID = \"IEz-R9-W5R\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "No"
+    "IEz-R9-W5R.title": {
+      "comment": "Class = \"NSButtonCell\"; title = \"No\"; ObjectID = \"IEz-R9-W5R\";",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "No"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Όχι"
           }
         }
       }
     },
-    "OYn-6J-Cfb.title" : {
-      "comment" : "Class = \"NSTextFieldCell\"; title = \"Mahalo to the \\\"Friends Objective-See\\\"\"; ObjectID = \"OYn-6J-Cfb\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Mahalo to the \"Friends Objective-See\""
+    "OYn-6J-Cfb.title": {
+      "comment": "Class = \"NSTextFieldCell\"; title = \"Mahalo to the \\\"Friends Objective-See\\\"\"; ObjectID = \"OYn-6J-Cfb\";",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Mahalo to the \"Friends Objective-See\""
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mahalo a los \"Friends de Objective-See\""
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mahalo a los \"Friends de Objective-See\""
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ευχαριστούμε τους «Φίλους της Objective-See»"
           }
         }
       }
     },
-    "WLJ-8f-ExO.title" : {
-      "comment" : "Class = \"NSTextFieldCell\"; title = \"It's free, open-source, and written by a single (mac-loving) coder!\"; ObjectID = \"WLJ-8f-ExO\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "It's free, open-source, and written by a single (mac-loving) coder!"
+    "WLJ-8f-ExO.title": {
+      "comment": "Class = \"NSTextFieldCell\"; title = \"It's free, open-source, and written by a single (mac-loving) coder!\"; ObjectID = \"WLJ-8f-ExO\";",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "It's free, open-source, and written by a single (mac-loving) coder!"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sin cargo, open-source y desarrollado por un único programador (amante de Mac)!  "
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sin cargo, open-source y desarrollado por un único programador (amante de Mac)!  "
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Είναι δωρεάν, ανοιχτού κώδικα και δημιουργήθηκε από έναν μόνο προγραμματιστή που αγαπά τα Mac!"
           }
         }
       }
     },
-    "zdX-7L-hfX.title" : {
-      "comment" : "Class = \"NSTextFieldCell\"; title = \"If \\\"Do Not Disturb\\\" mode is activated, OverSight's alerts won't be shown\"; ObjectID = \"zdX-7L-hfX\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "If \"Do Not Disturb\" mode is activated, OverSight's alerts won't be shown"
+    "zdX-7L-hfX.title": {
+      "comment": "Class = \"NSTextFieldCell\"; title = \"If \\\"Do Not Disturb\\\" mode is activated, OverSight's alerts won't be shown\"; ObjectID = \"zdX-7L-hfX\";",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "If \"Do Not Disturb\" mode is activated, OverSight's alerts won't be shown"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Si el modo \"No Molestar\" está activado, las alertas de OverSight no se mostrarán"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Si el modo \"No Molestar\" está activado, las alertas de OverSight no se mostrarán"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Αν είναι ενεργή η λειτουργία «Μην ενοχλείτε», δεν θα εμφανίζονται οι ειδοποιήσεις του OverSight."
           }
         }
       }
     }
   },
-  "version" : "1.0"
+  "version": "1.0"
 }

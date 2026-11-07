@@ -288,6 +288,7 @@
 				en,
 				Base,
 				es,
+				el,
 			);
 			mainGroup = 7D7755DA1F02E05B00D0017D;
 			productRefGroup = 7D7755E41F02E05B00D0017D /* Products */;
