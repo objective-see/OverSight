@@ -1,193 +1,295 @@
 {
-  "sourceLanguage" : "en",
-  "strings" : {
-    "☑️ %@: installed!\n" : {
-      "comment" : "☑️ %@: installed!\n",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "☑️ %@: ¡instalado!"
+  "sourceLanguage": "en",
+  "strings": {
+    "☑️ %@: installed!\n": {
+      "comment": "☑️ %@: installed!\n",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "☑️ %@: ¡instalado!"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "☑️ %@: εγκαταστάθηκε!\n"
           }
         }
       }
     },
-    "☑️ %@: uninstalled!\n" : {
-      "comment" : "☑️ %@: uninstalled!\n",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "☑️ %@: ¡desinstalado!"
+    "☑️ %@: uninstalled!\n": {
+      "comment": "☑️ %@: uninstalled!\n",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "☑️ %@: ¡desinstalado!"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "☑️ %@: απεγκαταστάθηκε!\n"
           }
         }
       }
     },
-    "⚠️ Error: %@ failed" : {
-      "comment" : "⚠️ Error: %@ failed",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "⚠️ Error: %@ falló"
+    "⚠️ Error: %@ failed": {
+      "comment": "⚠️ Error: %@ failed",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "⚠️ Error: %@ falló"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "⚠️ Σφάλμα: αποτυχία του %@"
           }
         }
       }
     },
-    "Close" : {
-      "comment" : "Close",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cerrar"
+    "Close": {
+      "comment": "Close",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cerrar"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Κλείσιμο"
           }
         }
       }
     },
-    "ERROR: Insuffient Privileges." : {
-      "comment" : "ERROR: Insuffient Privileges.",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ERROR: Privilegios Insuficientes."
+    "ERROR: Insuffient Privileges.": {
+      "comment": "ERROR: Insuffient Privileges.",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ERROR: Privilegios Insuficientes."
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ΣΦΑΛΜΑ: Ανεπαρκή δικαιώματα."
           }
         }
       }
     },
-    "Exit" : {
-      "comment" : "Exit",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Salir"
+    "Exit": {
+      "comment": "Exit",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Salir"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Έξοδος"
           }
         }
       }
     },
-    "For more info, from the terminal run:\r\nlog show --predicate=\"subsystem='com.objective-see.oversight'\"" : {
-      "comment" : "For more info, from the terminal run:\r\nlog show --predicate=\"subsystem='com.objective-see.oversight'\"",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Para más información, ejecuta en la terminal:\nlog show --predicate=\"subsystem='com.objective-see.oversight'"
+    "For more info, from the terminal run:\r\nlog show --predicate=\"subsystem='com.objective-see.oversight'\"": {
+      "comment": "For more info, from the terminal run:\r\nlog show --predicate=\"subsystem='com.objective-see.oversight'\"",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Para más información, ejecuta en la terminal:\nlog show --predicate=\"subsystem='com.objective-see.oversight'"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Για περισσότερες πληροφορίες, εκτέλεσε στο Τερματικό:\r\nlog show --predicate=\"subsystem='com.objective-see.oversight'\""
           }
         }
       }
     },
-    "install" : {
-      "comment" : "install",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "instalar"
+    "install": {
+      "comment": "install",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "instalar"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "εγκατάσταση"
           }
         }
       }
     },
-    "Installing..." : {
-      "comment" : "Installing...",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Instalando..."
+    "Installing...": {
+      "comment": "Installing...",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instalando..."
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Εγκατάσταση…"
           }
         }
       }
     },
-    "Next »" : {
-      "comment" : "Next »",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Siguiente »"
+    "Next »": {
+      "comment": "Next »",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Siguiente »"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Επόμενο »"
           }
         }
       }
     },
-    "OverSight can only be installed / run on accounts with administrative privileges" : {
-      "comment" : "OverSight can only be installed / run on accounts with administrative privileges",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "OverSight solo puede ser instalado / ejecutado en cuentas con privilegios administrativos"
+    "OverSight can only be installed / run on accounts with administrative privileges": {
+      "comment": "OverSight can only be installed / run on accounts with administrative privileges",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OverSight solo puede ser instalado / ejecutado en cuentas con privilegios administrativos"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Το OverSight μπορεί να εγκατασταθεί και να εκτελεστεί μόνο από λογαριασμούς με δικαιώματα διαχειριστή."
           }
         }
       }
     },
-    "Protects your webcam & microphone!" : {
-      "comment" : "Protects your webcam & microphone!",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "¡Protege tu webcam & micrófono!"
+    "Protects your webcam & microphone!": {
+      "comment": "Protects your webcam & microphone!",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¡Protege tu webcam & micrófono!"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Προστατεύει την κάμερα και το μικρόφωνό σου!"
           }
         }
       }
     },
-    "uninstall" : {
-      "comment" : "uninstall",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "desinstalar"
+    "uninstall": {
+      "comment": "uninstall",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "desinstalar"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "απεγκατάσταση"
           }
         }
       }
     },
-    "Uninstalling..." : {
-      "comment" : "Uninstalling...",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Desinstalando..."
+    "Uninstalling...": {
+      "comment": "Uninstalling...",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Desinstalando..."
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Απεγκατάσταση…"
           }
         }
       }
     },
-    "Upgrade" : {
-      "comment" : "Upgrade",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Actualizar"
+    "Upgrade": {
+      "comment": "Upgrade",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Actualizar"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Αναβάθμιση"
           }
         }
       }
     },
-    "version %@" : {
-      "comment" : "version %@",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "versión %@"
+    "version %@": {
+      "comment": "version %@",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "versión %@"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "έκδοση %@"
           }
         }
       }
     },
-    "Version: %@" : {
-      "comment" : "Version: %@",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Versión %@"
+    "Version: %@": {
+      "comment": "Version: %@",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Versión %@"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Έκδοση: %@"
           }
         }
       }
     }
   },
-  "version" : "1.0"
+  "version": "1.0"
 }

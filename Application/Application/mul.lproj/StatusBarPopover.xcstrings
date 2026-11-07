@@ -1,60 +1,78 @@
 {
-  "sourceLanguage" : "en",
-  "strings" : {
-    "2jG-uf-4XV.title" : {
-      "comment" : "Class = \"NSButtonCell\"; title = \"⌃\"; ObjectID = \"2jG-uf-4XV\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "⌃"
+  "sourceLanguage": "en",
+  "strings": {
+    "2jG-uf-4XV.title": {
+      "comment": "Class = \"NSButtonCell\"; title = \"⌃\"; ObjectID = \"2jG-uf-4XV\";",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "⌃"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "⌃"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "⌃"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "⌃"
           }
         }
       }
     },
-    "17.title" : {
-      "comment" : "Class = \"NSTextFieldCell\"; title = \"OverSight up & running!\"; ObjectID = \"17\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "OverSight up & running!"
+    "17.title": {
+      "comment": "Class = \"NSTextFieldCell\"; title = \"OverSight up & running!\"; ObjectID = \"17\";",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "OverSight up & running!"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "¡OverSight en funcionamiento!"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¡OverSight en funcionamiento!"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Το OverSight λειτουργεί!"
           }
         }
       }
     },
-    "22.title" : {
-      "comment" : "Class = \"NSTextFieldCell\"; title = \"Access it from here anytime\"; ObjectID = \"22\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Access it from here anytime"
+    "22.title": {
+      "comment": "Class = \"NSTextFieldCell\"; title = \"Access it from here anytime\"; ObjectID = \"22\";",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Access it from here anytime"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Accede desde aquí en cualquier momento"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Accede desde aquí en cualquier momento"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Μπορείς να το ανοίξεις από εδώ ανά πάσα στιγμή"
           }
         }
       }
     }
   },
-  "version" : "1.0"
+  "version": "1.0"
 }

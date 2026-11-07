@@ -1,114 +1,150 @@
 {
-  "sourceLanguage" : "en",
-  "strings" : {
-    "2GD-5k-sEf.title" : {
-      "comment" : "Class = \"NSTextFieldCell\"; title = \"Process\"; ObjectID = \"2GD-5k-sEf\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Process"
+  "sourceLanguage": "en",
+  "strings": {
+    "2GD-5k-sEf.title": {
+      "comment": "Class = \"NSTextFieldCell\"; title = \"Process\"; ObjectID = \"2GD-5k-sEf\";",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Process"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Proceso"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Proceso"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Διεργασία"
           }
         }
       }
     },
-    "EZN-NC-GXx.title" : {
-      "comment" : "Class = \"NSTextFieldCell\"; title = \"file:\"; ObjectID = \"EZN-NC-GXx\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "file:"
+    "EZN-NC-GXx.title": {
+      "comment": "Class = \"NSTextFieldCell\"; title = \"file:\"; ObjectID = \"EZN-NC-GXx\";",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "file:"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "archivo:"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "archivo:"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "αρχείο:"
           }
         }
       }
     },
-    "ocl-vV-SZu.headerCell.title" : {
-      "comment" : "Class = \"NSTableColumn\"; headerCell.title = \" Process\"; ObjectID = \"ocl-vV-SZu\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : " Process"
+    "ocl-vV-SZu.headerCell.title": {
+      "comment": "Class = \"NSTableColumn\"; headerCell.title = \" Process\"; ObjectID = \"ocl-vV-SZu\";",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": " Process"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Proceso"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Proceso"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": " Διεργασία"
           }
         }
       }
     },
-    "QUv-cU-tQS.headerCell.title" : {
-      "comment" : "Class = \"NSTableColumn\"; headerCell.title = \"Allowed Device\"; ObjectID = \"QUv-cU-tQS\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Allowed Device"
+    "QUv-cU-tQS.headerCell.title": {
+      "comment": "Class = \"NSTableColumn\"; headerCell.title = \"Allowed Device\"; ObjectID = \"QUv-cU-tQS\";",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Allowed Device"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dispositivo Permitido"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dispositivo Permitido"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Επιτρεπόμενη συσκευή"
           }
         }
       }
     },
-    "UoV-OW-a04.title" : {
-      "comment" : "Class = \"NSTextFieldCell\"; title = \"action\"; ObjectID = \"UoV-OW-a04\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "action"
+    "UoV-OW-a04.title": {
+      "comment": "Class = \"NSTextFieldCell\"; title = \"action\"; ObjectID = \"UoV-OW-a04\";",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "action"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "acción"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "acción"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ενέργεια"
           }
         }
       }
     },
-    "Wjb-RO-P6A.title" : {
-      "comment" : "Class = \"NSTextFieldCell\"; title = \"Currently, there are no allowed items...\"; ObjectID = \"Wjb-RO-P6A\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Currently, there are no allowed items..."
+    "Wjb-RO-P6A.title": {
+      "comment": "Class = \"NSTextFieldCell\"; title = \"Currently, there are no allowed items...\"; ObjectID = \"Wjb-RO-P6A\";",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Currently, there are no allowed items..."
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Actualmente, no hay ítems permitidos..."
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Actualmente, no hay ítems permitidos..."
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Δεν υπάρχουν επιτρεπόμενα στοιχεία…"
           }
         }
       }
     }
   },
-  "version" : "1.0"
+  "version": "1.0"
 }

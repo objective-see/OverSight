@@ -1,78 +1,102 @@
 {
-  "sourceLanguage" : "en",
-  "strings" : {
-    "6g3-Pg-x3P.title" : {
-      "comment" : "Class = \"NSButtonCell\"; title = \"Support Us!\"; ObjectID = \"6g3-Pg-x3P\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Support Us!"
+  "sourceLanguage": "en",
+  "strings": {
+    "6g3-Pg-x3P.title": {
+      "comment": "Class = \"NSButtonCell\"; title = \"Support Us!\"; ObjectID = \"6g3-Pg-x3P\";",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Support Us!"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "¡Apóyanos!"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¡Apóyanos!"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Υποστήριξέ μας!"
           }
         }
       }
     },
-    "bBK-v0-ypq.title" : {
-      "comment" : "Class = \"NSTextFieldCell\"; title = \"Version:\"; ObjectID = \"bBK-v0-ypq\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Version:"
+    "bBK-v0-ypq.title": {
+      "comment": "Class = \"NSTextFieldCell\"; title = \"Version:\"; ObjectID = \"bBK-v0-ypq\";",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Version:"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Versión:"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Versión:"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Έκδοση:"
           }
         }
       }
     },
-    "fJg-qw-wDf.title" : {
-      "comment" : "Class = \"NSTextFieldCell\"; title = \"Supporters/Patrons:\"; ObjectID = \"fJg-qw-wDf\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Supporters/Patrons:"
+    "fJg-qw-wDf.title": {
+      "comment": "Class = \"NSTextFieldCell\"; title = \"Supporters/Patrons:\"; ObjectID = \"fJg-qw-wDf\";",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Supporters/Patrons:"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Friends/Patrons:"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Friends/Patrons:"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Υποστηρικτές / Χορηγοί:"
           }
         }
       }
     },
-    "J9x-sM-h9S.title" : {
-      "comment" : "Class = \"NSButtonCell\"; title = \"More Info\"; ObjectID = \"J9x-sM-h9S\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "More Info"
+    "J9x-sM-h9S.title": {
+      "comment": "Class = \"NSButtonCell\"; title = \"More Info\"; ObjectID = \"J9x-sM-h9S\";",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "More Info"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Más Información"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Más Información"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Περισσότερες πληροφορίες"
           }
         }
       }
     }
   },
-  "version" : "1.0"
+  "version": "1.0"
 }

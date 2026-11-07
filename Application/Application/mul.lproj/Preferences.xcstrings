@@ -1,438 +1,582 @@
 {
-  "sourceLanguage" : "en",
-  "strings" : {
-    "1A2-j2-kqG.title" : {
-      "comment" : "Class = \"NSTextFieldCell\"; title = \"Do not show an alert when the camera/microphone is deactivated.  \"; ObjectID = \"1A2-j2-kqG\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Do not show an alert when the camera/microphone is deactivated.  "
+  "sourceLanguage": "en",
+  "strings": {
+    "1A2-j2-kqG.title": {
+      "comment": "Class = \"NSTextFieldCell\"; title = \"Do not show an alert when the camera/microphone is deactivated.  \"; ObjectID = \"1A2-j2-kqG\";",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Do not show an alert when the camera/microphone is deactivated.  "
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No mostrar una alerta cuando la cámara/micrófono se desactiven."
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No mostrar una alerta cuando la cámara/micrófono se desactiven."
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Να μην εμφανίζεται ειδοποίηση όταν απενεργοποιείται η κάμερα ή το μικρόφωνο.  "
           }
         }
       }
     },
-    "2qr-2x-A3U.title" : {
-      "comment" : "Class = \"NSButtonCell\"; title = \"Check Now\"; ObjectID = \"2qr-2x-A3U\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Check Now"
+    "2qr-2x-A3U.title": {
+      "comment": "Class = \"NSButtonCell\"; title = \"Check Now\"; ObjectID = \"2qr-2x-A3U\";",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Check Now"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Verificar Ahora"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verificar Ahora"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Έλεγχος τώρα"
           }
         }
       }
     },
-    "4EN-j2-enV.title" : {
-      "comment" : "Class = \"NSTextFieldCell\"; title = \"No Icon Mode\"; ObjectID = \"4EN-j2-enV\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "No Icon Mode"
+    "4EN-j2-enV.title": {
+      "comment": "Class = \"NSTextFieldCell\"; title = \"No Icon Mode\"; ObjectID = \"4EN-j2-enV\";",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "No Icon Mode"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Modo Sin Ícono"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Modo Sin Ícono"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Λειτουργία χωρίς εικονίδιο"
           }
         }
       }
     },
-    "7Ah-kZ-gGe.title" : {
-      "comment" : "Class = \"NSTextFieldCell\"; title = \"OverSight will pass in the following arguments: -device <camera|microphone> -event <on|off> -process <pid> -activeCount <0..n>  Notes:\\n-process is only specified on activation events.\\n-activeCount is the number of devices still active.\"; ObjectID = \"7Ah-kZ-gGe\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "OverSight will pass in the following arguments: -device <camera|microphone> -event <on|off> -process <pid> -activeCount <0..n>  Notes:\n-process is only specified on activation events.\n-activeCount is the number of devices still active."
+    "7Ah-kZ-gGe.title": {
+      "comment": "Class = \"NSTextFieldCell\"; title = \"OverSight will pass in the following arguments: -device <camera|microphone> -event <on|off> -process <pid> -activeCount <0..n>  Notes:\\n-process is only specified on activation events.\\n-activeCount is the number of devices still active.\"; ObjectID = \"7Ah-kZ-gGe\";",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "OverSight will pass in the following arguments: -device <camera|microphone> -event <on|off> -process <pid> -activeCount <0..n>  Notes:\n-process is only specified on activation events.\n-activeCount is the number of devices still active."
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "OverSight pasará los siguientes argumentos:\n-device <camera|microphone> -event <on|off> -process <pid> -activeCount <0..n>\n\nNotas:\n-process solo se especifica en eventos de activación.\n-activeCount es el número de dispositivos que siguen activos."
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OverSight pasará los siguientes argumentos:\n-device <camera|microphone> -event <on|off> -process <pid> -activeCount <0..n>\n\nNotas:\n-process solo se especifica en eventos de activación.\n-activeCount es el número de dispositivos que siguen activos."
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Το OverSight μεταβιβάζει τα εξής ορίσματα: -device <camera|microphone> -event <on|off> -process <pid> -activeCount <0..n>  Σημειώσεις:\n-process καθορίζεται μόνο κατά την ενεργοποίηση.\n-activeCount είναι ο αριθμός συσκευών που παραμένουν ενεργές."
           }
         }
       }
     },
-    "a5n-tt-65v.title" : {
-      "comment" : "Class = \"NSTextFieldCell\"; title = \"Ignore External Device\"; ObjectID = \"a5n-tt-65v\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Ignore External Device"
+    "a5n-tt-65v.title": {
+      "comment": "Class = \"NSTextFieldCell\"; title = \"Ignore External Device\"; ObjectID = \"a5n-tt-65v\";",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Ignore External Device"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ignorar Dispositivo Externo"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ignorar Dispositivo Externo"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Παράβλεψη εξωτερικών συσκευών"
           }
         }
       }
     },
-    "bky-MW-yBn.title" : {
-      "comment" : "Class = \"NSTextFieldCell\"; title = \"Execute a script or binary when an event is detected.\"; ObjectID = \"bky-MW-yBn\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Execute a script or binary when an event is detected."
+    "bky-MW-yBn.title": {
+      "comment": "Class = \"NSTextFieldCell\"; title = \"Execute a script or binary when an event is detected.\"; ObjectID = \"bky-MW-yBn\";",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Execute a script or binary when an event is detected."
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ejecutar un script o un programa cuando se detecte un evento."
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ejecutar un script o un programa cuando se detecte un evento."
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Εκτέλεση σεναρίου ή εκτελέσιμου αρχείου όταν εντοπίζεται συμβάν."
           }
         }
       }
     },
-    "BTl-QV-9GT.title" : {
-      "comment" : "Class = \"NSButtonCell\"; title = \"Browse\"; ObjectID = \"BTl-QV-9GT\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Browse"
+    "BTl-QV-9GT.title": {
+      "comment": "Class = \"NSButtonCell\"; title = \"Browse\"; ObjectID = \"BTl-QV-9GT\";",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Browse"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Navegar"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Navegar"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Αναζήτηση…"
           }
         }
       }
     },
-    "E0T-Ug-P8f.title" : {
-      "comment" : "Class = \"NSTextFieldCell\"; title = \"Automatically (re)start each time you login.\"; ObjectID = \"E0T-Ug-P8f\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Automatically (re)start each time you login."
+    "E0T-Ug-P8f.title": {
+      "comment": "Class = \"NSTextFieldCell\"; title = \"Automatically (re)start each time you login.\"; ObjectID = \"E0T-Ug-P8f\";",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Automatically (re)start each time you login."
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Iniciar automáticamente cada vez que inicies sesión."
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Iniciar automáticamente cada vez que inicies sesión."
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Αυτόματη (επαν)εκκίνηση σε κάθε σύνδεση."
           }
         }
       }
     },
-    "gji-hP-t04.label" : {
-      "comment" : "Class = \"NSToolbarItem\"; label = \"Action\"; ObjectID = \"gji-hP-t04\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Action"
+    "gji-hP-t04.label": {
+      "comment": "Class = \"NSToolbarItem\"; label = \"Action\"; ObjectID = \"gji-hP-t04\";",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Action"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Acción"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Acción"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ενέργεια"
           }
         }
       }
     },
-    "gji-hP-t04.paletteLabel" : {
-      "comment" : "Class = \"NSToolbarItem\"; paletteLabel = \"Action\"; ObjectID = \"gji-hP-t04\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Action"
+    "gji-hP-t04.paletteLabel": {
+      "comment": "Class = \"NSToolbarItem\"; paletteLabel = \"Action\"; ObjectID = \"gji-hP-t04\";",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Action"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Acción"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Acción"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ενέργεια"
           }
         }
       }
     },
-    "Gsa-fn-iag.title" : {
-      "comment" : "Class = \"NSTextFieldCell\"; title = \"Disable 'Inactive' Alerts\"; ObjectID = \"Gsa-fn-iag\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Disable 'Inactive' Alerts"
+    "Gsa-fn-iag.title": {
+      "comment": "Class = \"NSTextFieldCell\"; title = \"Disable 'Inactive' Alerts\"; ObjectID = \"Gsa-fn-iag\";",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Disable 'Inactive' Alerts"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Desactivar Alertas de 'Inactivo'"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Desactivar Alertas de 'Inactivo'"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Απενεργοποίηση ειδοποιήσεων απενεργοποίησης"
           }
         }
       }
     },
-    "JV5-cY-ff4.title" : {
-      "comment" : "Class = \"NSTextFieldCell\"; title = \"Do not automatically check for new versions.\"; ObjectID = \"JV5-cY-ff4\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Do not automatically check for new versions."
+    "JV5-cY-ff4.title": {
+      "comment": "Class = \"NSTextFieldCell\"; title = \"Do not automatically check for new versions.\"; ObjectID = \"JV5-cY-ff4\";",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Do not automatically check for new versions."
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No comprobar automáticamente si hay nuevas versiones."
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No comprobar automáticamente si hay nuevas versiones."
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Να μη γίνεται αυτόματος έλεγχος για νέες εκδόσεις."
           }
         }
       }
     },
-    "JVI-Or-h0u.title" : {
-      "comment" : "Class = \"NSTextFieldCell\"; title = \"Start at Login\"; ObjectID = \"JVI-Or-h0u\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Start at Login"
+    "JVI-Or-h0u.title": {
+      "comment": "Class = \"NSTextFieldCell\"; title = \"Start at Login\"; ObjectID = \"JVI-Or-h0u\";",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Start at Login"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Iniciar al iniciar sesión"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Iniciar al iniciar sesión"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Εκκίνηση κατά τη σύνδεση"
           }
         }
       }
     },
-    "k0w-Oi-kwd.label" : {
-      "comment" : "Class = \"NSToolbarItem\"; label = \"Mode\"; ObjectID = \"k0w-Oi-kwd\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Mode"
+    "k0w-Oi-kwd.label": {
+      "comment": "Class = \"NSToolbarItem\"; label = \"Mode\"; ObjectID = \"k0w-Oi-kwd\";",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Mode"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Modo"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Modo"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Λειτουργία"
           }
         }
       }
     },
-    "k0w-Oi-kwd.paletteLabel" : {
-      "comment" : "Class = \"NSToolbarItem\"; paletteLabel = \"Mode\"; ObjectID = \"k0w-Oi-kwd\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Mode"
+    "k0w-Oi-kwd.paletteLabel": {
+      "comment": "Class = \"NSToolbarItem\"; paletteLabel = \"Mode\"; ObjectID = \"k0w-Oi-kwd\";",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Mode"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Modo"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Modo"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Λειτουργία"
           }
         }
       }
     },
-    "KsW-is-XrR.title" : {
-      "comment" : "Class = \"NSButtonCell\"; title = \"View Allowed Items\"; ObjectID = \"KsW-is-XrR\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "View Allowed Items"
+    "KsW-is-XrR.title": {
+      "comment": "Class = \"NSButtonCell\"; title = \"View Allowed Items\"; ObjectID = \"KsW-is-XrR\";",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "View Allowed Items"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ver Ítems Permitidos"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ver Ítems Permitidos"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Προβολή επιτρεπόμενων στοιχείων"
           }
         }
       }
     },
-    "ncJ-bF-dAA.title" : {
-      "comment" : "Class = \"NSTextFieldCell\"; title = \"Execute\"; ObjectID = \"ncJ-bF-dAA\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Execute"
+    "ncJ-bF-dAA.title": {
+      "comment": "Class = \"NSTextFieldCell\"; title = \"Execute\"; ObjectID = \"ncJ-bF-dAA\";",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Execute"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ejecutar"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ejecutar"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Εκτέλεση"
           }
         }
       }
     },
-    "Oe0-3Y-Srk.placeholderString" : {
-      "comment" : "Class = \"NSTextFieldCell\"; placeholderString = \"Path...\"; ObjectID = \"Oe0-3Y-Srk\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Path..."
+    "Oe0-3Y-Srk.placeholderString": {
+      "comment": "Class = \"NSTextFieldCell\"; placeholderString = \"Path...\"; ObjectID = \"Oe0-3Y-Srk\";",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Path..."
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ruta..."
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ruta..."
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Διαδρομή…"
           }
         }
       }
     },
-    "rrF-xj-cXp.label" : {
-      "comment" : "Class = \"NSToolbarItem\"; label = \"Update\"; ObjectID = \"rrF-xj-cXp\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Update"
+    "rrF-xj-cXp.label": {
+      "comment": "Class = \"NSToolbarItem\"; label = \"Update\"; ObjectID = \"rrF-xj-cXp\";",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Update"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Actualizar"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Actualizar"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ενημέρωση"
           }
         }
       }
     },
-    "rrF-xj-cXp.paletteLabel" : {
-      "comment" : "Class = \"NSToolbarItem\"; paletteLabel = \"Update\"; ObjectID = \"rrF-xj-cXp\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Update"
+    "rrF-xj-cXp.paletteLabel": {
+      "comment": "Class = \"NSToolbarItem\"; paletteLabel = \"Update\"; ObjectID = \"rrF-xj-cXp\";",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Update"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Actualizar"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Actualizar"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ενημέρωση"
           }
         }
       }
     },
-    "SG5-YM-BoV.title" : {
-      "comment" : "Class = \"NSTextFieldCell\"; title = \"Run without showing an icon in the status menu bar.\"; ObjectID = \"SG5-YM-BoV\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Run without showing an icon in the status menu bar."
+    "SG5-YM-BoV.title": {
+      "comment": "Class = \"NSTextFieldCell\"; title = \"Run without showing an icon in the status menu bar.\"; ObjectID = \"SG5-YM-BoV\";",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Run without showing an icon in the status menu bar."
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ejecutar sin mostrar un ícono en la barra de menú de estado."
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ejecutar sin mostrar un ícono en la barra de menú de estado."
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Εκτέλεση χωρίς εικονίδιο στη γραμμή μενού."
           }
         }
       }
     },
-    "SYJ-Qv-cRq.title" : {
-      "comment" : "Class = \"NSTextFieldCell\"; title = \"Do not show an alert when external devices trigger an event.\"; ObjectID = \"SYJ-Qv-cRq\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Do not show an alert when external devices trigger an event."
+    "SYJ-Qv-cRq.title": {
+      "comment": "Class = \"NSTextFieldCell\"; title = \"Do not show an alert when external devices trigger an event.\"; ObjectID = \"SYJ-Qv-cRq\";",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Do not show an alert when external devices trigger an event."
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No mostrar una alerta cuando los dispositivos externos desencadenen un evento."
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No mostrar una alerta cuando los dispositivos externos desencadenen un evento."
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Να μην εμφανίζεται ειδοποίηση για συμβάντα από εξωτερικές συσκευές."
           }
         }
       }
     },
-    "WL4-fV-4Wq.title" : {
-      "comment" : "Class = \"NSTextFieldCell\"; title = \"Pass Arguments\"; ObjectID = \"WL4-fV-4Wq\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Pass Arguments"
+    "WL4-fV-4Wq.title": {
+      "comment": "Class = \"NSTextFieldCell\"; title = \"Pass Arguments\"; ObjectID = \"WL4-fV-4Wq\";",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Pass Arguments"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pasar Argumentos"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pasar Argumentos"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Μεταβίβαση ορισμάτων"
           }
         }
       }
     },
-    "z5b-fA-WCk.title" : {
-      "comment" : "Class = \"NSTextFieldCell\"; title = \"Disable Update Checks\"; ObjectID = \"z5b-fA-WCk\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Disable Update Checks"
+    "z5b-fA-WCk.title": {
+      "comment": "Class = \"NSTextFieldCell\"; title = \"Disable Update Checks\"; ObjectID = \"z5b-fA-WCk\";",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Disable Update Checks"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Desactivar Verificación de Actualizaciones"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Desactivar Verificación de Actualizaciones"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Απενεργοποίηση ελέγχου ενημερώσεων"
           }
         }
       }
     }
   },
-  "version" : "1.0"
+  "version": "1.0"
 }
